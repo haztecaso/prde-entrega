@@ -8,7 +8,7 @@ Implementación del juego /meta tres en raya/.
 -}
 
 module Mttt.Tablero (
-     Tablero
+     Tablero(bloques, bloqueActivo)
    , showTablero
    , putTablero
    , tableroVacio 
@@ -20,7 +20,11 @@ import Mttt.Bloque
 import Data.Array
 
 -- | Tipo para un tablero de /meta tres en raya/
-type Tablero = Array Pos Bloque
+data Tablero = T { bloques :: Array Pos Bloque -- ^ Bloques del tablero
+                 , bloqueActivo :: Maybe Pos   -- ^ 'Pos' del 'Bloque' activo para jugar.
+                                               -- Si es 'Nothing' se puede jugar en
+                                               -- cualquier 'Bloque'.
+                 } deriving (Eq, Show, Read)
 
 -- | Representación en caracteres de un 'Tablero'
 showTablero :: Tablero -> String
@@ -32,4 +36,7 @@ putTablero = putStr . showTablero
 
 -- | 'Tablero' vacío
 tableroVacio :: Tablero
-tableroVacio = listArray ((1,1),(3,3)) [bloqueVacio | _ <- listaIndices]
+tableroVacio =
+  T { bloques = listArray ((1,1),(3,3)) [bloqueVacio | _ <- listaIndices]
+    , bloqueActivo = Nothing 
+    }
