@@ -14,6 +14,7 @@ module Mttt.Bloque (
   , showBloque 
   , putBloque 
   , bloqueVacio
+  , bloqueEjemplo
 ) where
 
 import Mttt.Utils 
@@ -166,11 +167,11 @@ showLinea :: [Maybe Ficha] -> String
 showLinea = intersperse ' ' . map showMaybeFicha 
 
 -- | Ejemplo de un posible 'Bloque'
-ejemploBloque :: Bloque
-ejemploBloque =  movimientoBloque (
+bloqueEjemplo :: Bloque
+bloqueEjemplo =  movimientoBloque (
                      movimientoBloque (
                        movimientoBloque (
                          movimientoBloque bloqueVacio X (2,2)
                        ) O (1,1)
                      ) X (2,1)
-                   ) O (3,3)
+                   ) O (2,3)
