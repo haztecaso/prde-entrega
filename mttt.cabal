@@ -17,6 +17,10 @@ extra-source-files:
 library
   exposed-modules:
       Mttt
+      Mttt.Bloque
+      Mttt.Gui
+      Mttt.Tablero
+      Mttt.Utils
   other-modules:
       Paths_mttt
   hs-source-dirs:
@@ -24,9 +28,10 @@ library
   build-depends:
       array
     , base >=4.7 && <5
+    , gloss
   default-language: Haskell2010
 
-executable mttt-exe
+executable mttt
   main-is: Main.hs
   other-modules:
       Paths_mttt
@@ -36,12 +41,13 @@ executable mttt-exe
   build-depends:
       array
     , base >=4.7 && <5
+    , gloss
     , mttt
   default-language: Haskell2010
 
 test-suite mttt-test
   type: exitcode-stdio-1.0
-  main-is: Spec.hs
+  main-is: Test.hs
   other-modules:
       Paths_mttt
   hs-source-dirs:
@@ -50,5 +56,6 @@ test-suite mttt-test
   build-depends:
       array
     , base >=4.7 && <5
+    , gloss
     , mttt
   default-language: Haskell2010
