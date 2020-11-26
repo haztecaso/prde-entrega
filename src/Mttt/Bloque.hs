@@ -13,6 +13,7 @@ module Mttt.Bloque (
   , Bloque 
   , showBloque 
   , putBloque 
+  , movimientoBloque
   , bloqueVacio
   , bloqueEjemplo
 ) where
@@ -21,7 +22,7 @@ import Mttt.Utils
 
 import Data.Array
 import Data.List (intersperse, transpose)
-import Data.Maybe (isJust, isNothing)
+import Data.Maybe (isJust, isNothing, fromJust)
 
 -- | Tipo que representa una ficha del juego
 data Ficha = X -- ^ Cruz. Ficha del primer jugador
@@ -58,18 +59,26 @@ bloqueVacio :: Bloque
 bloqueVacio = listArray ((1,1),(3,3)) [Nothing | _ <- listaIndices]
 
 -- | Insertar una ficha nueva en un 'Bloque'.
--- Si se intenta insertar una ficha en una casilla ya ocupada
--- o no es el turno del jugador se lanzará un error.
--- Las demás funciones deberían hacer un uso correcto, garantizando
--- que nunca se lance el error.
-movimientoBloque ::
-            Bloque
-            -> Ficha -- ^ Ficha a añadir
-            -> Pos   -- ^ Posición en la que se añade la ficha
-            -> Bloque
+-- Si el movimiento es válido se devuelve un 'Just Bloque'.
+-- En caso contrario se devuelve 'Nothing' 
+movimientoBloque :: Bloque
+                  -> Ficha -- ^ Ficha a añadir
+                  -> Pos   -- ^ Posición en la que se añade la ficha
+                  -> Maybe Bloque
 movimientoBloque b f (x,y)
-  | (isNothing (b!(x,y))) && turnoBloque b == f = b // [((x,y), Just f)]
-  | otherwise            = error "Movimiento incorrecto"
+  | (isNothing (b!(x,y))) && turnoBloque b == f = Just (b // [((x,y), Just f)])
+  | otherwise                                   = Nothing
+
+-- | Hace lo mismo que 'movimientoBloque' salvo que en vez de
+-- devolver un 'Maybe Bloque' devuelve directamente un 'Bloque'.
+-- Si la jugada no es correcta se lanza un error.
+-- Esta función debe ser utilizada únicamente cuando está garantizado
+-- de antemano que la jugada es válida.
+movimientoBloque' :: Bloque
+                  -> Ficha -- ^ Ficha a añadir
+                  -> Pos   -- ^ Posición en la que se añade la ficha
+                  -> Bloque
+movimientoBloque' b f p = fromJust $ movimientoBloque b f p
 
 -- | Lista de posiciones vacías de un 'Bloque'
 casillasLibresBloque :: Bloque -> [Pos]
@@ -79,7 +88,7 @@ casillasLibresBloque b = map fst $ filter snd [((x, y), isNothing $ b!(x,y)) | (
 expandirBloque :: Bloque -> [Bloque]
 expandirBloque t
   | finBloque t = []
-  | otherwise   = map (movimientoBloque t f) $ casillasLibresBloque t
+  | otherwise   = map (movimientoBloque' t f) $ casillasLibresBloque t
   where f = turnoBloque t
 
 -- | Cuenta las fichas de cada tipo que hay en un 'Bloque'.
@@ -168,10 +177,10 @@ showLinea = intersperse ' ' . map showMaybeFicha
 
 -- | Ejemplo de un posible 'Bloque'
 bloqueEjemplo :: Bloque
-bloqueEjemplo =  movimientoBloque (
-                     movimientoBloque (
-                       movimientoBloque (
-                         movimientoBloque bloqueVacio X (2,2)
+bloqueEjemplo =  movimientoBloque' (
+                     movimientoBloque' (
+                       movimientoBloque' (
+                         movimientoBloque' bloqueVacio X (2,2)
                        ) O (1,1)
                      ) X (2,1)
                    ) O (2,3)
