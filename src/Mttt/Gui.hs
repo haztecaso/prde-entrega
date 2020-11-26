@@ -129,7 +129,7 @@ posicionFicha :: Float -- ^ Tamaño de la ficha
 posicionFicha tam pos = (tam*(y-1), tam*(3-x))
   where (x, y) =(fromIntegral $ fst pos, fromIntegral $ snd pos)
 
--- | Dibujar una casilla del 'Bloque'
+-- | Dibujar una casilla del 'EstadoBloque'
 dibujaCasilla :: EstadoBloque
               -> Pos
               -> Picture
