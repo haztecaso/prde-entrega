@@ -26,13 +26,16 @@ import Graphics.Gloss.Data.Color
 import Graphics.Gloss.Interface.IO.Interact
 import Graphics.Gloss.Data.Picture
 
+{-
+  DEFINICIONES GENERALES
+-}
+
 -- | Tipo para representar temas (grupos de colores)
 -- de la intefaz gráfica del juego.
 data Tema = Tema { fondo :: Color
             , contraste :: Color
             , principal :: Color
             , secundario :: Color
-            , neutro :: Color
             } deriving (Show)
 
 -- | Tema claro
@@ -41,7 +44,6 @@ temaClaro = Tema { fondo      = greyN 0.85
                  , contraste  = greyN 0.05
                  , principal  = red
                  , secundario = green
-                 , neutro     = greyN 0.5
                  }
 
 -- | Tema oscuro, por defecto.
@@ -50,45 +52,42 @@ temaOscuro = Tema { fondo     = greyN 0.15
                  , contraste  = greyN 0.95
                  , principal  = red
                  , secundario = green
-                 , neutro     = greyN 0.4
                  }
 
--- | Tipo que encapsula los datos necesarios para dibujar un 'Bloque' en pantalla
-data EstadoBloque = EB { bloqueEB :: Bloque -- ^ 'Bloque' a dibujar
-                       , posEB :: Point    -- ^ Posición del centro del tablero
-                       , tamEB :: Float    -- ^ Tamaño del tablero
-                       , temaEB :: Tema    -- ^ 'Tema' con el que dibujar el tablero
-                       }
--- | Función para crear un 'EstadoBloque'
-crearEB :: Bloque -- ^ 'bloqueEB'
-        -> Point  -- ^ 'posEB'
-        -> Float  -- ^ 'tamEB'
-        -> Tema   -- ^ 'temaEB'
-        -> EstadoBloque
-crearEB bloque pos tam tema =
-  EB { bloqueEB = bloque
-     , posEB    = pos 
-     , tamEB    = tam
-     , temaEB   = tema
-     }
+-- | Dado un 'Tema' elimina la varedad de colores,
+-- dejando solo el de 'fondo' y el de 'contraste'.
+temaBicolor :: Tema -> Tema
+temaBicolor tema =
+  tema { principal = c
+       , secundario = c
+       }
+  where c = contraste tema
 
--- | 'EstadoBloque' inicial ('bloqueVacio')
-eBInicial :: Float -- ^ 'tamEB'
-          -> Tema  -- ^  'temaEB'
-          -> EstadoBloque
-eBInicial tam tema = crearEB bloqueVacio (0,0) tam tema
-
--- | Dibujar lineas del tablero en un cuadrado
-dibujaLineas :: Point -- ^ Esquina superior izquierda del tablero
+-- | Dibuja lineas del tablero en un cuadrado
+dibujaLineas :: Point -- ^ Esquina inferior izquierda del tablero
              -> Float -- ^ Tamaño del tablero
              -> Color -- ^ Color de las líneas
              -> Picture
 dibujaLineas p t c = color c $ pictures $
   [ line [(x, 0),(x, t)] | x <- pos]
   ++ [ line [(0, y),(t, y)] | y <- pos]
-      where pos   = map (+ fst p) [t/3, t*2/3]
+      where pos = map (+ fst p) [t/3, t*2/3]
 
--- | Dibujar una cruz
+-- | Convertir de 'Pos' a posición 'Point'
+--
+-- __TODO__: explicar mejor
+posPoint :: Float -- ^ Tamaño de la ficha
+         -> Pos   -- ^ Posición de la ficha
+         -> Point -- ^ Posición del centro de la ficha en el dibujo
+posPoint tam pos = (tam*(y-1+0.5), tam*(3-x+0.5))
+    where (x, y) = (fromIntegral $ fst pos, fromIntegral $ snd pos)
+
+
+{-
+  PARTE RELATIVA AL TIPO Ficha
+-}
+
+-- | Dibuja una cruz
 dibujaX :: Point -- ^ Posición del centro de la X
         -> Float -- ^ Tamaño de la X
         -> Float -- ^ Grosor de la X
@@ -99,7 +98,7 @@ dibujaX pos tam gros col =
   zipWith rotate [45.0,-45.0] [rect, rect]
     where rect   = rectangleSolid (sqrt 2 * (tam - gros))  gros
           (x, y) = pos
--- | Dibujar un círculo
+-- | Dibuja un círculo
 dibujaO :: Point -- ^ Posición del centro del círculo
         -> Float -- ^ Tamaño del círculo
         -> Float -- ^ Grosor del círculo
@@ -109,39 +108,51 @@ dibujaO pos tam gros col =
   translate x y $ color col $ thickCircle ((tam - gros)/2)  gros
     where (x, y) = pos
 
--- | Dibujar una ficha
+-- | Dibuja una ficha
 dibujaFicha :: Tema  -- ^ Tema con el que dibujar la 'Ficha'
             -> Float -- ^ Tamaño de la ficha
             -> Point -- ^ Posición de la ficha (esquina inferior izquierda)
             -> Ficha -- ^ 'Ficha' a dibujar
             -> Picture
 dibujaFicha tema tam pos ficha
-  | esX ficha = dibujaX centro tam (tam*0.15) (principal tema)
-  | otherwise = dibujaO centro tam (tam*0.15) (secundario tema)
-  where centro = (fst pos + tam/2, snd pos + tam/2)
+  | esX ficha = dibujaX pos tam (tam*0.10) (principal tema)
+  | otherwise = dibujaO pos tam (tam*0.10) (secundario tema)
 
--- | Convertir de 'Pos' a posición 'Point'
---
--- __TODO__: explicar mejor
-posicionFicha :: Float -- ^ Tamaño de la ficha
-              -> Pos   -- ^ Posición de la ficha
-              -> Point -- ^ Posición del centro de la ficha en el dibujo
-posicionFicha tam pos = (tam*(y-1), tam*(3-x))
-  where (x, y) =(fromIntegral $ fst pos, fromIntegral $ snd pos)
+{-
+  PARTE RELATIVA AL TIPO Bloque
+-}
 
--- | Dibujar una casilla del 'EstadoBloque'
+-- | Tipo que encapsula los datos necesarios para dibujar un 'Bloque' en pantalla
+data EstadoBloque = EB { bloqueEB :: Bloque -- ^ 'Bloque' a dibujar
+                       , posEB :: Point    -- ^ Posición del centro del tablero
+                       , tamEB :: Float    -- ^ Tamaño del tablero
+                       , temaEB :: Tema    -- ^ 'Tema' con el que dibujar el tablero
+                       } deriving (Show)
+
+-- | 'EstadoBloque' inicial ('bloqueVacio')
+eBInicial :: Float -- ^ 'tamEB'
+          -> Tema  -- ^  'temaEB'
+          -> EstadoBloque
+eBInicial tam tema = 
+  EB { bloqueEB = bloqueVacio
+     , posEB    = (0,0)
+     , tamEB    = tam
+     , temaEB   = tema
+     }
+
+-- | Dibuja una casilla del 'EstadoBloque'
 dibujaCasilla :: EstadoBloque
               -> Pos
               -> Picture
 dibujaCasilla estado pos
-  | isJust(casilla) = dibujaFicha tema (tam/3) origen (fromJust casilla)
+  | isJust(casilla) = dibujaFicha tema (tam*0.2) origen (fromJust casilla)
   | otherwise = Blank
   where casilla = (bloqueEB estado)!pos
         tam = tamEB estado
         tema = temaEB estado
-        origen = posicionFicha (tam/3) pos
+        origen = posPoint (tam/3) pos
 
--- | Dibujar un 'EstadoBloque'
+-- | Dibuja un 'EstadoBloque'
 dibujaEB :: EstadoBloque -> Picture
 dibujaEB estado = translate (x-tam/2) (y-tam/2) $ pictures $
                   [dibujaLineas (0,0) tam (contraste tema)] ++
@@ -150,20 +161,24 @@ dibujaEB estado = translate (x-tam/2) (y-tam/2) $ pictures $
                           tam    = tamEB estado
                           tema   = temaEB estado
 
-
-modificarEB :: Event -> EstadoBloque -> EstadoBloque
-modificarEB _ estado = estado
--- modificarEB (EventKey (MouseButton LeftButton) Up _ pos) b =
---   | isJust(nuevo) = fromJust(nuevo)
---   | otherwise = b
---   where nuevo = movimientoBloque b (turnoBloque b) (posicionPunteroBloque pos )
+-- | Modifica el 'EstadoBloque' actual del juego cuando se hace click
+modificaEB :: Event -> EstadoBloque -> EstadoBloque
+modificaEB (EventKey (MouseButton LeftButton) Up _ posPuntero) estado
+  | isJust(nuevo) = estado {bloqueEB = fromJust(nuevo)}
+  | otherwise = estado
+  where b      = bloqueEB estado
+        tam    = tamEB estado
+        pos    = posEB estado
+        nuevo  = movimientoBloque b (turnoBloque b) (posicionPunteroBloque posPuntero estado)
+modificaEB _ estado = estado
 
 posicionPunteroBloque :: Point -- ^ Posición del puntero en la pantalla
-                      -> Float -- ^ Tamaño del tablero
-                      -> Point -- ^ Posición (centro) del tablero
-                      -> Pos   -- Posición del puntero en el 'Bloque'
-posicionPunteroBloque (x,y) tam (px, py) = (floor $ x + tam2, floor $ y + tam2)
-  where tam2 = tam / 2
+                      -> EstadoBloque 
+                      -> Pos -- ^ Posición del puntero en el 'bloqueEB'
+posicionPunteroBloque (x,y) estado = (floor $ (y + tam2) / tamC, floor $ (x + tam2) / tamC)
+  where tam2     = (tamEB estado) / 2
+        tamC     = (tamEB estado) / 3
+        (px, py) = posEB estado
 
 -- | Ventana para jugar al tres en raya
 bloqueVentana :: Display
@@ -174,9 +189,66 @@ bloqueVentana = InWindow "Tres en raya" (800, 800) (0,0)
 displayEB :: EstadoBloque -> IO ()
 displayEB estado = display bloqueVentana (fondo $ temaEB estado) (dibujaEB estado)
 
--- | Función IO para jugar al tres en raya
+-- | Función IO para jugar al /tres en raya/
 guiBoard :: Tema  -- ^ Tema con el que dibujar la interfaz
          -> Float -- ^ Tamaño del tablero
          -> IO ()
-guiBoard tema tam = play bloqueVentana (fondo tema) 30 (eBInicial tam tema) dibujaEB modificarEB (const id)
+guiBoard tema tam = play bloqueVentana (fondo tema) 15 (eBInicial tam tema) dibujaEB modificaEB (const id)
 
+{-
+  PARTE RELATIVA AL TIPO Tablero
+-}
+
+-- | Tipo que encapsula los datos necesarios para dibujar un 'Tablero' en pantalla
+data EstadoTablero = ET { tableroET :: Tablero -- ^ 'Tablero' a dibujar
+                       , posET :: Point    -- ^ Posición del centro del tablero
+                       , tamET :: Float    -- ^ Tamaño del tablero
+                       , temaET :: Tema    -- ^ 'Tema' con el que dibujar el tablero
+                       } deriving (Show)
+
+-- | 'EstadoTablero' inicial ('tableroVacio')
+eTInicial :: Float -- ^ 'tamEB'
+          -> Tema  -- ^  'temaEB'
+          -> EstadoTablero
+eTInicial tam tema = 
+  ET { tableroET = tableroVacio
+     , posET     = (0,0)
+     , tamET     = tam
+     , temaET    = tema
+     }
+
+-- | Dibuja un 'EstadoTablero'
+dibujaET :: EstadoTablero -> Picture
+dibujaET estado =
+  translate (x-tam/2) (y-tam/2) $ pictures $
+  [dibujaLineas (0,0) tam $ contraste $ temaET estado]
+  ++ [dibujaEB $ estadoBloque pos| pos <- listaIndices]
+    where
+      (x, y)           = posET estado
+      tam              = tamET estado
+      tema pos         = temaET estado
+      estadoBloque pos =
+        EB { bloqueEB = (tableroET estado)!pos
+           , posEB = posPoint (tam/3) pos
+           , tamEB = tam/3*0.8
+           , temaEB = tema pos
+           }
+
+-- | Modifica el 'EstadoTablero' actual del juego cuando se hace click
+modificaET :: Event -> EstadoTablero -> EstadoTablero
+modificaET _ estado = estado
+
+-- | Ventana para jugar al meta tres en raya
+tableroVentana :: Display
+tableroVentana = InWindow "Meta tres en raya" (800, 800) (0,0)
+
+-- | Función IO para pintar un 'EstadoTablero' en pantalla.
+-- Tiene la misma interfaz que 'dibujaET'
+displayET :: EstadoTablero -> IO ()
+displayET estado = display tableroVentana (fondo $ temaET estado) (dibujaET estado)
+
+-- | Función IO para jugar al /meta tres en raya/
+guiTablero :: Tema  -- ^ Tema con el que dibujar la interfaz
+           -> Float -- ^ Tamaño del tablero
+           -> IO ()
+guiTablero tema tam = play tableroVentana (fondo tema) 15 (eTInicial tam tema) dibujaET modificaET (const id)

@@ -13,7 +13,9 @@ module Mttt.Bloque (
   , Bloque 
   , showBloque 
   , putBloque 
+  , turnoBloque
   , movimientoBloque
+  , ganadorBloque
   , bloqueVacio
   , bloqueEjemplo
 ) where
@@ -66,8 +68,10 @@ movimientoBloque :: Bloque
                   -> Pos   -- ^ Posición en la que se añade la ficha
                   -> Maybe Bloque
 movimientoBloque b f (x,y)
-  | (isNothing (b!(x,y))) && turnoBloque b == f = Just (b // [((x,y), Just f)])
-  | otherwise                                   = Nothing
+  | ((x,y)`elem` listaIndices)
+    && (isNothing (b!(x,y)))
+    && turnoBloque b == f      = Just (b // [((x,y), Just f)])
+  | otherwise                  = Nothing
 
 -- | Hace lo mismo que 'movimientoBloque' salvo que en vez de
 -- devolver un 'Maybe Bloque' devuelve directamente un 'Bloque'.
