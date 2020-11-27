@@ -54,7 +54,7 @@ temaOscuro = Tema { fondo     = greyN 0.15
                  , secundario = green
                  }
 
--- | Dado un 'Tema' elimina la varedad de colores,
+-- | Dado un 'Tema' elimina la variedad de colores,
 -- dejando solo el de 'fondo' y el de 'contraste'.
 temaBicolor :: Tema -> Tema
 temaBicolor tema =
@@ -135,7 +135,7 @@ eBInicial :: Float -- ^ 'tamEB'
           -> EstadoBloque
 eBInicial tam tema = 
   EB { bloqueEB = bloqueVacio
-     , posEB    = (0,0)
+     , posEB    = (-250,0)
      , tamEB    = tam
      , temaEB   = tema
      }
@@ -167,18 +167,18 @@ modificaEB (EventKey (MouseButton LeftButton) Up _ posPuntero) estado
   | isJust(nuevo) = estado {bloqueEB = fromJust(nuevo)}
   | otherwise = estado
   where b      = bloqueEB estado
-        tam    = tamEB estado
-        pos    = posEB estado
-        nuevo  = movimientoBloque b (turnoBloque b) (posicionPunteroBloque posPuntero estado)
+        nuevo  = movimientoBloque b (turnoBloque b) (pointPosEB posPuntero estado)
 modificaEB _ estado = estado
 
-posicionPunteroBloque :: Point -- ^ Posición del puntero en la pantalla
-                      -> EstadoBloque 
-                      -> Pos -- ^ Posición del puntero en el 'bloqueEB'
-posicionPunteroBloque (x,y) estado = (floor $ (y + tam2) / tamC, floor $ (x + tam2) / tamC)
-  where tam2     = (tamEB estado) / 2
-        tamC     = (tamEB estado) / 3
+pointPosEB :: Point -- ^ Posición del puntero en la pantalla
+           -> EstadoBloque 
+           -> Pos -- ^ Posición del puntero en el 'bloqueEB'
+pointPosEB (x,y) estado = floor' (4-3*(y-py+tam/2)/tam,
+                                  1+3*(x-px+tam/2)/tam)
+  where tam     = (tamEB estado)
+        tamCelda     = tam/3
         (px, py) = posEB estado
+        floor' (a,b) = (floor a, floor b)
 
 -- | Ventana para jugar al tres en raya
 bloqueVentana :: Display
