@@ -21,7 +21,7 @@ module Mttt.Bloque.Data (
   , finBloque
   , tablasBloque
   , bloqueVacio
-  , AgenteBloque
+  , AgenteBloque (funAB, nombreAB)
   , movAgenteBloque 
   , agenteBTonto
 ) where

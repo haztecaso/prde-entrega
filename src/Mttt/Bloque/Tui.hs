@@ -61,13 +61,14 @@ tuiBloqueMulti :: IO ()
 tuiBloqueMulti = do
   putStrLn "Nueva partida de tres en raya [Multijugador]"
   (b, partida) <- loopBPartidaMulti bloqueVacio []
+  putStr "Jugadas: "
   print $ reverse partida
   putBloque b
   putStrLn $ "\n[FIN] " ++ bloqueMsgMulti b
 
 {-
   BLOQUE: Agente
-
+-}
 
 loopBPartidaAgente :: Bloque -- ^ 'Bloque' actual
                    -> AgenteBloque -- ^ 'AgenteBloque' contra el que jugar
@@ -75,15 +76,15 @@ loopBPartidaAgente :: Bloque -- ^ 'Bloque' actual
                    -> [Pos] -- ^ Lista de jugadas (ordenadas empezando por la más reciente)
                    -> IO (Bloque, [Pos])
 loopBPartidaAgente b agente fichaAgente jugadas = do
-  if turnoBloque b == Just fichaAgente
-     then do nuevo <- jugarBloque b $ funAB agente b
-     else do
-       pos <- preguntarMovB b
-       nuevo <- jugarBloque b pos
+  pos <- if turnoBloque b == Just fichaAgente
+            then return (funAB agente b)
+            else preguntarMovB b
+  nuevo <- jugarBloque b pos
   if finBloque nuevo
      then return (nuevo, jugadas)
-     else loopBPartidaMulti nuevo $ pos:jugadas
+     else loopBPartidaAgente nuevo agente fichaAgente (pos:jugadas)
 
+{-
 bloqueMsgAgente :: Bloque -> Ficha -> String
 bloqueMsgAgente b fichaAgente
   | tablasBloque b = "Tablas"
@@ -94,15 +95,18 @@ bloqueMsgAgente b fichaAgente
   && Just fichaAgente != fromJust $ ganadorBloque b
     = "Has vencido al agente"
   | otherwise = "Partida en curso"
+  -}
 
 tuiBloqueAgente :: AgenteBloque
-                -> Bool -- ^ Si 'True' el 'AgenteBloque' es el segundo jugador
+                -> Bool -- ^ Si 'True' el 'AgenteBloque' juega primero ('Ficha' 'X')
                 -> IO ()
 tuiBloqueAgente agente turnoAgente = do
   putStrLn "Nueva partida de tres en raya"
-  putStrLn "AGENTE: " ++ nombreAB
-  (b, partida) <- loopBPartidaAgente bloqueVacio []
+  putStrLn $ "Jugando contra agente " ++ nombreAB agente
+  (b, partida) <- loopBPartidaAgente bloqueVacio agente fichaAgente []
   print $ reverse partida
   putBloque b
-  putStrLn $ "\n[FIN] " ++ bloqueMsgAgente b fichaAgente
--}
+  where fichaAgente 
+          | turnoAgente = X
+          | otherwise = O
+  -- putStrLn $ "\n[FIN] " ++ bloqueMsgAgente b fichaAgente
