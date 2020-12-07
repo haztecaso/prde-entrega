@@ -5,7 +5,7 @@ cabal-version: 1.12
 -- see: https://github.com/sol/hpack
 
 name:           mttt
-version:        0.1.0.0
+version:        0.2.0.0
 description:    Please see the README
 author:         Adrián Lattes y David Díez
 maintainer:     Adrián Lattes y David Díez
