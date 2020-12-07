@@ -163,7 +163,7 @@ modificaEBAgente :: AgenteBloque -- ^ 'AgenteBloque' con el que calcular la juga
                  -> EstadoBloque -- ^ Estado actual del tablero
                  -> EstadoBloque
 modificaEBAgente agente fichaAgente _ estado =
-  if turno == Just fichaAgente
+  if turnoBloque b == Just fichaAgente && not (finBloque b)
      then (estado {bloqueEB = fromJust $ movBloque b $ funAB agente b})
      else estado
          where b = bloqueEB estado
@@ -178,5 +178,5 @@ guiBloqueAgente :: Tema -- ^ Tema con el que dibujar la interfaz
                 -> Ficha -- ^ Ficha del 'AgenteBloque'
                 -> IO ()
 guiBloqueAgente tema tam agente fichaAgente =
-  play (bloqueVentana tamV) (fondo tema) 15 (eBInicial tam tema) dibujaEB modificaEB (modificaEBAgente agente fichaAgente)
+  play (bloqueVentana tamV) (fondo tema) 3 (eBInicial tam tema) dibujaEB modificaEB (modificaEBAgente agente fichaAgente)
   where tamV = floor $ 1.15 * tam

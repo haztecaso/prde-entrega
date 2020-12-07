@@ -20,6 +20,7 @@ import Text.Read (readMaybe)
   BLOQUE: Generalidades
 -}
 
+-- | Pregunta donde se quiere jugar.
 -- | TODO: arreglar
 preguntarMovB :: Bloque -> IO Pos
 preguntarMovB b = do
@@ -29,6 +30,7 @@ preguntarMovB b = do
     n <- prompt "Número de casilla donde jugar: "
     return (int2pos $ read n)
 
+-- | Modifica un 'Bloque' insertando una ficha si es posible.
 jugarBloque :: Bloque -> Pos -> IO Bloque
 jugarBloque b pos = do
   let nuevo = movBloque b pos

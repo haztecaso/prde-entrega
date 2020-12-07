@@ -22,8 +22,8 @@ module Mttt.Bloque.Data (
   , tablasBloque
   , bloqueVacio
   , AgenteBloque (funAB, nombreAB)
-  , movAgenteBloque 
   , agenteBTonto
+  , agenteBMinimaxHeur1
 ) where
 
 import Mttt.Common.Utils 
@@ -98,6 +98,14 @@ expandirBloque b
   | finBloque b = []
   | otherwise = map (fromJust . ( movBloque b )) $ casillasLibresBloque b
 
+-- | Movimiento de bloque expandido
+posMovimientoBloque :: Bloque -> Bloque -> Pos
+posMovimientoBloque bloque expandido =
+  libres !! (fromJust $ elemIndex expandido siguientes)
+  where siguientes = expandirBloque bloque
+        libres = casillasLibresBloque bloque
+
+
 -- | Cuenta las fichas de cada tipo que hay en un 'Bloque'.
 contarFichasBloque :: Bloque
               -> (Int, Int) -- ^ El primer valor corresponde al número de X's y el segundo a las O's
@@ -155,18 +163,14 @@ ganadorBloque t
           | l == [Just O, Just O, Just O] = Just O
           | otherwise = Nothing
 
--- | TODO
-validarBloque:: Bloque -> Bool
-validarBloque _ = False
-
 {- FUNCIONES HEURÍSTICAS -}
 
 -- | Función heurística para el tres en raya
 -- Toma el valor 0 si nadie ha ganado, 1 si ganan X y -1 si gana O.
 heurBloque :: Bloque -> Int
 heurBloque b
-  | ganador == Just X = 1
-  | ganador == Just O = -1
+  | ganador == Just X = -1
+  | ganador == Just O = 1
   | otherwise = 0
   where ganador = ganadorBloque b
 
@@ -177,15 +181,15 @@ data AgenteBloque = AgenteBloque { funAB :: Bloque -> Pos
                                  , nombreAB :: String
                                  }
 
--- | Ejecuta el movimiento de un agente, siempre
--- que la partdia no haya concluido.
-movAgenteBloque:: Bloque -> AgenteBloque -> Maybe Bloque
-movAgenteBloque bloque agente = movBloque bloque (funAB agente bloque)
-    where ficha = turnoBloque bloque
-
--- | Devuelve la primera posición disponible donde jugar, en el
--- orden generado por 'casillasLibresBloque'.
+-- | Agente que devuelve la primera posición disponible donde jugar,
+-- en el orden generado por 'casillasLibresBloque'.
 agenteBTonto :: AgenteBloque
 agenteBTonto = AgenteBloque { funAB = head . casillasLibresBloque
                            , nombreAB = "tonto"
                            }
+
+agenteBMinimaxHeur1 :: AgenteBloque
+agenteBMinimaxHeur1 = AgenteBloque { funAB = \b -> posMovimientoBloque b (minimax 9 expandirBloque heurBloque b)
+                                   , nombreAB = "minimax-heur1"
+                                   }
+

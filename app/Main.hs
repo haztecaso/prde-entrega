@@ -1,7 +1,17 @@
-module Main where
-
-import Mttt
+module Main where 
 import System.Console.ParseArgs
+
+import Mttt.Common.Utils
+import Mttt.Common.Gui
+import Mttt.Common.Tui
+
+import Mttt.Bloque.Data
+import Mttt.Bloque.Tui
+import Mttt.Bloque.Gui
+
+import Mttt.Tablero.Data
+import Mttt.Tablero.Tui
+import Mttt.Tablero.Gui
 
 -- | Tipo de dato para diferenciar las opciones de la interfaz cli
 data Opciones =
@@ -46,16 +56,27 @@ argd = [ Arg { argIndex = OAyuda
              }
        ]
 
+selAgenteBloque :: IO AgenteBloque
+selAgenteBloque = do putStrLn "¿Contra que agente quieres jugar?"
+                     opc <- selOpcion ["Agente tonto", "minimax"]
+                     case opc of
+                       0 -> return agenteBTonto
+                       1 -> return agenteBMinimaxHeur1 
+
 -- | Función para seleccionar que debe hacer este programa
 nuevoJuego :: Bool -- ^ ¿Jugar a /ttt/? No: /mttt/
            -> Bool -- ^ ¿Usar tui? No: /gui/
            -> Bool -- ^ ¿Multijugador? No: /agente/
+           -> Ficha -- ^ Ficha del Agente
            -> IO ()
-nuevoJuego True True True = tuiBloqueMulti
--- nuevoJuego True True False = tuiBloqueAgente agenteTonto
-nuevoJuego True False True = guiBloque temaOscuro 450
-nuevoJuego False False True = guiTablero temaOscuro 450
-nuevoJuego _ _ _= putStrLn "[PENDIENTE DE IMPLEMENTAR]"
+nuevoJuego True True True _   = tuiBloqueMulti
+nuevoJuego True True False p  = do agente <- selAgenteBloque
+                                   tuiBloqueAgente agente p
+nuevoJuego True False True _  = guiBloqueMulti temaOscuro 450
+nuevoJuego True False False p = do agente <- selAgenteBloque 
+                                   guiBloqueAgente temaOscuro 450 agente p
+nuevoJuego False False True _ = guiTablero temaOscuro 450
+nuevoJuego _ _ _ _            = putStrLn "¡¡¡PENDIENTE DE IMPLEMENTAR!!!"
 
 main :: IO ()
 main = do
@@ -67,8 +88,9 @@ main = do
   let simple  = gotArg args OSimple
   let tui     = gotArg args OTui
   let multi   = gotArg args OMulti
-  let primero = gotArg args OPrimero
-  print (simple, tui, multi)
+  let fichaAgente = if gotArg args OPrimero
+                       then X
+                       else O
   if ayuda
      then putStr $ argsUsage args
-     else nuevoJuego simple tui multi
+     else nuevoJuego simple tui multi fichaAgente
