@@ -84,7 +84,7 @@ loopBPartidaAgente b agente fichaAgente jugadas = do
      then return (nuevo, jugadas)
      else loopBPartidaAgente nuevo agente fichaAgente (pos:jugadas)
 
-{-
+{- 
 bloqueMsgAgente :: Bloque -> Ficha -> String
 bloqueMsgAgente b fichaAgente
   | tablasBloque b = "Tablas"
@@ -92,21 +92,18 @@ bloqueMsgAgente b fichaAgente
   && Just fichaAgente == fromJust $ ganadorBloque b
     = "El agente ha ganado"
   | isJust $ ganadorBloque b
-  && Just fichaAgente != fromJust $ ganadorBloque b
+  && Just fichaAgente /= fromJust $ ganadorBloque b
     = "Has vencido al agente"
   | otherwise = "Partida en curso"
-  -}
+-}
 
 tuiBloqueAgente :: AgenteBloque
-                -> Bool -- ^ Si 'True' el 'AgenteBloque' juega primero ('Ficha' 'X')
+                -> Ficha -- ^ 'Ficha' del 'AgenteBloque'
                 -> IO ()
-tuiBloqueAgente agente turnoAgente = do
+tuiBloqueAgente agente fichaAgente = do
   putStrLn "Nueva partida de tres en raya"
   putStrLn $ "Jugando contra agente " ++ nombreAB agente
   (b, partida) <- loopBPartidaAgente bloqueVacio agente fichaAgente []
   print $ reverse partida
   putBloque b
-  where fichaAgente 
-          | turnoAgente = X
-          | otherwise = O
-  -- putStrLn $ "\n[FIN] " ++ bloqueMsgAgente b fichaAgente
+  -- print $ "\n[FIN] " ++ bloqueMsgAgente b fichaAgente

@@ -148,9 +148,35 @@ displayEB :: EstadoBloque -> IO ()
 displayEB estado = display (bloqueVentana tam) (fondo $ temaEB estado) (dibujaEB estado)
   where tam = floor $ 1.15 * (tamEB estado)
 
--- | Función IO para jugar al /tres en raya/
-guiBloque :: Tema -- ^ Tema con el que dibujar la interfaz
-         -> Float -- ^ Tamaño del tablero
-         -> IO ()
-guiBloque tema tam = play (bloqueVentana tamV) (fondo tema) 15 (eBInicial tam tema) dibujaEB modificaEB (const id)
+-- | Función IO para jugar al /tres en raya/ en modo multijugador
+guiBloqueMulti :: Tema -- ^ Tema con el que dibujar la interfaz
+               -> Float -- ^ Tamaño del tablero
+               -> IO ()
+guiBloqueMulti tema tam = play (bloqueVentana tamV) (fondo tema) 15 (eBInicial tam tema) dibujaEB modificaEB (const id)
+  where tamV = floor $ 1.15 * tam
+
+
+-- | Función que ejecuta la jugada de un 'AgenteBloque'.
+modificaEBAgente :: AgenteBloque -- ^ 'AgenteBloque' con el que calcular la jugada
+                 -> Ficha        -- ^ 'Ficha' del 'AgenteBloque'
+                 -> Float        -- ^ Frame actual del juego (parámetro ignorado)
+                 -> EstadoBloque -- ^ Estado actual del tablero
+                 -> EstadoBloque
+modificaEBAgente agente fichaAgente _ estado =
+  if turno == Just fichaAgente
+     then (estado {bloqueEB = fromJust $ movBloque b $ funAB agente b})
+     else estado
+         where b = bloqueEB estado
+               turno = turnoBloque b
+
+-- | Función IO para jugar al /tres en raya/ contra un agente
+--
+-- __NOTA:__ Debido a que la librería /gloss/ es algo limitada hemos tenido que usar de una manera un poco cutre la función 'play'.
+guiBloqueAgente :: Tema -- ^ Tema con el que dibujar la interfaz
+                -> Float -- ^ Tamaño del tablero
+                -> AgenteBloque -- ^ 'AgenteBloque' contra el que jugar
+                -> Ficha -- ^ Ficha del 'AgenteBloque'
+                -> IO ()
+guiBloqueAgente tema tam agente fichaAgente =
+  play (bloqueVentana tamV) (fondo tema) 15 (eBInicial tam tema) dibujaEB modificaEB (modificaEBAgente agente fichaAgente)
   where tamV = floor $ 1.15 * tam
