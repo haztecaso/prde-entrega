@@ -1,5 +1,5 @@
 {-
-Module      : Mttt.Bloque
+Module      : Mttt.Bloque.Data
 Copyright   : (c) Adrián Lattes y David Diez
 License     : GPL-3
 Stability   : experimental
@@ -7,23 +7,29 @@ Stability   : experimental
 Implementación del juego /tres en raya/.
 -}
 
-module Mttt.Bloque (
-    Ficha(X,O)
+module Mttt.Bloque.Data (
+    Ficha(X,O) -- TODO: Es inofensivo exportar los constructores?¿
   , esX 
   , Bloque 
   , showBloque 
+  , showListaPosBloque
   , putBloque 
   , turnoBloque
-  , movimientoBloque
+  , movBloque 
+  , casillasLibresBloque
   , ganadorBloque
+  , finBloque
+  , tablasBloque
   , bloqueVacio
-  , bloqueEjemplo
+  , AgenteBloque
+  , movAgenteBloque 
+  , agenteBTonto
 ) where
 
-import Mttt.Utils 
+import Mttt.Common.Utils 
 
 import Data.Array
-import Data.List (intersperse, transpose)
+import Data.List (intersperse, transpose, elemIndex)
 import Data.Maybe (isJust, isNothing, fromJust)
 
 -- | Tipo que representa una ficha del juego
@@ -52,6 +58,14 @@ showMaybeFicha (Just f)  = head (show f)
 showBloque :: Bloque -> String
 showBloque b = unlines [intersperse ' ' [showMaybeFicha $ b!(x, y) | y <- [1..3]] | x <- [1..3]] 
 
+-- | Dibujo de un 'Bloque' resaltando unas 'Pos'.
+showListaPosBloque :: Bloque -> [Pos] -> String
+showListaPosBloque b ps = unlines [intersperse ' ' [casilla (x, y) | y <- [1..3]] | x <- [1..3]] 
+  where
+    casilla pos 
+      | isJust (b!pos) = showMaybeFicha $ b!pos
+      | otherwise      = head $ show $ pos2int pos
+
 -- | Utilidad para imprimir en pantalla un 'Bloque'
 putBloque :: Bloque -> IO ()
 putBloque = putStr . showBloque
@@ -60,29 +74,19 @@ putBloque = putStr . showBloque
 bloqueVacio :: Bloque
 bloqueVacio = listArray ((1,1),(3,3)) [Nothing | _ <- listaIndices]
 
--- | Insertar una ficha nueva en un 'Bloque'.
+-- | Insertar una ficha nueva en un 'Bloque'. La función hace uso de
+-- 'turnoBloque' para decidir que 'Ficha' colocar.
+--
 -- Si el movimiento es válido se devuelve un 'Just Bloque'.
 -- En caso contrario se devuelve 'Nothing' 
-movimientoBloque :: Bloque
-                  -> Ficha -- ^ Ficha a añadir
+movBloque :: Bloque
                   -> Pos   -- ^ Posición en la que se añade la ficha
                   -> Maybe Bloque
-movimientoBloque b f (x,y)
-  | ((x,y)`elem` listaIndices)
+movBloque b (x,y)
+  | ((x,y) `elem` listaIndices)
     && (isNothing (b!(x,y)))
-    && turnoBloque b == f      = Just (b // [((x,y), Just f)])
+    && isJust (turnoBloque b) = Just (b // [((x,y), turnoBloque b)])
   | otherwise                  = Nothing
-
--- | Hace lo mismo que 'movimientoBloque' salvo que en vez de
--- devolver un 'Maybe Bloque' devuelve directamente un 'Bloque'.
--- Si la jugada no es correcta se lanza un error.
--- Esta función debe ser utilizada únicamente cuando está garantizado
--- de antemano que la jugada es válida.
-movimientoBloque' :: Bloque
-                  -> Ficha -- ^ Ficha a añadir
-                  -> Pos   -- ^ Posición en la que se añade la ficha
-                  -> Bloque
-movimientoBloque' b f p = fromJust $ movimientoBloque b f p
 
 -- | Lista de posiciones vacías de un 'Bloque'
 casillasLibresBloque :: Bloque -> [Pos]
@@ -90,10 +94,9 @@ casillasLibresBloque b = map fst $ filter snd [((x, y), isNothing $ b!(x,y)) | (
 
 -- | Posibles jugadas
 expandirBloque :: Bloque -> [Bloque]
-expandirBloque t
-  | finBloque t = []
-  | otherwise   = map (movimientoBloque' t f) $ casillasLibresBloque t
-  where f = turnoBloque t
+expandirBloque b
+  | finBloque b = []
+  | otherwise = map (fromJust . ( movBloque b )) $ casillasLibresBloque b
 
 -- | Cuenta las fichas de cada tipo que hay en un 'Bloque'.
 contarFichasBloque :: Bloque
@@ -103,6 +106,26 @@ contarFichasBloque b = foldr1 suma $ map f $ elems b
                              f (Just X) = (1,0)
                              f (Just O) = (0,1)
                              suma (a,b) (c, d) = (a+c, b+d)
+
+-- | Determina a quien le toca
+turnoBloque :: Bloque -> Maybe Ficha
+turnoBloque b
+  | (isNothing $ ganadorBloque b) && (xs - os) == 1 = Just O
+  | (isNothing $ ganadorBloque b) && (xs - os) == 0 = Just X
+  | otherwise = Nothing
+  where (xs, os) = contarFichasBloque b
+
+-- | Determina si la partida ha acabado o no
+finBloque :: Bloque -> Bool
+finBloque t
+  | isJust (ganadorBloque t) = True
+  | tablasBloque t           = True
+  | otherwise                = False
+
+-- | Determina si la partida de tres en raya ha acabado en tablas.
+tablasBloque :: Bloque -> Bool
+tablasBloque b = notElem Nothing b && isNothing (ganadorBloque b)
+
 
 -- | Devuelve las filas de un 'Bloque'
 filasBloque :: Bloque -> [[Maybe Ficha]]
@@ -119,12 +142,6 @@ diagonalesBloque b = [[b!(x,x)| x<-[1..3]],[b!(x, 4-x) |x<-[1..3]]]
 -- | Devuelve todas las lineas rectas de un tablero de tres en raya
 lineasBloque :: Bloque-> [[Maybe Ficha]]
 lineasBloque = concat . sequence [filasBloque, columnasBloque, diagonalesBloque]
--- | Determina a quien le toca
-turnoBloque :: Bloque -> Ficha
-turnoBloque b
-  | (xs - os) == 1 = O
-  | (xs - os) == 0 = X
-  where (xs, os) = contarFichasBloque b
 
 -- | Determina quien ha ganado la partida de tres en raya, si es que alguien ha ganado.
 ganadorBloque :: Bloque -> Maybe Ficha
@@ -138,33 +155,11 @@ ganadorBloque t
           | l == [Just O, Just O, Just O] = Just O
           | otherwise = Nothing
 
--- | Determina si la partida ha acabado o no
-finBloque :: Bloque -> Bool
-finBloque t
-  | isJust (ganadorBloque t) = True
-  | tablasBloque t           = True
-  | otherwise                = False
-
-
--- | Determina si la partida de tres en raya ha acabado en tablas.
-tablasBloque :: Bloque -> Bool
-tablasBloque b = notElem Nothing b && isNothing (ganadorBloque b)
-
--- | Determina si una posición de un tablero de tres en raya es válida o no.
---
--- __TODO:__ Completar; Tener en cuenta que la partida debe acabar cuando alguien gana, por lo que no se puede ganar dos veces la partida.
+-- | TODO
 validarBloque:: Bloque -> Bool
-validarBloque b = (xs - os) == 0 || (xs - os) == 1
-    where (xs, os) = contarFichasBloque b
+validarBloque _ = False
 
--- | Implementación del algoritmo minimax que recorre el árbol hasta las hojas.
--- minimaxBloqueDeep :: ([Int] -> Int) -> ([a] -> a) -> Bloque -> a
--- minimaxBloqueDeep peor mejor tablero
---   | finBloque tablero = heurBloque tablero
---   | otherwise    = mejor (map (minimaxBloqueDeep mejor peor) siguientes)
---   where siguientes = expandirBloque tablero
-
-minimaxBloqueDeep = minimax 10 expandirBloque heurBloque
+{- FUNCIONES HEURÍSTICAS -}
 
 -- | Función heurística para el tres en raya
 -- Toma el valor 0 si nadie ha ganado, 1 si ganan X y -1 si gana O.
@@ -175,16 +170,22 @@ heurBloque b
   | otherwise = 0
   where ganador = ganadorBloque b
 
--- | Utilidad para imprimir lineas de un tablero de tres en raya
-showLinea :: [Maybe Ficha] -> String
-showLinea = intersperse ' ' . map showMaybeFicha 
+{- AGENTES -}
 
--- | Ejemplo de un posible 'Bloque'
-bloqueEjemplo :: Bloque
-bloqueEjemplo =  movimientoBloque' (
-                     movimientoBloque' (
-                       movimientoBloque' (
-                         movimientoBloque' bloqueVacio X (2,2)
-                       ) O (1,1)
-                     ) X (2,1)
-                   ) O (2,3)
+-- | Tipo para Agentes de 'Bloque'.
+data AgenteBloque = AgenteBloque { funAB :: Bloque -> Pos
+                                 , nombreAB :: String
+                                 }
+
+-- | Ejecuta el movimiento de un agente, siempre
+-- que la partdia no haya concluido.
+movAgenteBloque:: Bloque -> AgenteBloque -> Maybe Bloque
+movAgenteBloque bloque agente = movBloque bloque (funAB agente bloque)
+    where ficha = turnoBloque bloque
+
+-- | Devuelve la primera posición disponible donde jugar, en el
+-- orden generado por 'casillasLibresBloque'.
+agenteBTonto :: AgenteBloque
+agenteBTonto = AgenteBloque { funAB = head . casillasLibresBloque
+                           , nombreAB = "tonto"
+                           }

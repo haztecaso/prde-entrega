@@ -7,11 +7,22 @@ Stability   : experimental
 Utilidades
 -}
 
-module Mttt.Utils (
-  Pos
+module Mttt.Common.Utils (
+    Jugador(Persona, Agente)
+  , Pos
   , listaIndices
+  , pos2int
+  , int2pos
+  , prompt
+  , selOpcion
   , minimax
 ) where
+
+import System.IO (hFlush, stdout)
+
+-- | Tipo para diferenciar entre personas y agentes inteligentes
+data Jugador = Persona | Agente
+    deriving (Show, Read)
 
 -- | Tipo sinónimo para representar posiciones en los tableros.
 -- Puede ser utilizado tanto para 'Tablero' como para 'Bloque'
@@ -21,6 +32,41 @@ type Pos = (Int, Int)
 listaIndices :: [(Int, Int)]
 listaIndices = [(x, y) | x <- [1..3], y <- [1..3]]
 
+pos2int :: Pos -> Int
+pos2int (x,y) = (y-1)+3*(x-1)
+
+int2pos :: Int -> Pos
+int2pos n = (n `div` 3 + 1, n `mod` 3 + 1)
+
+{- IO -}
+
+-- | Utilidad para pedir y recibir valores a un usuario
+-- Copiada de https://stackoverflow.com/questions/13190314/
+prompt :: String -> IO String
+prompt text = do
+  putStr text
+  hFlush stdout
+  getLine
+
+-- | Función que formatea e imprime una lista de opciones
+putOps :: [String] -> IO ()
+putOps xs = putOps' xs 0
+
+putOps' :: [String] -> Int -> IO ()
+putOps' [] _ = return ()
+putOps' (x:xs) n = do putStrLn $ (show n) ++ ": " ++ x
+                      putOps' xs (n+1)
+
+-- | Seleccionar una opción
+selOpcion :: [String] -> IO Int
+selOpcion ops = do
+  putOps ops
+  n <- prompt "Selecciona una opción: " 
+  if (read n >= 0) && (read n < length ops)
+    then return (read n)
+    else selOpcion ops
+
+{- ALGORITMOS -}
 -- | Parte /interna/ del algoritmo minimax visto en clase
 -- __TODO__: REVISAR!!!
 minimaxInt :: Ord b => Int -> (a->[a]) -> (a->b) -> ([b]->b) -> ([b]->b) -> a -> b

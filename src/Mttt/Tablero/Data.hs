@@ -1,5 +1,5 @@
 {-
-Module      : Mttt.Tablero
+Module      : Mttt.Tablero.Data
 Copyright   : (c) Adrián Lattes y David Diez
 License     : GPL-3
 Stability   : experimental
@@ -7,15 +7,15 @@ Stability   : experimental
 Implementación del juego /meta tres en raya/.
 -}
 
-module Mttt.Tablero (
+module Mttt.Tablero.Data (
      Tablero(bloques, bloqueActivo)
    , showTablero
    , putTablero
    , tableroVacio 
 ) where
 
-import Mttt.Utils
-import Mttt.Bloque
+import Mttt.Common.Utils
+import Mttt.Bloque.Data
 
 import Data.Array
 

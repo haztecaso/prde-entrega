@@ -9,12 +9,30 @@ Implementaciones de los juegos /tres en raya/ y /meta tres en raya/.
 -}
 
 module Mttt (
-    module Mttt.Bloque  -- | Implementaciones de los tipos y funciones relativos al juego /tres en raya/
-  , module Mttt.Tablero -- | Implementaciones de los tipos y funciones relativos al juego /meta tres en raya/
-  , module Mttt.Gui -- | Interfaces gráficas para los juegos
+    -- * __Generalidades__
+    module Mttt.Common.Utils
+  , module Mttt.Common.Gui
+  , module Mttt.Common.Tui
+
+    -- * __Tres en raya__
+  , module Mttt.Bloque.Data
+  , module Mttt.Bloque.Gui
+  , module Mttt.Bloque.Tui
+
+    -- * __Meta Tres en raya__
+  , module Mttt.Tablero.Data
+  , module Mttt.Tablero.Gui
+  , module Mttt.Tablero.Tui
 ) where
 
-import Mttt.Utils
-import Mttt.Bloque
-import Mttt.Tablero
-import Mttt.Gui
+import Mttt.Common.Utils
+import Mttt.Common.Gui
+import Mttt.Common.Tui
+
+import Mttt.Bloque.Data
+import Mttt.Bloque.Gui
+import Mttt.Bloque.Tui
+
+import Mttt.Tablero.Data
+import Mttt.Tablero.Gui
+import Mttt.Tablero.Tui
