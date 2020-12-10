@@ -22,9 +22,7 @@ import Mttt.Bloque.Data
 import Data.Array
 import Data.Maybe (isJust, fromJust)
 import Graphics.Gloss
-import Graphics.Gloss.Data.Color
 import Graphics.Gloss.Interface.IO.Interact
-import Graphics.Gloss.Data.Picture
 
 {-
   PARTE RELATIVA AL TIPO Ficha
@@ -74,7 +72,7 @@ modTemaEB estado
   | otherwise                 = t
   where b = bloqueEB estado
         t = temaEB estado
-        n = neutro $ t
+        n = neutro t
 
 -- | Tipo que encapsula los datos necesarios para dibujar un 'Bloque' en pantalla
 data EstadoBloque = EB { bloqueEB :: Bloque -- ^ 'Bloque' a dibujar
@@ -99,9 +97,9 @@ dibujaCasilla :: EstadoBloque
               -> Pos
               -> Picture
 dibujaCasilla estado pos
-  | isJust(casilla) = dibujaFicha tema (tam*0.2) origen (fromJust casilla)
+  | isJust casilla = dibujaFicha tema (tam*0.2) origen (fromJust casilla)
   | otherwise = Blank
-  where casilla = (bloqueEB estado)!pos
+  where casilla = bloqueEB estado ! pos
         tam = tamEB estado
         tema = modTemaEB estado
         origen = posPoint (tam/3) pos
@@ -109,8 +107,8 @@ dibujaCasilla estado pos
 -- | Dibuja un 'EstadoBloque'
 dibujaEB :: EstadoBloque -> Picture
 dibujaEB estado = translate (x-tam/2) (y-tam/2) $ pictures $
-                  [dibujaLineas (0,0) tam (contraste tema)] ++
-                  [dibujaCasilla estado pos | pos <- listaIndices]
+                  dibujaLineas (0,0) tam (contraste tema)
+                  : [dibujaCasilla estado pos | pos <- listaIndices]
                     where (x, y) = posEB estado
                           tam    = tamEB estado
                           tema   = temaEB estado
@@ -121,19 +119,17 @@ pointPosEB :: Point -- ^ Posición del puntero en la pantalla
            -> Pos -- ^ Posición del puntero en el 'bloqueEB'
 pointPosEB (x,y) estado = floor' (4-3*(y-py+tam/2)/tam,
                                   1+3*(x-px+tam/2)/tam)
-  where tam     = (tamEB estado)
-        tamCelda     = tam/3
+  where tam     = tamEB estado
         (px, py) = posEB estado
         floor' (a,b) = (floor a, floor b)
 
 -- | Modifica el 'EstadoBloque' actual del juego cuando se hace click
 modificaEB :: Event -> EstadoBloque -> EstadoBloque
 modificaEB (EventKey (MouseButton LeftButton) Up _ posPuntero) estado
-  | isJust(nuevo)   = estado {bloqueEB = fromJust(nuevo)}
+  | isJust nuevo   = estado {bloqueEB = fromJust nuevo}
   | finBloque b     = estado {bloqueEB = bloqueVacio}
   | otherwise       = estado
   where b      = bloqueEB estado
-        turno  = turnoBloque b
         nuevo  = movBloque b (pointPosEB posPuntero estado)
 modificaEB _ estado = estado
 
@@ -146,7 +142,7 @@ bloqueVentana tam = InWindow "Tres en raya" (tam, tam) (0,0)
 -- Tiene la misma interfaz que 'dibujaEB'
 displayEB :: EstadoBloque -> IO ()
 displayEB estado = display (bloqueVentana tam) (fondo $ temaEB estado) (dibujaEB estado)
-  where tam = floor $ 1.15 * (tamEB estado)
+  where tam = floor $ 1.15 * tamEB estado
 
 -- | Función IO para jugar al /tres en raya/ en modo multijugador
 guiBloqueMulti :: Tema -- ^ Tema con el que dibujar la interfaz
@@ -167,7 +163,6 @@ modificaEBAgente agente fichaAgente _ estado =
      then (estado {bloqueEB = fromJust $ movBloque b $ funAB agente b})
      else estado
          where b = bloqueEB estado
-               turno = turnoBloque b
 
 -- | Función IO para jugar al /tres en raya/ contra un agente
 --
