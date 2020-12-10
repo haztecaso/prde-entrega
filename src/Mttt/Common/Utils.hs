@@ -54,7 +54,7 @@ putOps xs = putOps' xs 0
 
 putOps' :: [String] -> Int -> IO ()
 putOps' [] _ = return ()
-putOps' (x:xs) n = do putStrLn $ (show n) ++ ": " ++ x
+putOps' (x:xs) n = do putStrLn $ show n ++ ": " ++ x
                       putOps' xs (n+1)
 
 -- | Seleccionar una opción

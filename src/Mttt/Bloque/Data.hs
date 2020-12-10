@@ -85,7 +85,7 @@ movBloque :: Bloque
           -> Maybe Bloque
 movBloque b (x,y)
   | ((x,y) `elem` listaIndices)
-    && (isNothing (b!(x,y)))
+    && isNothing (b!(x,y))
     && isJust (turnoBloque b) = Just (b // [((x,y), turnoBloque b)])
   | otherwise                 = Nothing
 
@@ -97,12 +97,12 @@ casillasLibresBloque b = map fst $ filter snd [((x, y), isNothing $ b!(x,y)) | (
 expandirBloque :: Bloque -> [Bloque]
 expandirBloque b
   | finBloque b = []
-  | otherwise = map (fromJust . ( movBloque b )) $ casillasLibresBloque b
+  | otherwise = map (fromJust .  movBloque b ) $ casillasLibresBloque b
 
 -- Dados dos bloques devuelve la posición en la que se ha jugado.
 posMovimientoBloque :: Bloque -> Bloque -> Pos
 posMovimientoBloque bloque expandido =
-  libres !! (fromJust $ elemIndex expandido siguientes)
+  libres !! fromJust ( elemIndex expandido siguientes)
   where siguientes = expandirBloque bloque
         libres = casillasLibresBloque bloque
 
@@ -119,8 +119,8 @@ contarFichasBloque b = foldr1 suma $ map f $ elems b
 -- | Determina a quien le toca
 turnoBloque :: Bloque -> Maybe Ficha
 turnoBloque b
-  | (isNothing $ ganadorBloque b) && (xs - os) == 1 = Just O
-  | (isNothing $ ganadorBloque b) && (xs - os) == 0 = Just X
+  | isNothing (ganadorBloque b) && (xs - os) == 1 = Just O
+  | isNothing (ganadorBloque b) && (xs - os) == 0 = Just X
   | otherwise = Nothing
   where (xs, os) = contarFichasBloque b
 

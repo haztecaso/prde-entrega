@@ -20,9 +20,9 @@ module Mttt.Tablero.Data (
 import Mttt.Common.Utils
 import Mttt.Bloque.Data
 
-import Data.List (transpose, intersperse)
-import Data.Array (Array, (!), (//), listArray, elems)
-import Data.Maybe (isJust, isNothing, fromJust)
+import Data.List (transpose, intercalate)
+import Data.Array (Array, (!), listArray)
+import Data.Maybe (isNothing)
 
 -- | Tipo para un tablero de /meta tres en raya/
 data Tablero = T { bloques :: Array Pos Bloque -- ^ Bloques del tablero
@@ -39,7 +39,7 @@ showTablero t = showTablero' t 1 ++ "──────┼───────�
 
 -- | Función auxiliar para imprimir una linea de un tablero
 showTablero' :: Tablero -> Int -> String
-showTablero' t n = unlines $ map (concat . intersperse " │ ")
+showTablero' t n = unlines $ map (intercalate " │ ")
                  $ transpose [lines $ showBloque $ bs ! (n,i) | i<-[1..3]]
   where bs = bloques t
 
@@ -57,15 +57,15 @@ tableroVacio =
 -- | Cuenta las fichas de cada tipo que hay en un 'Tablero'.
 contarFichasTablero :: Tablero
               -> (Int, Int) -- ^ El primer valor corresponde al número de X's y el segundo a las O's
-contarFichasTablero t = foldr1 suma [ contarFichasBloque $ (bloques t) ! i | i <- listaIndices]
+contarFichasTablero t = foldr1 suma [ contarFichasBloque $ bloques t ! i | i <- listaIndices]
                        where suma (a,b) (c, d) = (a+c, b+d)
 
 -- | Devuelve todas las lineas rectas de un 'Tablero'
 lineasTablero :: Tablero -> [[Bloque]]
 lineasTablero t = filas ++ columnas ++ diagonales
-  where filas      = [[(bloques t)!(x, y)| x <- [1..3]] | y <- [1..3]]
+  where filas      = [[bloques t ! (x, y) | x <- [1..3]] | y <- [1..3]]
         columnas   = transpose filas
-        diagonales = [[(bloques t)!(x,x)| x<-[1..3]],[(bloques t)!(x, 4-x) |x<-[1..3]]]
+        diagonales = [[bloques t ! (x,x)| x<-[1..3]],[bloques t ! (x, 4-x) |x<-[1..3]]]
 
 -- | Determina quien ha ganado la partida si es que alguien ha ganado.
 ganadorTablero :: Tablero -> Maybe Ficha
@@ -82,8 +82,8 @@ ganadorTablero t
 -- | Determina a quien le toca
 turnoTablero :: Tablero -> Maybe Ficha
 turnoTablero t
-  | (isNothing $ ganadorTablero t) && (xs - os) == 1 = Just O
-  | (isNothing $ ganadorTablero t) && (xs - os) == 0 = Just X
+  | isNothing (ganadorTablero t) && (xs - os) == 1 = Just O
+  | isNothing (ganadorTablero t) && (xs - os) == 0 = Just X
   | otherwise = Nothing
   where (xs, os) = contarFichasTablero t
 

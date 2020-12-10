@@ -13,8 +13,6 @@ import Mttt.Common.Utils
 import Mttt.Bloque.Data
 
 import Data.Maybe (isJust, isNothing, fromJust)
-import Data.List (elemIndex)
-import Text.Read (readMaybe)
 
 {-
   BLOQUE: Generalidades
@@ -26,7 +24,7 @@ preguntarMovB :: Bloque -> IO Pos
 preguntarMovB b = do
     putStr $ showListaPosBloque b $ casillasLibresBloque b
     let jugador = fromJust $ turnoBloque  b -- Atención: fromJust puede lanzar errores! Usar esta función con cuidado...
-    putStr $ "\n[Turno de " ++ (show jugador) ++ "] "
+    putStr $ "\n[Turno de " ++ show jugador ++ "] "
     n <- prompt "Número de casilla donde jugar: "
     return (int2pos $ read n)
 
@@ -34,9 +32,7 @@ preguntarMovB b = do
 jugarBloque :: Bloque -> Pos -> IO Bloque
 jugarBloque b pos = do
   let nuevo = movBloque b pos
-  if isNothing nuevo
-    then putStrLn "¡Movimiento incorrecto!" >> return b
-    else return $ fromJust nuevo
+  maybe (putStrLn "¡Movimiento incorrecto!" >> return b) return nuevo
 
 {-
   BLOQUE: Multijugador
@@ -55,7 +51,7 @@ loopBPartidaMulti b jugadas = do
 bloqueMsgMulti :: Bloque -> String
 bloqueMsgMulti b
   | tablasBloque b = "Tablas"
-  | isJust $ ganadorBloque b = (show $ fromJust $ ganadorBloque b) ++ " ha ganado"
+  | isJust $ ganadorBloque b = show (fromJust $ ganadorBloque b) ++ " ha ganado"
   | otherwise = "Partida en curso"
 
 -- | TODO: revisar

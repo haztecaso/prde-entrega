@@ -18,15 +18,11 @@ module Mttt.Tablero.Gui where
 import Mttt.Common.Utils
 import Mttt.Common.Gui
 import Mttt.Bloque.Gui
-import Mttt.Bloque.Data
 import Mttt.Tablero.Data
 
 import Data.Array
-import Data.Maybe (isJust, fromJust)
 import Graphics.Gloss
-import Graphics.Gloss.Data.Color
 import Graphics.Gloss.Interface.IO.Interact
-import Graphics.Gloss.Data.Picture
 
 -- | Tipo que encapsula los datos necesarios para dibujar un 'Tablero' en pantalla
 data EstadoTablero = ET { tableroET :: Tablero -- ^ 'Tablero' a dibujar
@@ -50,17 +46,17 @@ eTInicial tam tema =
 dibujaET :: EstadoTablero -> Picture
 dibujaET estado =
   translate (x-tam/2) (y-tam/2) $ pictures $
-  [dibujaLineas (0,0) tam $ contraste $ temaET estado]
-  ++ [dibujaEB $ estadoBloque pos | pos <- listaIndices]
+    dibujaLineas (0,0) tam (contraste $ temaET estado)
+    : [dibujaEB $ estadoBloque pos | pos <- listaIndices]
     where
       (x, y)           = posET estado
       tam              = tamET estado
-      tema pos         = temaET estado
+      tema             = temaET estado
       estadoBloque pos =
-        EB { bloqueEB = (bloques $ tableroET estado)!pos
+        EB { bloqueEB = bloques (tableroET estado) ! pos
            , posEB = posPoint (tam/3) pos
            , tamEB = tam/3*0.8
-           , temaEB = tema pos
+           , temaEB = tema
            }
 
 -- | Modifica el 'EstadoTablero' actual del juego cuando se hace click
@@ -76,7 +72,7 @@ tableroVentana tam = InWindow "Meta tres en raya" (tam, tam) (0,0)
 -- Tiene la misma interfaz que 'dibujaET'
 displayET :: EstadoTablero -> IO ()
 displayET estado = display (tableroVentana tam) (fondo $ temaET estado) (dibujaET estado)
-  where tam = floor $ 1.15 * (tamET estado)
+  where tam = floor $ 1.15 * tamET estado
 
 -- | Función IO para jugar al /meta tres en raya/
 guiTableroMulti :: Tema  -- ^ Tema con el que dibujar la interfaz

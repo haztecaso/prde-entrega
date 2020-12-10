@@ -16,15 +16,9 @@ module Mttt.Common.Gui where
 -- ) where
 
 import Mttt.Common.Utils
-import Mttt.Bloque.Data
-import Mttt.Tablero.Data
 
-import Data.Array
-import Data.Maybe (isJust, fromJust)
 import Graphics.Gloss
-import Graphics.Gloss.Data.Color
-import Graphics.Gloss.Interface.IO.Interact
-import Graphics.Gloss.Data.Picture
+import Data.Bifunctor (bimap)
 
 {-
   DEFINICIONES GENERALES
@@ -83,4 +77,4 @@ posPoint :: Float -- ^ Tamaño de la ficha
          -> Pos   -- ^ Posición de la ficha
          -> Point -- ^ Posición del centro de la ficha en el dibujo
 posPoint tam pos = (tam*(y-1+0.5), tam*(3-x+0.5))
-    where (x, y) = (fromIntegral $ fst pos, fromIntegral $ snd pos)
+    where (x, y) = bimap fromIntegral fromIntegral pos
