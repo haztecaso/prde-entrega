@@ -14,7 +14,7 @@ module Mttt.Tablero.Data (
    , tableroVacio 
    , turnoTablero
    , ganadorTablero
-                         , lineasTablero
+   , lineasTablero
 ) where
 
 import Mttt.Common.Utils
@@ -92,7 +92,7 @@ turnoTablero t
 --
 -- Si el movimiento es válido se devuelve un 'Just Tablero'.
 -- En caso contrario se devuelve 'Nothing' 
-    {- TODO
+{-
 movTablero :: Tablero
            -> Pos   -- ^ 'Bloque' en que jugar
            -> Pos   -- ^ Posición del 'Bloque' seleccionado donde poner la ficha

@@ -79,8 +79,8 @@ displayET estado = display (tableroVentana tam) (fondo $ temaET estado) (dibujaE
   where tam = floor $ 1.15 * (tamET estado)
 
 -- | Función IO para jugar al /meta tres en raya/
-guiTablero :: Tema  -- ^ Tema con el que dibujar la interfaz
+guiTableroMulti :: Tema  -- ^ Tema con el que dibujar la interfaz
            -> Float -- ^ Tamaño del tablero
            -> IO ()
-guiTablero tema tam = play (tableroVentana tamV) (fondo tema) 15 (eTInicial tam tema) dibujaET modificaET (const id)
+guiTableroMulti tema tam = play (tableroVentana tamV) (fondo tema) 15 (eTInicial tam tema) dibujaET modificaET (const id)
   where tamV = floor $ 1.15 * tam
