@@ -14,6 +14,7 @@ module Mttt.Bloque.Data (
   , showBloque 
   , showListaPosBloque
   , putBloque 
+  , contarFichasBloque
   , turnoBloque
   , movBloque 
   , casillasLibresBloque
@@ -26,9 +27,9 @@ module Mttt.Bloque.Data (
   , agenteBMinimaxHeur1
 ) where
 
-import Mttt.Common.Utils 
+import Mttt.Common.Utils
 
-import Data.Array
+import Data.Array (Array, (!), (//), listArray, elems)
 import Data.List (intersperse, transpose, elemIndex)
 import Data.Maybe (isJust, isNothing, fromJust)
 
@@ -80,13 +81,13 @@ bloqueVacio = listArray ((1,1),(3,3)) [Nothing | _ <- listaIndices]
 -- Si el movimiento es válido se devuelve un 'Just Bloque'.
 -- En caso contrario se devuelve 'Nothing' 
 movBloque :: Bloque
-                  -> Pos   -- ^ Posición en la que se añade la ficha
-                  -> Maybe Bloque
+          -> Pos   -- ^ Posición en la que se añade la ficha
+          -> Maybe Bloque
 movBloque b (x,y)
   | ((x,y) `elem` listaIndices)
     && (isNothing (b!(x,y)))
     && isJust (turnoBloque b) = Just (b // [((x,y), turnoBloque b)])
-  | otherwise                  = Nothing
+  | otherwise                 = Nothing
 
 -- | Lista de posiciones vacías de un 'Bloque'
 casillasLibresBloque :: Bloque -> [Pos]
@@ -98,7 +99,7 @@ expandirBloque b
   | finBloque b = []
   | otherwise = map (fromJust . ( movBloque b )) $ casillasLibresBloque b
 
--- | Movimiento de bloque expandido
+-- Dados dos bloques devuelve la posición en la que se ha jugado.
 posMovimientoBloque :: Bloque -> Bloque -> Pos
 posMovimientoBloque bloque expandido =
   libres !! (fromJust $ elemIndex expandido siguientes)
@@ -134,30 +135,20 @@ finBloque t
 tablasBloque :: Bloque -> Bool
 tablasBloque b = notElem Nothing b && isNothing (ganadorBloque b)
 
+-- | Devuelve todas las lineas rectas de un 'Bloque'
+lineasBloque :: Bloque -> [[Maybe Ficha]]
+lineasBloque b = filas ++ columnas ++ diagonales
+  where filas      = [[b!(x, y)| x <- [1..3]] | y <- [1..3]]
+        columnas   = transpose filas
+        diagonales = [[b!(x,x)| x<-[1..3]],[b!(x, 4-x) |x<-[1..3]]]
 
--- | Devuelve las filas de un 'Bloque'
-filasBloque :: Bloque -> [[Maybe Ficha]]
-filasBloque b = [[b!(x, y)| x <- [1..3]] | y <- [1..3]]
-
--- | Devuelve las columnas de un tablero de tres en raya
-columnasBloque :: Bloque -> [[Maybe Ficha]]
-columnasBloque = transpose . filasBloque
-
--- | Devuelve las diagonales de un tablero de tres en raya
-diagonalesBloque :: Bloque -> [[Maybe Ficha]]
-diagonalesBloque b = [[b!(x,x)| x<-[1..3]],[b!(x, 4-x) |x<-[1..3]]]
-
--- | Devuelve todas las lineas rectas de un tablero de tres en raya
-lineasBloque :: Bloque-> [[Maybe Ficha]]
-lineasBloque = concat . sequence [filasBloque, columnasBloque, diagonalesBloque]
-
--- | Determina quien ha ganado la partida de tres en raya, si es que alguien ha ganado.
+-- | Determina quien ha ganado la partida si es que alguien ha ganado.
 ganadorBloque :: Bloque -> Maybe Ficha
-ganadorBloque t
+ganadorBloque b
   | Just X `elem` ganadores = Just X
   | Just O `elem` ganadores = Just O
   | otherwise = Nothing
-  where ganadores = map ganadorLinea $ lineasBloque t
+  where ganadores = map ganadorLinea $ lineasBloque b
         ganadorLinea l
           | l == [Just X, Just X, Just X] = Just X
           | l == [Just O, Just O, Just O] = Just O
