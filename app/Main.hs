@@ -74,8 +74,8 @@ nuevoJuego True True False p  = do agente <- selAgenteBloque
                                    tuiBloqueAgente agente p
 nuevoJuego True False True _  = guiBloqueMulti temaOscuro 450
 nuevoJuego True False False p = do agente <- selAgenteBloque 
-                                   guiBloqueAgente temaOscuro 450 agente p
-nuevoJuego False False True _ = guiTablero temaOscuro 450
+                                   guiBloqueAgente temaOscuro 350 agente p
+nuevoJuego False False True _ = guiTableroMulti temaOscuro 350
 nuevoJuego _ _ _ _            = putStrLn "¡¡¡PENDIENTE DE IMPLEMENTAR!!!"
 
 main :: IO ()
