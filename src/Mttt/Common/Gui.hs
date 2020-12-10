@@ -17,8 +17,8 @@ module Mttt.Common.Gui where
 
 import Mttt.Common.Utils
 
-import Graphics.Gloss
 import Data.Bifunctor (bimap)
+import Graphics.Gloss
 
 {-
   DEFINICIONES GENERALES
@@ -26,12 +26,15 @@ import Data.Bifunctor (bimap)
 
 -- | Tipo para representar temas (grupos de colores)
 -- de la intefaz gráfica del juego.
-data Tema = Tema { fondo      :: Color
-                 , contraste  :: Color
-                 , principal  :: Color
-                 , secundario :: Color
-                 , neutro     :: Color
-                 } deriving (Show)
+data Tema
+  = Tema
+      { fondo      :: Color
+      , contraste  :: Color
+      , principal  :: Color
+      , secundario :: Color
+      , neutro     :: Color
+      }
+  deriving (Show)
 
 -- | Tema claro
 temaClaro :: Tema

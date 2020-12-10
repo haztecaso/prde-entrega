@@ -15,12 +15,12 @@ module Mttt.Bloque.Gui where
 --   , guiBoard
 -- ) where
 
-import Mttt.Common.Utils
-import Mttt.Common.Gui
 import Mttt.Bloque.Data
+import Mttt.Common.Gui
+import Mttt.Common.Utils
 
 import Data.Array
-import Data.Maybe (isJust, fromJust)
+import Data.Maybe                           (fromJust, isJust)
 import Graphics.Gloss
 import Graphics.Gloss.Interface.IO.Interact
 
@@ -75,11 +75,18 @@ modTemaEB estado
         n = neutro t
 
 -- | Tipo que encapsula los datos necesarios para dibujar un 'Bloque' en pantalla
-data EstadoBloque = EB { bloqueEB :: Bloque -- ^ 'Bloque' a dibujar
-                       , posEB :: Point    -- ^ Posición del centro del tablero
-                       , tamEB :: Float    -- ^ Tamaño del tablero
-                       , temaEB :: Tema    -- ^ 'Tema' con el que dibujar el tablero
-                       } deriving (Show)
+data EstadoBloque
+  = EB
+      { bloqueEB :: Bloque
+        -- ^ 'Bloque' a dibujar
+      , posEB    :: Point
+        -- ^ Posición del centro del tablero
+      , tamEB    :: Float
+        -- ^ Tamaño del tablero
+      , temaEB   :: Tema
+        -- ^ 'Tema' con el que dibujar el tablero
+      }
+  deriving (Show)
 
 -- | 'EstadoBloque' inicial ('bloqueVacio')
 eBInicial :: Float -- ^ 'tamEB'

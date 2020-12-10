@@ -17,19 +17,24 @@ module Mttt.Tablero.Data (
    , lineasTablero
 ) where
 
-import Mttt.Common.Utils
 import Mttt.Bloque.Data
+import Mttt.Common.Utils
 
-import Data.List (transpose, intercalate)
-import Data.Array (Array, (!), listArray)
+import Data.Array (Array, listArray, (!))
+import Data.List  (intercalate, transpose)
 import Data.Maybe (isNothing)
 
 -- | Tipo para un tablero de /meta tres en raya/
-data Tablero = T { bloques :: Array Pos Bloque -- ^ Bloques del tablero
-                 , bloqueActivo :: Maybe Pos   -- ^ 'Pos' del 'Bloque' activo para jugar.
-                                               -- Si es 'Nothing' se puede jugar en
-                                               -- cualquier 'Bloque'.
-                 } deriving (Eq, Show, Read)
+data Tablero
+  = T
+      { bloques      :: Array Pos Bloque
+        -- ^ Bloques del tablero
+      , bloqueActivo :: Maybe Pos
+        -- ^ 'Pos' del 'Bloque' activo para jugar.
+        -- Si es 'Nothing' se puede jugar en
+        -- cualquier 'Bloque'.
+      }
+  deriving (Eq, Read, Show)
 
 -- | Representación en caracteres de un 'Tablero'
 showTablero :: Tablero -> String

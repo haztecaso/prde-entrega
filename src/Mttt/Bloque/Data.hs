@@ -29,14 +29,12 @@ module Mttt.Bloque.Data (
 
 import Mttt.Common.Utils
 
-import Data.Array (Array, (!), (//), listArray, elems)
-import Data.List (intersperse, transpose, elemIndex)
-import Data.Maybe (isJust, isNothing, fromJust)
+import Data.Array (Array, elems, listArray, (!), (//))
+import Data.List  (elemIndex, intersperse, transpose)
+import Data.Maybe (fromJust, isJust, isNothing)
 
 -- | Tipo que representa una ficha del juego
-data Ficha = X -- ^ Cruz. Ficha del primer jugador
-           | O -- ^ Circulo. Ficha del segundo jugador
-    deriving (Eq, Read, Enum)
+data Ficha = X | O deriving (Enum, Eq, Read)
 
 instance Show Ficha where
     show X = "✗"
@@ -52,8 +50,8 @@ type Bloque = Array Pos (Maybe Ficha)
 
 -- | Utilidad para imprimir una /casilla/ de un 'Bloque' en pantalla
 showMaybeFicha :: Maybe Ficha -> Char
-showMaybeFicha Nothing = '_'
-showMaybeFicha (Just f)  = head (show f)
+showMaybeFicha Nothing  = '_'
+showMaybeFicha (Just f) = head (show f)
 
 -- | Representación en caracteres de un 'Bloque'
 showBloque :: Bloque -> String
@@ -111,7 +109,7 @@ posMovimientoBloque bloque expandido =
 contarFichasBloque :: Bloque
               -> (Int, Int) -- ^ El primer valor corresponde al número de X's y el segundo a las O's
 contarFichasBloque b = foldr1 suma $ map f $ elems b
-                       where f Nothing = (0,0)
+                       where f Nothing  = (0,0)
                              f (Just X) = (1,0)
                              f (Just O) = (0,1)
                              suma (a,b) (c, d) = (a+c, b+d)
@@ -168,9 +166,11 @@ heurBloque b
 {- AGENTES -}
 
 -- | Tipo para Agentes de 'Bloque'.
-data AgenteBloque = AgenteBloque { funAB :: Bloque -> Pos
-                                 , nombreAB :: String
-                                 }
+data AgenteBloque
+  = AgenteBloque
+      { funAB    :: Bloque -> Pos
+      , nombreAB :: String
+      }
 
 -- | Agente que devuelve la primera posición disponible donde jugar,
 -- en el orden generado por 'casillasLibresBloque'.

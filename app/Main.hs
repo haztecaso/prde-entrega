@@ -1,17 +1,17 @@
 module Main where
-import System.Console.ParseArgs
+import           System.Console.ParseArgs
 
-import Mttt.Common.Utils
-import Mttt.Common.Gui
-import Mttt.Common.Tui
+import           Mttt.Common.Gui
+import           Mttt.Common.Tui
+import           Mttt.Common.Utils
 
-import Mttt.Bloque.Data
-import Mttt.Bloque.Tui
-import Mttt.Bloque.Gui
+import           Mttt.Bloque.Data
+import           Mttt.Bloque.Gui
+import           Mttt.Bloque.Tui
 
-import Mttt.Tablero.Data
-import Mttt.Tablero.Tui
-import Mttt.Tablero.Gui
+import           Mttt.Tablero.Data
+import           Mttt.Tablero.Gui
+import           Mttt.Tablero.Tui
 
 -- | Tipo de dato para diferenciar las opciones de la interfaz cli
 data Opciones =

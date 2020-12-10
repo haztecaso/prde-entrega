@@ -9,10 +9,10 @@ Interfaz de texto del /tres en raya/.
 
 module Mttt.Bloque.Tui where
 
-import Mttt.Common.Utils ( Pos, int2pos, prompt )
 import Mttt.Bloque.Data
+import Mttt.Common.Utils (Pos, int2pos, prompt)
 
-import Data.Maybe (isJust, fromJust)
+import Data.Maybe (fromJust, isJust)
 
 {-
   BLOQUE: Generalidades

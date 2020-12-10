@@ -15,9 +15,9 @@ module Mttt.Tablero.Gui where
 --   , guiBoard
 -- ) where
 
-import Mttt.Common.Utils
-import Mttt.Common.Gui
 import Mttt.Bloque.Gui
+import Mttt.Common.Gui
+import Mttt.Common.Utils
 import Mttt.Tablero.Data
 
 import Data.Array
@@ -25,11 +25,18 @@ import Graphics.Gloss
 import Graphics.Gloss.Interface.IO.Interact
 
 -- | Tipo que encapsula los datos necesarios para dibujar un 'Tablero' en pantalla
-data EstadoTablero = ET { tableroET :: Tablero -- ^ 'Tablero' a dibujar
-                       , posET :: Point    -- ^ Posición del centro del tablero
-                       , tamET :: Float    -- ^ Tamaño del tablero
-                       , temaET :: Tema    -- ^ 'Tema' con el que dibujar el tablero
-                       } deriving (Show)
+data EstadoTablero
+  = ET
+      { tableroET :: Tablero
+        -- ^ 'Tablero' a dibujar
+      , posET     :: Point
+        -- ^ Posición del centro del tablero
+      , tamET     :: Float
+        -- ^ Tamaño del tablero
+      , temaET    :: Tema
+        -- ^ 'Tema' con el que dibujar el tablero
+      }
+  deriving (Show)
 
 -- | 'EstadoTablero' inicial ('tableroVacio')
 eTInicial :: Float -- ^ 'tamET'

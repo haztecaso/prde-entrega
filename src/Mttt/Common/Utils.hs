@@ -21,8 +21,7 @@ module Mttt.Common.Utils (
 import System.IO (hFlush, stdout)
 
 -- | Tipo para diferenciar entre personas y agentes inteligentes
-data Jugador = Persona | Agente
-    deriving (Show, Read)
+data Jugador = Persona | Agente deriving (Read, Show)
 
 -- | Tipo sinónimo para representar posiciones en los tableros.
 -- Puede ser utilizado tanto para 'Tablero' como para 'Bloque'
