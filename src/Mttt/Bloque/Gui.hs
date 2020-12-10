@@ -8,14 +8,14 @@ Interfaz gráfica del /tres en raya/.
 -}
 
 module Mttt.Bloque.Gui where
--- module Mttt.Gui ( 
+-- module Mttt.Gui (
 --     Tema
 --   , temaClaro
 --   , temaOscuro
 --   , guiBoard
 -- ) where
 
-import Mttt.Common.Utils 
+import Mttt.Common.Utils
 import Mttt.Common.Gui
 import Mttt.Bloque.Data
 
@@ -87,8 +87,8 @@ data EstadoBloque = EB { bloqueEB :: Bloque -- ^ 'Bloque' a dibujar
 eBInicial :: Float -- ^ 'tamEB'
           -> Tema  -- ^  'temaEB'
           -> EstadoBloque
-eBInicial tam tema = 
-  EB { bloqueEB = bloqueVacio 
+eBInicial tam tema =
+  EB { bloqueEB = bloqueVacio
      , posEB    = (0,0)
      , tamEB    = tam
      , temaEB   = tema
@@ -117,7 +117,7 @@ dibujaEB estado = translate (x-tam/2) (y-tam/2) $ pictures $
 
 
 pointPosEB :: Point -- ^ Posición del puntero en la pantalla
-           -> EstadoBloque 
+           -> EstadoBloque
            -> Pos -- ^ Posición del puntero en el 'bloqueEB'
 pointPosEB (x,y) estado = floor' (4-3*(y-py+tam/2)/tam,
                                   1+3*(x-px+tam/2)/tam)

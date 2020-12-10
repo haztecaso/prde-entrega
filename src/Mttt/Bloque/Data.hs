@@ -9,14 +9,14 @@ Implementación del juego /tres en raya/.
 
 module Mttt.Bloque.Data (
     Ficha(X,O) -- TODO: Es inofensivo exportar los constructores?¿
-  , esX 
-  , Bloque 
-  , showBloque 
+  , esX
+  , Bloque
+  , showBloque
   , showListaPosBloque
-  , putBloque 
+  , putBloque
   , contarFichasBloque
   , turnoBloque
-  , movBloque 
+  , movBloque
   , casillasLibresBloque
   , ganadorBloque
   , finBloque
@@ -57,13 +57,13 @@ showMaybeFicha (Just f)  = head (show f)
 
 -- | Representación en caracteres de un 'Bloque'
 showBloque :: Bloque -> String
-showBloque b = unlines [intersperse ' ' [showMaybeFicha $ b!(x, y) | y <- [1..3]] | x <- [1..3]] 
+showBloque b = unlines [intersperse ' ' [showMaybeFicha $ b!(x, y) | y <- [1..3]] | x <- [1..3]]
 
 -- | Dibujo de un 'Bloque' resaltando unas 'Pos'.
 showListaPosBloque :: Bloque -> [Pos] -> String
-showListaPosBloque b ps = unlines [intersperse ' ' [casilla (x, y) | y <- [1..3]] | x <- [1..3]] 
+showListaPosBloque b ps = unlines [intersperse ' ' [casilla (x, y) | y <- [1..3]] | x <- [1..3]]
   where
-    casilla pos 
+    casilla pos
       | isJust (b!pos) = showMaybeFicha $ b!pos
       | otherwise      = head $ show $ pos2int pos
 
@@ -79,7 +79,7 @@ bloqueVacio = listArray ((1,1),(3,3)) [Nothing | _ <- listaIndices]
 -- 'turnoBloque' para decidir que 'Ficha' colocar.
 --
 -- Si el movimiento es válido se devuelve un 'Just Bloque'.
--- En caso contrario se devuelve 'Nothing' 
+-- En caso contrario se devuelve 'Nothing'
 movBloque :: Bloque
           -> Pos   -- ^ Posición en la que se añade la ficha
           -> Maybe Bloque

@@ -61,7 +61,7 @@ putOps' (x:xs) n = do putStrLn $ (show n) ++ ": " ++ x
 selOpcion :: [String] -> IO Int
 selOpcion ops = do
   putOps ops
-  n <- prompt "Selecciona una opción: " 
+  n <- prompt "Selecciona una opción: "
   if (read n >= 0) && (read n < length ops)
     then return (read n)
     else selOpcion ops
@@ -80,7 +80,7 @@ minimaxInt prof expandir evaluar peor mejor prob
 minimax :: Ord b => Int -> (a->[a]) -> (a-> b) -> a -> a
 minimax prof expandir evaluar prob
   | (prof==0) || null siguientes = prob
-  | otherwise = snd (maximum' sigVals) 
+  | otherwise = snd (maximum' sigVals)
   where siguientes   = expandir prob
         valoraciones = map (minimaxInt (prof-1) expandir evaluar maximum minimum) siguientes
         sigVals      = zip valoraciones siguientes

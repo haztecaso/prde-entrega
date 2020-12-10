@@ -8,14 +8,14 @@ Definiciones generales de la intefaz gráfica.
 -}
 
 module Mttt.Common.Gui where
--- module Mttt.Gui ( 
+-- module Mttt.Gui (
 --     Tema
 --   , temaClaro
 --   , temaOscuro
 --   , guiBoard
 -- ) where
 
-import Mttt.Common.Utils 
+import Mttt.Common.Utils
 import Mttt.Bloque.Data
 import Mttt.Tablero.Data
 

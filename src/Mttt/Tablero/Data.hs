@@ -11,7 +11,7 @@ module Mttt.Tablero.Data (
      Tablero(bloques, bloqueActivo)
    , showTablero
    , putTablero
-   , tableroVacio 
+   , tableroVacio
    , turnoTablero
    , ganadorTablero
    , lineasTablero
@@ -33,8 +33,8 @@ data Tablero = T { bloques :: Array Pos Bloque -- ^ Bloques del tablero
 
 -- | Representación en caracteres de un 'Tablero'
 showTablero :: Tablero -> String
-showTablero t = showTablero' t 1 ++ "──────┼───────┼──────\n" 
-             ++ showTablero' t 2 ++ "──────┼───────┼──────\n" 
+showTablero t = showTablero' t 1 ++ "──────┼───────┼──────\n"
+             ++ showTablero' t 2 ++ "──────┼───────┼──────\n"
              ++ showTablero' t 3
 
 -- | Función auxiliar para imprimir una linea de un tablero
@@ -51,7 +51,7 @@ putTablero = putStr . showTablero
 tableroVacio :: Tablero
 tableroVacio =
   T { bloques = listArray ((1,1),(3,3)) [bloqueVacio | _ <- listaIndices]
-    , bloqueActivo = Nothing 
+    , bloqueActivo = Nothing
     }
 
 -- | Cuenta las fichas de cada tipo que hay en un 'Tablero'.
@@ -91,14 +91,14 @@ turnoTablero t
 -- 'turnoTablero' para decidir que 'Ficha' colocar.
 --
 -- Si el movimiento es válido se devuelve un 'Just Tablero'.
--- En caso contrario se devuelve 'Nothing' 
+-- En caso contrario se devuelve 'Nothing'
 {-
 movTablero :: Tablero
            -> Pos   -- ^ 'Bloque' en que jugar
            -> Pos   -- ^ Posición del 'Bloque' seleccionado donde poner la ficha
            -> Maybe Tablero
 movTablero t p1 p2
-  | Just p1 == bloqueActivo t = 
+  | Just p1 == bloqueActivo t =
   | otherwise = error "F"
-  where bloque = 
+  where bloque =
 -}

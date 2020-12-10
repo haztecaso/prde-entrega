@@ -8,14 +8,14 @@ Interfaz gráfica del /meta tres en raya/.
 -}
 
 module Mttt.Tablero.Gui where
--- module Mttt.Gui ( 
+-- module Mttt.Gui (
 --     Tema
 --   , temaClaro
 --   , temaOscuro
 --   , guiBoard
 -- ) where
 
-import Mttt.Common.Utils 
+import Mttt.Common.Utils
 import Mttt.Common.Gui
 import Mttt.Bloque.Gui
 import Mttt.Bloque.Data
@@ -39,7 +39,7 @@ data EstadoTablero = ET { tableroET :: Tablero -- ^ 'Tablero' a dibujar
 eTInicial :: Float -- ^ 'tamET'
           -> Tema  -- ^  'temaET'
           -> EstadoTablero
-eTInicial tam tema = 
+eTInicial tam tema =
   ET { tableroET = tableroVacio
      , posET     = (0,0)
      , tamET     = tam

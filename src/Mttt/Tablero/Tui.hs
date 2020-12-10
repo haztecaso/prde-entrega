@@ -9,7 +9,7 @@ Interfaz de texto del /meta tres en raya/.
 
 module Mttt.Tablero.Tui where
 
-import Mttt.Common.Utils 
+import Mttt.Common.Utils
 import Mttt.Bloque.Data
 import Mttt.Tablero.Data
 

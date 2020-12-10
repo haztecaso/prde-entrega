@@ -1,4 +1,4 @@
-module Main where 
+module Main where
 import System.Console.ParseArgs
 
 import Mttt.Common.Utils
@@ -61,7 +61,7 @@ selAgenteBloque = do putStrLn "¿Contra que agente quieres jugar?"
                      opc <- selOpcion ["Agente tonto", "minimax"]
                      case opc of
                        0 -> return agenteBTonto
-                       1 -> return agenteBMinimaxHeur1 
+                       1 -> return agenteBMinimaxHeur1
 
 -- | Función para seleccionar que debe hacer este programa
 nuevoJuego :: Bool -- ^ ¿Jugar a /ttt/? No: /mttt/
@@ -73,7 +73,7 @@ nuevoJuego True True True _   = tuiBloqueMulti
 nuevoJuego True True False p  = do agente <- selAgenteBloque
                                    tuiBloqueAgente agente p
 nuevoJuego True False True _  = guiBloqueMulti temaOscuro 450
-nuevoJuego True False False p = do agente <- selAgenteBloque 
+nuevoJuego True False False p = do agente <- selAgenteBloque
                                    guiBloqueAgente temaOscuro 350 agente p
 nuevoJuego False False True _ = guiTableroMulti temaOscuro 350
 nuevoJuego _ _ _ _            = putStrLn "¡¡¡PENDIENTE DE IMPLEMENTAR!!!"
@@ -82,7 +82,7 @@ main :: IO ()
 main = do
   --guiBloque temaOscuro 250
   args <- parseArgsIO
-            (ArgsParseControl ArgsComplete ArgsHardDash) 
+            (ArgsParseControl ArgsComplete ArgsHardDash)
             argd
   let ayuda   = gotArg args OAyuda
   let simple  = gotArg args OSimple

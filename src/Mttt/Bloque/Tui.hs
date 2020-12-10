@@ -9,7 +9,7 @@ Interfaz de texto del /tres en raya/.
 
 module Mttt.Bloque.Tui where
 
-import Mttt.Common.Utils 
+import Mttt.Common.Utils
 import Mttt.Bloque.Data
 
 import Data.Maybe (isJust, isNothing, fromJust)
@@ -86,7 +86,7 @@ loopBPartidaAgente b agente fichaAgente jugadas = do
      then return (nuevo, jugadas)
      else loopBPartidaAgente nuevo agente fichaAgente (pos:jugadas)
 
-{- 
+{-
 bloqueMsgAgente :: Bloque -> Ficha -> String
 bloqueMsgAgente b fichaAgente
   | tablasBloque b = "Tablas"
