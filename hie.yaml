@@ -1,0 +1,13 @@
+cradle:
+  stack:
+    - path: "./src"
+      component: "mttt:lib"
+
+    - path: "./app/Main.hs"
+      component: "mttt:exe:mttt"
+
+    - path: "./app/Paths_mttt.hs"
+      component: "mttt:exe:mttt"
+
+    - path: "./test"
+      component: "mttt:test:mttt-test"
