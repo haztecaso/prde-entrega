@@ -9,11 +9,9 @@ Interfaz de texto del /meta tres en raya/.
 
 module Mttt.Tablero.Tui where
 
+import Data.List (elemIndex)
+import Data.Maybe (fromJust, isJust, isNothing)
 import Mttt.Bloque.Data
 import Mttt.Common.Utils
 import Mttt.Tablero.Data
-
-import Data.List  (elemIndex)
-import Data.Maybe (fromJust, isJust, isNothing)
-import Text.Read  (readMaybe)
-
+import Text.Read (readMaybe)

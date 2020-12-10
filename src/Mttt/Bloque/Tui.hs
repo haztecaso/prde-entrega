@@ -9,10 +9,9 @@ Interfaz de texto del /tres en raya/.
 
 module Mttt.Bloque.Tui where
 
+import Data.Maybe (fromJust, isJust)
 import Mttt.Bloque.Data
 import Mttt.Common.Utils (Pos, int2pos, prompt)
-
-import Data.Maybe (fromJust, isJust)
 
 {-
   BLOQUE: Generalidades
@@ -22,11 +21,11 @@ import Data.Maybe (fromJust, isJust)
 -- | TODO: arreglar
 preguntarMovB :: Bloque -> IO Pos
 preguntarMovB b = do
-    putStr $ showListaPosBloque b $ casillasLibresBloque b
-    let jugador = fromJust $ turnoBloque  b -- Atención: fromJust puede lanzar errores! Usar esta función con cuidado...
-    putStr $ "\n[Turno de " ++ show jugador ++ "] "
-    n <- prompt "Número de casilla donde jugar: "
-    return (int2pos $ read n)
+  putStr $ showListaPosBloque b $ casillasLibresBloque b
+  let jugador = fromJust $ turnoBloque b -- Atención: fromJust puede lanzar errores! Usar esta función con cuidado...
+  putStr $ "\n[Turno de " ++ show jugador ++ "] "
+  n <- prompt "Número de casilla donde jugar: "
+  return (int2pos $ read n)
 
 -- | Modifica un 'Bloque' insertando una ficha si es posible.
 jugarBloque :: Bloque -> Pos -> IO Bloque
@@ -38,15 +37,18 @@ jugarBloque b pos = do
   BLOQUE: Multijugador
 -}
 
-loopBPartidaMulti :: Bloque -- ^ 'Bloque' actual
-                  -> [Pos] -- ^ Lista de jugadas (ordenadas empezando por la más reciente)
-                  -> IO (Bloque, [Pos])
+loopBPartidaMulti ::
+  -- | 'Bloque' actual
+  Bloque ->
+  -- | Lista de jugadas (ordenadas empezando por la más reciente)
+  [Pos] ->
+  IO (Bloque, [Pos])
 loopBPartidaMulti b jugadas = do
   pos <- preguntarMovB b
   nuevo <- jugarBloque b pos
   if finBloque nuevo
-     then return (nuevo, jugadas)
-     else loopBPartidaMulti nuevo $ pos:jugadas
+    then return (nuevo, jugadas)
+    else loopBPartidaMulti nuevo $ pos : jugadas
 
 bloqueMsgMulti :: Bloque -> String
 bloqueMsgMulti b
@@ -68,19 +70,25 @@ tuiBloqueMulti = do
   BLOQUE: Agente
 -}
 
-loopBPartidaAgente :: Bloque -- ^ 'Bloque' actual
-                   -> AgenteBloque -- ^ 'AgenteBloque' contra el que jugar
-                   -> Ficha -- ^ 'Ficha' del agente
-                   -> [Pos] -- ^ Lista de jugadas (ordenadas empezando por la más reciente)
-                   -> IO (Bloque, [Pos])
+loopBPartidaAgente ::
+  -- | 'Bloque' actual
+  Bloque ->
+  -- | 'AgenteBloque' contra el que jugar
+  AgenteBloque ->
+  -- | 'Ficha' del agente
+  Ficha ->
+  -- | Lista de jugadas (ordenadas empezando por la más reciente)
+  [Pos] ->
+  IO (Bloque, [Pos])
 loopBPartidaAgente b agente fichaAgente jugadas = do
-  pos <- if turnoBloque b == Just fichaAgente
-            then return (funAB agente b)
-            else preguntarMovB b
+  pos <-
+    if turnoBloque b == Just fichaAgente
+      then return (funAB agente b)
+      else preguntarMovB b
   nuevo <- jugarBloque b pos
   if finBloque nuevo
-     then return (nuevo, jugadas)
-     else loopBPartidaAgente nuevo agente fichaAgente (pos:jugadas)
+    then return (nuevo, jugadas)
+    else loopBPartidaAgente nuevo agente fichaAgente (pos : jugadas)
 
 {-
 bloqueMsgAgente :: Bloque -> Ficha -> String
@@ -95,13 +103,16 @@ bloqueMsgAgente b fichaAgente
   | otherwise = "Partida en curso"
 -}
 
-tuiBloqueAgente :: AgenteBloque
-                -> Ficha -- ^ 'Ficha' del 'AgenteBloque'
-                -> IO ()
+tuiBloqueAgente ::
+  AgenteBloque ->
+  -- | 'Ficha' del 'AgenteBloque'
+  Ficha ->
+  IO ()
 tuiBloqueAgente agente fichaAgente = do
   putStrLn "Nueva partida de tres en raya"
   putStrLn $ "Jugando contra agente " ++ nombreAB agente
   (b, partida) <- loopBPartidaAgente bloqueVacio agente fichaAgente []
   print $ reverse partida
   putBloque b
-  -- print $ "\n[FIN] " ++ bloqueMsgAgente b fichaAgente
+
+-- print $ "\n[FIN] " ++ bloqueMsgAgente b fichaAgente
