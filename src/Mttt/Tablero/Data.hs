@@ -16,12 +16,17 @@ module Mttt.Tablero.Data
     ganadorTablero,
     lineasTablero,
     movTablero,
+    HeurTablero (funHT, descHT),
+    heurTablero0,
+    AgenteTablero (funAT, nombreAT),
+    agenteTTonto,
+    agenteTMinimax,
   )
 where
 
 import Data.Array        (Array, listArray, (!), (//))
-import Data.List         (intercalate, transpose)
-import Data.Maybe        (fromJust, isNothing)
+import Data.List         (elemIndex, intercalate, transpose)
+import Data.Maybe        (fromJust, isJust, isNothing)
 import Mttt.Bloque.Data
 import Mttt.Common.Utils
 
@@ -40,7 +45,8 @@ data Tablero
 -- | Representación en caracteres de un 'Tablero'
 showTablero :: Tablero -> String
 showTablero t =
-  showTablero' t 1 ++ "──────┼───────┼──────\n"
+  showTablero' t 1
+    ++ "──────┼───────┼──────\n"
     ++ showTablero' t 2
     ++ "──────┼───────┼──────\n"
     ++ showTablero' t 3
@@ -105,6 +111,17 @@ turnoTablero t
   where
     (xs, os) = contarFichasTablero t
 
+-- | Determina si la partida ha acabado en tablas.
+tablasTablero :: Tablero -> Bool
+tablasTablero t = null (casillasDisponiblesTablero t) && isNothing (ganadorTablero t)
+
+-- | Determina si la partida ha acabado o no
+finTablero :: Tablero -> Bool
+finTablero t
+  | isJust (ganadorTablero t) = True
+  | tablasTablero t = True
+  | otherwise = False
+
 -- | Insertar una ficha nueva en un 'Tablero'. La función hace uso de
 -- 'turnoTablero' para decidir que 'Ficha' colocar.
 --
@@ -132,3 +149,69 @@ movTablero t p1 p2
         { bloques = bloques t // [(p1, fromJust bloque)],
           bloqueActivo = siguienteBloque p2
         }
+
+-- | Lista de casillas de un bloque donde se puede jugar.
+casillasDisponiblesTablero :: Tablero -> [(Pos, Pos)]
+casillasDisponiblesTablero t
+  | isJust (bloqueActivo t) = [(activo, p) | p <- casillasLibresBloque (bloques t ! activo)]
+  | otherwise = [(p1, p2) | p1 <- listaIndices, p2 <- casillasLibresBloque (bloques t ! p1)]
+  where
+    activo = fromJust $ bloqueActivo t
+
+-- | Posibles jugadas
+expandirTablero :: Tablero -> [Tablero]
+expandirTablero t
+  | finTablero t = []
+  | otherwise = map (fromJust . uncurry (movTablero t)) $ casillasDisponiblesTablero t
+
+-- Dados dos bloques devuelve la posición en la que se ha jugado.
+posMovimientoTablero :: Tablero -> Tablero -> (Pos, Pos)
+posMovimientoTablero tablero expandido =
+  libres !! fromJust (elemIndex expandido siguientes)
+  where
+    siguientes = expandirTablero tablero
+    libres = casillasDisponiblesTablero tablero
+
+{- FUNCIONES HEURÍSTICAS -}
+
+-- | Tipo para funciones heurísticas de 'Tablero'.
+data HeurTablero
+  = HeurTablero
+      { funHT  :: Tablero -> Int
+      , descHT :: String
+      }
+
+-- | Función heuristica tonta, para testeos
+heurTablero0 :: HeurTablero
+heurTablero0 =
+  HeurTablero
+    { funHT = const 0,
+      descHT = "0"
+    }
+
+{- AGENTES -}
+
+-- | Tipo para Agentes de 'Tablero'.
+data AgenteTablero
+  = AgenteTablero
+      { funAT    :: Tablero -> (Pos, Pos)
+      , nombreAT :: String
+      }
+
+-- | Agente que devuelve la primera posición disponible donde jugar,
+-- en el orden generado por 'casillasDisponiblesTablero'.
+agenteTTonto :: AgenteTablero
+agenteTTonto =
+  AgenteTablero
+    { funAT = head . casillasDisponiblesTablero,
+      nombreAT = "tonto"
+    }
+
+-- | Dada una 'HeurTablero' y una profundidad devuelve el 'AgenteTablero'
+-- que juega con el minimax.
+agenteTMinimax :: HeurTablero -> Int -> AgenteTablero
+agenteTMinimax h prof =
+  AgenteTablero
+    { funAT = \t -> posMovimientoTablero t (minimax prof expandirTablero (funHT h) t),
+      nombreAT = "minimax - heur " ++ descHT h ++ " (profundidad " ++ show prof ++ ")"
+    }

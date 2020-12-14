@@ -28,9 +28,9 @@ module Mttt.Bloque.Data
   )
 where
 
-import Data.Array (Array, elems, listArray, (!), (//))
-import Data.List (elemIndex, intersperse, transpose)
-import Data.Maybe (fromJust, isJust, isNothing)
+import Data.Array        (Array, elems, listArray, (!), (//))
+import Data.List         (elemIndex, intersperse, transpose)
+import Data.Maybe        (fromJust, isJust, isNothing)
 import Mttt.Common.Utils
 
 -- | Tipo que representa una ficha del juego
@@ -50,7 +50,7 @@ type Bloque = Array Pos (Maybe Ficha)
 
 -- | Utilidad para imprimir una /casilla/ de un 'Bloque' en pantalla
 showMaybeFicha :: Maybe Ficha -> Char
-showMaybeFicha Nothing = '_'
+showMaybeFicha Nothing  = '_'
 showMaybeFicha (Just f) = head (show f)
 
 -- | Representación en caracteres de un 'Bloque'
@@ -115,7 +115,7 @@ contarFichasBloque ::
   (Int, Int)
 contarFichasBloque b = foldr1 suma $ map f $ elems b
   where
-    f Nothing = (0, 0)
+    f Nothing  = (0, 0)
     f (Just X) = (1, 0)
     f (Just O) = (0, 1)
     suma (a, b) (c, d) = (a + c, b + d)
@@ -129,16 +129,16 @@ turnoBloque b
   where
     (xs, os) = contarFichasBloque b
 
--- | Determina si la partida ha acabado o no
-finBloque :: Bloque -> Bool
-finBloque t
-  | isJust (ganadorBloque t) = True
-  | tablasBloque t = True
-  | otherwise = False
-
--- | Determina si la partida de tres en raya ha acabado en tablas.
+-- | Determina si la partida ha acabado en tablas.
 tablasBloque :: Bloque -> Bool
 tablasBloque b = notElem Nothing b && isNothing (ganadorBloque b)
+
+-- | Determina si la partida ha acabado o no
+finBloque :: Bloque -> Bool
+finBloque b
+  | isJust (ganadorBloque b) = True
+  | tablasBloque b = True
+  | otherwise = False
 
 -- | Devuelve todas las lineas rectas de un 'Bloque'
 lineasBloque :: Bloque -> [[Maybe Ficha]]
@@ -176,10 +176,11 @@ heurBloque b
 {- AGENTES -}
 
 -- | Tipo para Agentes de 'Bloque'.
-data AgenteBloque = AgenteBloque
-  { funAB :: Bloque -> Pos,
-    nombreAB :: String
-  }
+data AgenteBloque
+  = AgenteBloque
+      { funAB    :: Bloque -> Pos
+      , nombreAB :: String
+      }
 
 -- | Agente que devuelve la primera posición disponible donde jugar,
 -- en el orden generado por 'casillasLibresBloque'.
