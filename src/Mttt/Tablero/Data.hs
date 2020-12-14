@@ -15,24 +15,26 @@ module Mttt.Tablero.Data
     turnoTablero,
     ganadorTablero,
     lineasTablero,
+    movTablero,
   )
 where
 
-import Data.Array (Array, listArray, (!))
-import Data.List (intercalate, transpose)
-import Data.Maybe (isNothing)
+import Data.Array        (Array, listArray, (!), (//))
+import Data.List         (intercalate, transpose)
+import Data.Maybe        (fromJust, isNothing)
 import Mttt.Bloque.Data
 import Mttt.Common.Utils
 
 -- | Tipo para un tablero de /meta tres en raya/
-data Tablero = T
-  { -- | Bloques del tablero
-    bloques :: Array Pos Bloque,
-    -- | 'Pos' del 'Bloque' activo para jugar.
-    -- Si es 'Nothing' se puede jugar en
-    -- cualquier 'Bloque'.
-    bloqueActivo :: Maybe Pos
-  }
+data Tablero
+  = T
+      { -- | Bloques del tablero
+        bloques      :: Array Pos Bloque
+        -- | 'Pos' del 'Bloque' activo para jugar.
+        -- Si es 'Nothing' se puede jugar en
+        -- cualquier 'Bloque'.
+      , bloqueActivo :: Maybe Pos
+      }
   deriving (Eq, Read, Show)
 
 -- | Representación en caracteres de un 'Tablero'
@@ -108,14 +110,25 @@ turnoTablero t
 --
 -- Si el movimiento es válido se devuelve un 'Just Tablero'.
 -- En caso contrario se devuelve 'Nothing'
-
-{-
-movTablero :: Tablero
-           -> Pos   -- ^ 'Bloque' en que jugar
-           -> Pos   -- ^ Posición del 'Bloque' seleccionado donde poner la ficha
-           -> Maybe Tablero
+movTablero ::
+  Tablero ->
+  -- | 'Bloque' en que jugar
+  Pos ->
+  -- | Posición del 'Bloque' seleccionado donde poner la ficha
+  Pos ->
+  Maybe Tablero
 movTablero t p1 p2
-  | Just p1 == bloqueActivo t =
-  | otherwise = error "F"
-  where bloque =
--}
+  | isNothing bloque = Nothing
+  | Just p1 == bloqueActivo t = Just nuevo
+  | isNothing (bloqueActivo t) = Just nuevo
+  | otherwise = Nothing
+  where
+    bloque = movBloque (bloques t ! p1) p2
+    siguienteBloque p
+      | finBloque (bloques t ! p) = Nothing -- Si una partida de un bloque ha acabado se puede jugar en cualquier bloque
+      | otherwise = Just p
+    nuevo =
+      T
+        { bloques = bloques t // [(p1, fromJust bloque)],
+          bloqueActivo = siguienteBloque p2
+        }
