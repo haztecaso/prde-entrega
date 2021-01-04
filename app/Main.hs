@@ -64,7 +64,7 @@ selAgenteBloque = do
   opc <- selOpcion ["Agente tonto", "minimax"]
   case opc of
     0 -> return agenteBTonto
-    1 -> return agenteBMinimaxHeur1
+    1 -> return agenteBMinimax
 
 -- | Función para seleccionar que debe hacer este programa
 nuevoJuego ::

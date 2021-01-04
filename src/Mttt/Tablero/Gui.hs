@@ -25,16 +25,17 @@ import Mttt.Common.Utils
 import Mttt.Tablero.Data
 
 -- | Tipo que encapsula los datos necesarios para dibujar un 'Tablero' en pantalla
-data EstadoTablero = ET
-  { -- | 'Tablero' a dibujar
-    tableroET :: Tablero,
-    -- | Posición del centro del tablero
-    posET :: Point,
-    -- | Tamaño del tablero
-    tamET :: Float,
-    -- | 'Tema' con el que dibujar el tablero
-    temaET :: Tema
-  }
+data EstadoTablero
+  = ET
+      { -- | 'Tablero' a dibujar
+        tableroET :: Tablero
+        -- | Posición del centro del tablero
+      , posET     :: Point
+        -- | Tamaño del tablero
+      , tamET     :: Float
+        -- | 'Tema' con el que dibujar el tablero
+      , temaET    :: Tema
+      }
   deriving (Show)
 
 -- | 'EstadoTablero' inicial ('tableroVacio')
@@ -71,6 +72,24 @@ dibujaET estado =
           temaEB = tema
         }
 
+pointPosET ::
+  -- | Posición del puntero en la pantalla
+  Point ->
+  EstadoTablero ->
+  -- | Posición del puntero en el 'bloqueEB'
+  (Pos, Pos)
+pointPosET (x, y) estado =
+  (posBloque, (0, 0))
+  where
+    tam = tamET estado
+    (px, py) = posET estado
+    floor' (a, b) = (floor a, floor b)
+    posBloque =
+      floor'
+        ( 4 -3 * (y - py + tam / 2) / tam,
+          1 + 3 * (x - px + tam / 2) / tam
+        )
+
 -- | Modifica el 'EstadoTablero' actual del juego cuando se hace click
 modificaET :: Event -> EstadoTablero -> EstadoTablero
 modificaET _ estado = estado
@@ -89,7 +108,7 @@ displayET estado = display (tableroVentana tam) (fondo $ temaET estado) (dibujaE
   where
     tam = floor $ 1.15 * tamET estado
 
--- | Función IO para jugar al /meta tres en raya/
+-- | Función IO para jugar al /meta tres en raya/ en modo multijugador
 guiTableroMulti ::
   -- | Tema con el que dibujar la interfaz
   Tema ->

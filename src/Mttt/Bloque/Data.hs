@@ -24,7 +24,7 @@ module Mttt.Bloque.Data
     bloqueVacio,
     AgenteBloque (funAB, nombreAB),
     agenteBTonto,
-    agenteBMinimaxHeur1,
+    agenteBMinimax,
   )
 where
 
@@ -191,9 +191,9 @@ agenteBTonto =
       nombreAB = "tonto"
     }
 
-agenteBMinimaxHeur1 :: AgenteBloque
-agenteBMinimaxHeur1 =
+agenteBMinimax :: AgenteBloque
+agenteBMinimax =
   AgenteBloque
     { funAB = \b -> posMovimientoBloque b (minimax 9 expandirBloque heurBloque b),
-      nombreAB = "minimax-heur1"
+      nombreAB = "minimax"
     }

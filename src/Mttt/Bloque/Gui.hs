@@ -17,7 +17,7 @@ module Mttt.Bloque.Gui where
 -- ) where
 
 import Data.Array
-import Data.Maybe (fromJust, isJust)
+import Data.Maybe                           (fromJust, isJust)
 import Graphics.Gloss
 import Graphics.Gloss.Interface.IO.Interact
 import Mttt.Bloque.Data
@@ -97,16 +97,17 @@ modTemaEB estado
     n = neutro t
 
 -- | Tipo que encapsula los datos necesarios para dibujar un 'Bloque' en pantalla
-data EstadoBloque = EB
-  { -- | 'Bloque' a dibujar
-    bloqueEB :: Bloque,
-    -- | Posición del centro del tablero
-    posEB :: Point,
-    -- | Tamaño del tablero
-    tamEB :: Float,
-    -- | 'Tema' con el que dibujar el tablero
-    temaEB :: Tema
-  }
+data EstadoBloque
+  = EB
+      { -- | 'Bloque' a dibujar
+        bloqueEB :: Bloque
+        -- | Posición del centro del tablero
+      , posEB    :: Point
+        -- | Tamaño del tablero
+      , tamEB    :: Float
+        -- | 'Tema' con el que dibujar el tablero
+      , temaEB   :: Tema
+      }
   deriving (Show)
 
 -- | 'EstadoBloque' inicial ('bloqueVacio')
@@ -150,6 +151,8 @@ dibujaEB estado =
     tam = tamEB estado
     tema = temaEB estado
 
+-- | Dada una posición del puntero y un 'EstadoBloque' devuelve la
+-- 'Pos' de la casilla del 'Bloque' donde está el puntero.
 pointPosEB ::
   -- | Posición del puntero en la pantalla
   Point ->
