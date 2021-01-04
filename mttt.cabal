@@ -9,7 +9,7 @@ version:        0.3.0
 description:    Please see the README
 author:         Adrián Lattes y David Díez
 maintainer:     Adrián Lattes y David Díez
-license:        GPLv3
+license:        GPL-3
 build-type:     Simple
 extra-source-files:
     README.md
