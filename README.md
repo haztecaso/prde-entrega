@@ -37,8 +37,6 @@ Es importante ir documentando las funciones sobre la marcha!
 
 ### Estilo y detalles
 
-- Cuidado con exportar las representaciones internas de los tipos de datos.
-Mejor definir funciones que usen bien las representaciones.
 - Revisar todos los comentarios de TODO
 - Revisar formato codigo
 - Revisar warnings
@@ -54,10 +52,13 @@ Mejor definir funciones que usen bien las representaciones.
 
 - Separar app/Main.hs en cuatro programas, uno para cada juego (cli / gui)
 
-Paquetes
-------------
+Haddock: documentación a partir del código y los comentarios
+------------------------------------------------------------
 
-### Stack
+TODO: link!
+
+Stack: paquete, gestión de dependecias
+--------------------------------------
 
 Stack gestiona las dependencias de la aplicación y proporciona una interfaz muy
 cómoda para ghc y ghci. Además está muy bien integrado con otras utilidades como
@@ -67,9 +68,19 @@ Stack es compatible con cabal. Para generar el archivo .cabal a partir de
 `packacge.yaml` (configuración del proyecto de stack) se puede usar *hpack* o
 `stack build`.
 
-Se puede compilar el codigo mediante el comando `stack build`.
+Algunos comandos útiles de stack:
 
-### Nix
+- `stack build` para compilar el programa.
+- `stack ghci` para obtener un prompt de ghci con el programa cargado como
+  librería.
+- `stack exec mttt` para ejecutar el programa.
+- `stack haddock` para generar la documentación.
+
+También se puede usar nix para evitar tener que instalar stack en el entorno
+global de nuestro sistema: `nix-shell --run "stack ..."`.
+
+Nix
+---
 
 [Nix](https://nixos.wiki/wiki/Nix) es un gestor de paquetes que deriva
 instrucciones de compilación especificadas en el lenguaje de programación
@@ -98,7 +109,7 @@ Dependencias
 Se pueden consultar en `package.yaml`.
 
 - [gloss](https://hackage.haskell.org/package/gloss/)
-<!-- # - [parseargs](https://hackage.haskell.org/package/parseargs/) -->
+- [parseargs](https://hackage.haskell.org/package/parseargs/)
 
 Referencias
 -----------
