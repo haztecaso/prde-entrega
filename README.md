@@ -54,13 +54,51 @@ Mejor definir funciones que usen bien las representaciones.
 
 - Separar app/Main.hs en cuatro programas, uno para cada juego (cli / gui)
 
+Paquetes
+------------
+
+### Stack
+
+Stack gestiona las dependencias de la aplicación y proporciona una interfaz muy
+cómoda para ghc y ghci. Además está muy bien integrado con otras utilidades como
+cabal, ghcid y el lenguaje nix.
+
+Stack es compatible con cabal. Para generar el archivo .cabal a partir de
+`packacge.yaml` (configuración del proyecto de stack) se puede usar *hpack* o
+`stack build`.
+
+Se puede compilar el codigo mediante el comando `stack build`.
+
+### Nix
+
+[Nix](https://nixos.wiki/wiki/Nix) es un gestor de paquetes que deriva
+instrucciones de compilación especificadas en el lenguaje de programación
+[nix](https://nixos.wiki/wiki/Nix_Expression_Language), un lenguaje de
+programación funcional puro y perezoso.
+
+Este proyecto usa nix solo para gestionar el entorno de desarollo de haskell.
+La gestión de dependencias y compilación queda delegada totalmente a stack. Lo
+bueno de esto es que no es necesario escribir una derivación de nix y como stack
+está integrado con nix, no perdemos ciertos beneficios de nix (como tener un
+entorno aislado).
+
+Con **nix-shell** se puede utilizar el entorno de desarollo definido en `shell.nix`.
+Aquí se incluyen algunas utilidades cómodas para programar en haskell:
+
+- **ghcid**: Versión de ghci que recompila el código cada vez que se modifica un
+  fichero. Se puede lanzar con el comando `nix-shell --run ghcid`.
+
+- **haskell-language-server**:
+  [LSP](https://microsoft.github.io/language-server-protocol/) para haskell.
+  Útil para integrar con un editor (por ejemplo con nvim, mediante coc-nvim).
+
 Dependencias
 ------------
 
 Se pueden consultar en `package.yaml`.
 
 - [gloss](https://hackage.haskell.org/package/gloss/)
-- [parseargs](https://hackage.haskell.org/package/parseargs/)
+<!-- # - [parseargs](https://hackage.haskell.org/package/parseargs/) -->
 
 Referencias
 -----------
