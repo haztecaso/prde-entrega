@@ -1,12 +1,10 @@
-{-
-Module      : Mttt.Tablero.Gui
-Copyright   : (c) Adrián Lattes y David Diez
-License     : GPL-3
-Stability   : experimental
-
-Interfaz gráfica del /meta tres en raya/.
--}
-
+-- |
+-- Module      : Mttt.Tablero.Gui
+-- Copyright   : (c) Adrián Lattes y David Diez
+-- License     : GPL-3
+-- Stability   : experimental
+--
+-- Interfaz gráfica del /meta tres en raya/.
 module Mttt.Tablero.Gui where
 
 -- module Mttt.Gui (
@@ -17,82 +15,89 @@ module Mttt.Tablero.Gui where
 -- ) where
 
 import Data.Array
+import Data.Maybe (fromJust, isJust)
 import Graphics.Gloss
 import Graphics.Gloss.Interface.IO.Interact
+import Mttt.Bloque.Data (bloqueVacio)
 import Mttt.Bloque.Gui
 import Mttt.Common.Gui
 import Mttt.Common.Utils
 import Mttt.Tablero.Data
 
--- | Tipo que encapsula los datos necesarios para dibujar un 'Tablero' en pantalla
-data EstadoTablero
-  = ET
-      { -- | 'Tablero' a dibujar
-        tableroET :: Tablero
-        -- | Posición del centro del tablero
-      , posET     :: Point
-        -- | Tamaño del tablero
-      , tamET     :: Float
-        -- | 'Tema' con el que dibujar el tablero
-      , temaET    :: Tema
-      }
+-- | Tipo que encapsula los datos necesarios para dibujar un 'Tablero' en
+-- pantalla
+data EstadoTablero = ET
+  { -- | 'Tablero' a dibujar
+    tableroET :: Tablero,
+    -- | Tamaño del tablero
+    tamET :: Float,
+    -- | 'Tema' con el que dibujar el tablero
+    temaET :: Tema
+  }
   deriving (Show)
 
--- | 'EstadoTablero' inicial ('tableroVacio')
-eTInicial ::
-  -- | 'tamET'
+instance Estado EstadoTablero where
+  tam = tamET
+  tema = temaET
+
+  dibuja estado =
+    pictures $
+      dibujaBloquesActivos estado :
+        [dibuja' $ estadoBloque pos | pos <- listaIndices]
+    where
+      estadoBloque pos =
+        EB
+          { bloqueEB = bloques (tableroET estado) ! pos,
+            posEB = posPoint (tam estado / 3) pos,
+            tamEB = tam estado / 3 * 0.8,
+            temaEB = tema estado
+          }
+
+  modifica pos estado
+    | isJust nuevo = estado {tableroET = fromJust nuevo}
+    | finTablero t = estado {tableroET = tableroVacio}
+    | otherwise = estado
+    where
+      t = tableroET estado
+      positions = pointPosET pos estado
+      nuevo = movTablero t (fst positions) (snd positions)
+
+estadoTableroInicial ::
+  -- | Tamaño
   Float ->
-  -- |  'temaET'
   Tema ->
   EstadoTablero
-eTInicial tam tema =
+estadoTableroInicial tam tema =
   ET
-    { tableroET = tableroVacio,
-      posET = (0, 0),
+    { tableroET = tableroTest,
       tamET = tam,
       temaET = tema
     }
 
--- | Dibuja un 'EstadoTablero'
-dibujaET :: EstadoTablero -> Picture
-dibujaET estado =
-  translate (x - tam / 2) (y - tam / 2) $
-    pictures $
-      dibujaLineas (0, 0) tam (contraste $ temaET estado) :
-        [dibujaEB $ estadoBloque pos | pos <- listaIndices]
+-- | Resalta los bloques activos de un 'EstadoTablero'
+dibujaBloquesActivos :: EstadoTablero -> Picture
+dibujaBloquesActivos estado =
+  color (bright $ bright $ fondo tema) $
+    pictures
+      [translateP (posPoint tam p) $ cuadrado $ tam * 0.9 | p <- pos]
   where
-    (x, y) = posET estado
-    tam = tamET estado
+    tam = tamET estado / 3
     tema = temaET estado
-    estadoBloque pos =
-      EB
-        { bloqueEB = bloques (tableroET estado) ! pos,
-          posEB = posPoint (tam / 3) pos,
-          tamEB = tam / 3 * 0.8,
-          temaEB = tema
-        }
+    pos = maybe listaIndices (\x -> [x]) $ bloqueActivo $ tableroET estado
 
+-- | Dada una posición del puntero y un 'EstadoTablero' devuelve las
+-- 'Pos' del 'Bloque' y casilla donde está el puntero.
 pointPosET ::
   -- | Posición del puntero en la pantalla
   Point ->
   EstadoTablero ->
   -- | Posición del puntero en el 'bloqueEB'
   (Pos, Pos)
-pointPosET (x, y) estado =
-  (posBloque, (0, 0))
+pointPosET p estado =
+  (posBloque, posFicha)
   where
-    tam = tamET estado
-    (px, py) = posET estado
-    floor' (a, b) = (floor a, floor b)
-    posBloque =
-      floor'
-        ( 4 -3 * (y - py + tam / 2) / tam,
-          1 + 3 * (x - px + tam / 2) / tam
-        )
-
--- | Modifica el 'EstadoTablero' actual del juego cuando se hace click
-modificaET :: Event -> EstadoTablero -> EstadoTablero
-modificaET _ estado = estado
+    posBloque = pointPos p (tamET estado) (pos estado)
+    posFicha = (2, 2)
 
 -- | Ventana para jugar al meta tres en raya
 tableroVentana ::
@@ -100,21 +105,3 @@ tableroVentana ::
   Int ->
   Display
 tableroVentana tam = InWindow "Meta tres en raya" (tam, tam) (0, 0)
-
--- | Función IO para pintar un 'EstadoTablero' en pantalla.
--- Tiene la misma interfaz que 'dibujaET'
-displayET :: EstadoTablero -> IO ()
-displayET estado = display (tableroVentana tam) (fondo $ temaET estado) (dibujaET estado)
-  where
-    tam = floor $ 1.15 * tamET estado
-
--- | Función IO para jugar al /meta tres en raya/ en modo multijugador
-guiTableroMulti ::
-  -- | Tema con el que dibujar la interfaz
-  Tema ->
-  -- | Tamaño del tablero
-  Float ->
-  IO ()
-guiTableroMulti tema tam = play (tableroVentana tamV) (fondo tema) 15 (eTInicial tam tema) dibujaET modificaET (const id)
-  where
-    tamV = floor $ 1.15 * tam
