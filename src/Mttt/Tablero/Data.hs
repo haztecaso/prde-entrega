@@ -1,20 +1,20 @@
-{-
-Module      : Mttt.Tablero.Data
-Copyright   : (c) Adrián Lattes y David Diez
-License     : GPL-3
-Stability   : experimental
-
-Implementación del juego /meta tres en raya/.
--}
-
+-- |
+-- Module      : Mttt.Tablero.Data
+-- Copyright   : (c) Adrián Lattes y David Diez
+-- License     : GPL-3
+-- Stability   : experimental
+--
+-- Implementación del juego /meta tres en raya/.
 module Mttt.Tablero.Data
   ( Tablero (bloques, bloqueActivo),
     showTablero,
     putTablero,
     tableroVacio,
+    tableroTest,
     turnoTablero,
     ganadorTablero,
     lineasTablero,
+    finTablero,
     movTablero,
     HeurTablero (funHT, descHT),
     heurTablero0,
@@ -24,22 +24,21 @@ module Mttt.Tablero.Data
   )
 where
 
-import Data.Array        (Array, listArray, (!), (//))
-import Data.List         (elemIndex, intercalate, transpose)
-import Data.Maybe        (fromJust, isJust, isNothing)
+import Data.Array (Array, listArray, (!), (//))
+import Data.List (elemIndex, intercalate, transpose)
+import Data.Maybe (fromJust, isJust, isNothing)
 import Mttt.Bloque.Data
 import Mttt.Common.Utils
 
 -- | Tipo para un tablero de /meta tres en raya/
-data Tablero
-  = T
-      { -- | Bloques del tablero
-        bloques      :: Array Pos Bloque
-        -- | 'Pos' del 'Bloque' activo para jugar.
-        -- Si es 'Nothing' se puede jugar en
-        -- cualquier 'Bloque'.
-      , bloqueActivo :: Maybe Pos
-      }
+data Tablero = T
+  { -- | Bloques del tablero
+    bloques :: Array Pos Bloque,
+    -- | 'Pos' del 'Bloque' activo para jugar.
+    -- Si es 'Nothing' se puede jugar en
+    -- cualquier 'Bloque'.
+    bloqueActivo :: Maybe Pos
+  }
   deriving (Eq, Read, Show)
 
 -- | Representación en caracteres de un 'Tablero'
@@ -136,14 +135,15 @@ movTablero ::
   Maybe Tablero
 movTablero t p1 p2
   | isNothing bloque = Nothing
-  | Just p1 == bloqueActivo t = Just nuevo
-  | isNothing (bloqueActivo t) = Just nuevo
+  | validPos && Just p1 == bloqueActivo t = Just nuevo
+  | validPos && isNothing (bloqueActivo t) = Just nuevo
   | otherwise = Nothing
   where
-    bloque = movBloque (bloques t ! p1) p2
+    bloque = movMaybeFichaBloque (turnoTablero t) (bloques t ! p1) p2
     siguienteBloque p
       | finBloque (bloques t ! p) = Nothing -- Si una partida de un bloque ha acabado se puede jugar en cualquier bloque
       | otherwise = Just p
+    validPos = p1 `elem` listaIndices && p2 `elem` listaIndices
     nuevo =
       T
         { bloques = bloques t // [(p1, fromJust bloque)],
@@ -172,14 +172,23 @@ posMovimientoTablero tablero expandido =
     siguientes = expandirTablero tablero
     libres = casillasDisponiblesTablero tablero
 
+tableroTest' = (fromJust $ movTablero tableroVacio (2, 2) (1, 1))
+
+tableroTest'' = (fromJust $ movTablero tableroTest' (1, 1) (1, 1))
+
+tableroTest''' = (fromJust $ movTablero tableroTest'' (1, 1) (2, 3))
+
+tableroTest'''' = (fromJust $ movTablero tableroTest''' (2, 3) (3, 1))
+
+tableroTest = (fromJust $ movTablero tableroTest'''' (3, 1) (2, 2))
+
 {- FUNCIONES HEURÍSTICAS -}
 
 -- | Tipo para funciones heurísticas de 'Tablero'.
-data HeurTablero
-  = HeurTablero
-      { funHT  :: Tablero -> Int
-      , descHT :: String
-      }
+data HeurTablero = HeurTablero
+  { funHT :: Tablero -> Int,
+    descHT :: String
+  }
 
 -- | Función heuristica tonta, para testeos
 heurTablero0 :: HeurTablero
@@ -192,11 +201,10 @@ heurTablero0 =
 {- AGENTES -}
 
 -- | Tipo para Agentes de 'Tablero'.
-data AgenteTablero
-  = AgenteTablero
-      { funAT    :: Tablero -> (Pos, Pos)
-      , nombreAT :: String
-      }
+data AgenteTablero = AgenteTablero
+  { funAT :: Tablero -> (Pos, Pos),
+    nombreAT :: String
+  }
 
 -- | Agente que devuelve la primera posición disponible donde jugar,
 -- en el orden generado por 'casillasDisponiblesTablero'.

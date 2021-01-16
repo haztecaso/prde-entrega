@@ -1,12 +1,10 @@
-{-
-Module      : Mttt.Tablero.Tui
-Copyright   : (c) Adrián Lattes y David Diez
-License     : GPL-3
-Stability   : experimental
-
-Interfaz de texto del /meta tres en raya/.
--}
-
+-- |
+-- Module      : Mttt.Tablero.Tui
+-- Copyright   : (c) Adrián Lattes y David Diez
+-- License     : GPL-3
+-- Stability   : experimental
+--
+-- Interfaz de texto del /meta tres en raya/.
 module Mttt.Tablero.Tui where
 
 import Data.List (elemIndex)

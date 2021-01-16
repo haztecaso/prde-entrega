@@ -1,12 +1,10 @@
-{-
-Module      : Mttt.Bloque.Tui
-Copyright   : (c) Adrián Lattes y David Diez
-License     : GPL-3
-Stability   : experimental
-
-Interfaz de texto del /tres en raya/.
--}
-
+-- |
+-- Module      : Mttt.Bloque.Tui
+-- Copyright   : (c) Adrián Lattes y David Diez
+-- License     : GPL-3
+-- Stability   : experimental
+--
+-- Interfaz de texto del /tres en raya/.
 module Mttt.Bloque.Tui where
 
 import Data.Maybe (fromJust, isJust)

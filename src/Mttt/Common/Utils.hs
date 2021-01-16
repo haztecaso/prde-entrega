@@ -1,12 +1,10 @@
-{-
-Module      : Mttt.Utils
-Copyright   : (c) Adrián Lattes y David Diez
-License     : GPL-3
-Stability   : experimental
-
-Utilidades
--}
-
+-- |
+-- Module      : Mttt.Utils
+-- Copyright   : (c) Adrián Lattes y David Diez
+-- License     : GPL-3
+-- Stability   : experimental
+--
+-- Utilidades
 module Mttt.Common.Utils
   ( Jugador (Persona, Agente),
     Pos,
@@ -32,9 +30,11 @@ type Pos = (Int, Int)
 listaIndices :: [(Int, Int)]
 listaIndices = [(x, y) | x <- [1 .. 3], y <- [1 .. 3]]
 
+-- Utilidad para obtener el índice de una posición
 pos2int :: Pos -> Int
 pos2int (x, y) = (y -1) + 3 * (x -1)
 
+-- Utilidad para obtener la posición de un índice
 int2pos :: Int -> Pos
 int2pos n = (n `div` 3 + 1, n `mod` 3 + 1)
 
@@ -70,7 +70,6 @@ selOpcion ops = do
 {- ALGORITMOS -}
 
 -- | Parte /interna/ del algoritmo minimax visto en clase
--- __TODO__: REVISAR!!!
 minimaxInt :: Ord b => Int -> (a -> [a]) -> (a -> b) -> ([b] -> b) -> ([b] -> b) -> a -> b
 minimaxInt prof expandir evaluar peor mejor prob
   | (prof == 0) || null siguientes = evaluar prob
@@ -79,8 +78,19 @@ minimaxInt prof expandir evaluar peor mejor prob
     siguientes = expandir prob
 
 -- | Parte /externa/ del algoritmo minimax visto en clase
--- __TODO__: REVISAR!!!
-minimax :: Ord b => Int -> (a -> [a]) -> (a -> b) -> a -> a
+minimax ::
+  Ord b =>
+  -- | Profundidad de búsqueda
+  Int ->
+  -- | Función  de expansión. Dado un estado devuelve todos los posibles
+  -- estados siguientes.
+  (a -> [a]) ->
+  -- | Función heurística. Dado un estado devuelve una puntuación asociada a tal
+  -- estado.
+  (a -> b) ->
+  -- | Estado de entrada
+  a ->
+  a
 minimax prof expandir evaluar prob
   | (prof == 0) || null siguientes = prob
   | otherwise = snd (maximum' sigVals)
