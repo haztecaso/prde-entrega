@@ -3,59 +3,16 @@ Meta Tic Tac Toe
 
 - Se asume que siempre empieza el jugador X
 
-TO DO
------
-
-### Desarrollo
-
-Es importante ir documentando las funciones sobre la marcha!
-
-- Tipos de datos
-- Funciones show
-- Reglas del juego
-  - Determinar a quien le toca
-  - Donde se puede jugar
-  - Determinar si ha acabado la partida
-    - ¿Quien ha ganado?
-
-- Operaciones de E/S
-  - Leer tablero desde archivo
-    - CLI
-      - Preguntar donde jugar
-      - Enseñar tablero
-    - GUI
-
-- IA
-  - Jugador aleatorio
-  - Definición de funciones heurísticas
-  - MiniMax
-  - Poda Alpha-Beta
-  - ¿Reducciones del árbol, definiciones de jugadas equivalentes?
-
-- Tests
-  - Comparar funciones heurísticas
-
-### Estilo y detalles
-
-- Revisar todos los comentarios de TODO
-- Revisar formato codigo
-- Revisar warnings
-- Ver si hay funciones sin documentar: `$ stack haddock`
-- Atención con la pereza
-  - Tipos de datos estrictos?
-
-### Organización del código
-
-- Decidir bien los nombres de las cosas
-  - Tipso (Bloque, Tablero, ...)
-  - Módulos
-
-- Separar app/Main.hs en cuatro programas, uno para cada juego (cli / gui)
-
 Haddock: documentación a partir del código y los comentarios
 ------------------------------------------------------------
 
-TODO: link!
+[haddock](https://www.haskell.org/haddock/) es una utilidad para
+generar documentación automáticamente a partir de los comentarios del código
+fuente.
+
+En [este enlace](https://haztecaso.com/mttt/) se puede consultar la
+documentación generada por haddock. Es posible el enlace esté caido o
+desactualizado.
 
 Stack: paquete, gestión de dependecias
 --------------------------------------
