@@ -12,10 +12,11 @@ import Mttt.Tablero.Tui
 import System.Console.ParseArgs
 
 -- | Tipo de dato para diferenciar las opciones de la interfaz cli
-data Opciones = OAyuda | OTui | OSimple | OMulti | OPrimero deriving
-    ( Eq
-    , Ord
-    , Show
+data Opciones = OAyuda | OTui | OSimple | OMulti | OPrimero
+  deriving
+    ( Eq,
+      Ord,
+      Show
     )
 
 -- | Detalles de las opciones de la interfaz cli
@@ -79,13 +80,11 @@ nuevoJuego ::
   IO ()
 nuevoJuego True True True _ = tuiBloqueMulti
 nuevoJuego True True False p = do
-  agente <- selAgenteBloque
-  tuiBloqueAgente agente p
-nuevoJuego True False True _ = guiBloqueMulti temaOscuro 450
+  tuiBloqueAgente agenteBMinimax p
+nuevoJuego True False True _ = guiMulti $ estadoBloqueInicial 350 temaOscuro
 nuevoJuego True False False p = do
-  agente <- selAgenteBloque
-  guiBloqueAgente temaOscuro 350 agente p
-nuevoJuego False False True _ = guiTableroMulti temaOscuro 350
+  guiBloqueAgente temaOscuro 350 agenteBMinimax p
+nuevoJuego False False True _ = guiMulti $ estadoTableroInicial 350 temaOscuro
 nuevoJuego _ _ _ _ = putStrLn "¡¡¡PENDIENTE DE IMPLEMENTAR!!!"
 
 main :: IO ()
