@@ -8,6 +8,7 @@
 module Mttt.Common.Gui
   ( ventana,
     translateP,
+    sumP,
     Tema (fondo, contraste, principal, secundario, neutro),
     temaClaro,
     temaOscuro,
@@ -16,10 +17,12 @@ module Mttt.Common.Gui
     dibujaFicha,
     posPoint,
     pointPos,
-    Estado (tam, pos, tema, dibuja, modifica),
+    Estado (tam, centro, tema, dibuja, modifica),
+    displayEstado,
     dibuja',
     modificaEvent,
     guiMulti,
+    -- guiAgente,
   )
 where
 
@@ -198,8 +201,8 @@ posPoint tam pos = (tam * (y -1 + 0.5), tam * (3 - x + 0.5))
   where
     (x, y) = bimap fromIntegral fromIntegral pos
 
--- | Dada una posición del puntero y un tamaño y posición de un 'Bloque' o
--- 'Tablero' devuelve la posición correspondiente.
+-- | Dada una posición del puntero y un tamaño y centro de un estado devuelve
+-- la 'Pos' correspondiente.
 pointPos ::
   -- | Posición del puntero en pantalla
   Point ->
@@ -224,8 +227,8 @@ class Estado e where
   tam :: e -> Float
 
   -- | Posición del centro del tablero
-  pos :: e -> Point
-  pos _ = (0, 0)
+  centro :: e -> Point
+  centro _ = (0, 0)
 
   tema :: e -> Tema
 
@@ -243,19 +246,29 @@ displayEstado estado = display (ventana $ tam estado) (fondo $ tema estado) (dib
 -- al dibujo de un estado.
 dibuja' :: Estado e => e -> Picture
 dibuja' estado =
-  translateP centro $
+  translateP centro' $
     pictures
       [ cuadricula (0, 0) (tam estado) 1 (contraste $ tema estado),
         dibuja estado
       ]
   where
-    centro = sumP (- (tam estado) / 2, - (tam estado) / 2) $ pos estado
+    centro' = sumP (- (tam estado) / 2, - (tam estado) / 2) $ centro estado
 
 -- | Función para modificar un estado cuando se hace click
 modificaEvent :: Estado e => Event -> e -> e
-modificaEvent (EventKey (MouseButton LeftButton) Up _ pos) = modifica pos
+modificaEvent (EventKey (MouseButton LeftButton) Up _ point) = modifica point
 modificaEvent _ = id
 
 -- | Función IO para jugar en modo multijugador
 guiMulti :: Estado e => e -> IO ()
 guiMulti e = play (ventana $ tam e) (fondo $ tema e) 15 e dibuja' modificaEvent (const id)
+
+{-
+guiAgente ::
+  Estado e =>
+  -- | Estado actual
+  e ->
+  -- | 'Ficha' del 'AgenteBloque'
+  Ficha ->
+  IO ()
+  -}

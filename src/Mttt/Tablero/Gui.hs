@@ -5,13 +5,17 @@
 -- Stability   : experimental
 --
 -- Interfaz gráfica del /meta tres en raya/.
-module Mttt.Tablero.Gui where
+module Mttt.Tablero.Gui
+  ( EstadoTablero,
+    estadoTableroInicial,
+  )
+where
 
 import Data.Array ((!))
 import Data.Maybe (fromJust, isJust)
 import Graphics.Gloss (Picture, Point, bright, color, pictures)
 import Mttt.Bloque.Data (bloqueVacio)
-import Mttt.Bloque.Gui (EstadoBloque (EB, bloqueEB, posEB, tamEB, temaEB))
+import Mttt.Bloque.Gui (EstadoBloque (EB, bloqueEB, centroEB, tamEB, temaEB))
 import Mttt.Common.Data (Pos, casilla, fin, listaIndices, mov)
 import Mttt.Common.Gui
 import Mttt.Tablero.Data
@@ -39,32 +43,35 @@ instance Estado EstadoTablero where
       eBloque pos =
         EB
           { bloqueEB = casilla (tableroET e) pos,
-            posEB = posPoint (tam e / 3) pos,
+            centroEB = posPoint (tam e / 3) pos,
             tamEB = tam e / 3 * 0.8,
             temaEB = tema e
           }
-  modifica pos e
+  modifica p e
     | isJust nuevo = e {tableroET = fromJust nuevo}
     | fin t = e {tableroET = tableroVacio}
     | otherwise = e
     where
       t = tableroET e
-      positions = pointPosET pos e
-      nuevo = mov t (fst positions, snd positions) -- TODO: arreglar
+      positions = pointPos' p $ tam e
+      nuevo = mov t (fst positions, snd positions)
 
 -- | Dada una posición del puntero y un 'EstadoTablero' devuelve las
 -- 'Pos' del 'Bloque' y casilla donde está el puntero.
-pointPosET ::
+pointPos' ::
   -- | Posición del puntero en la pantalla
   Point ->
-  EstadoTablero ->
+  -- | Tamaño
+  Float ->
   -- | Posición del puntero en el 'bloqueEB'
   (Pos, Pos)
-pointPosET p e =
-  (posBloque, posFicha)
+pointPos' p t =
+  ( posBloque,
+    pointPos p (t / 3 * 0.8) (centroBloque)
+  )
   where
-    posBloque = pointPos p (tam e) (pos e)
-    posFicha = (2, 2)
+    posBloque = pointPos p t (0, 0)
+    centroBloque = sumP (posPoint (t / 3) posBloque) (- t / 2, - t / 2)
 
 estadoTableroInicial ::
   -- | Tamaño

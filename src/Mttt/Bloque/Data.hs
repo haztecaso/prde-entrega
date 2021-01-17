@@ -96,8 +96,6 @@ movFichaBloque ficha (B b) (x, y)
   | otherwise = Nothing
 
 -- | Insertar una `Maybe Ficha` nueva en un 'Bloque', ignorando el turno.
--- Se comporta como `movFichaBloque` si recibe un Just y en caso contrario
--- devuelve un Nothing.
 movLibreBloque ::
   Maybe Ficha ->
   Bloque ->

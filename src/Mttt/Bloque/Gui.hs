@@ -5,7 +5,12 @@
 -- Stability   : experimental
 --
 -- Interfaz gráfica del /tres en raya/.
-module Mttt.Bloque.Gui where
+module Mttt.Bloque.Gui
+  ( EstadoBloque (EB, bloqueEB, centroEB, tamEB, temaEB),
+    estadoBloqueInicial,
+    guiBloqueAgente,
+  )
+where
 
 import Data.Maybe (fromJust, isJust)
 import Graphics.Gloss (Picture (Blank), Point, color, pictures, play)
@@ -18,7 +23,7 @@ data EstadoBloque = EB
   { -- | 'Bloque' a dibujar
     bloqueEB :: Bloque,
     -- | Posición del centro del tablero
-    posEB :: Point,
+    centroEB :: Point,
     -- | Tamaño del tablero
     tamEB :: Float,
     -- | 'Tema' con el que dibujar el tablero
@@ -28,7 +33,7 @@ data EstadoBloque = EB
 
 instance Estado EstadoBloque where
   tam = tamEB
-  pos = posEB
+  centro = centroEB
   tema = temaEB
 
   dibuja e = pictures $ [dibujaCasilla pos | pos <- listaIndices]
@@ -46,7 +51,7 @@ instance Estado EstadoBloque where
     | otherwise = e
     where
       b = bloqueEB e
-      nuevo = mov b $ pointPos p (tam e) (pos e)
+      nuevo = mov b $ pointPos p (tam e) (centro e)
 
 estadoBloqueInicial ::
   -- | Tamaño
@@ -56,14 +61,14 @@ estadoBloqueInicial ::
 estadoBloqueInicial tam tema =
   EB
     { bloqueEB = bloqueVacio,
-      posEB = (0, 0),
+      centroEB = (0, 0),
       tamEB = tam,
       temaEB = tema
     }
 
--- Pintar el ganador de la partida. Estaría bien que se pinten solo las casillas
--- ganadoras, pero para esto habría que cambiar el modo en que se usan los
--- temas.
+-- | Pintar el ganador de la partida. Estaría bien que se pinten solo las
+--  casillas ganadoras, pero para esto habría que cambiar el modo en que se usan
+--  los temas.
 modTemaEB ::
   EstadoBloque ->
   Tema
