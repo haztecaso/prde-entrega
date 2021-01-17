@@ -7,7 +7,6 @@
 -- Implementación del juego /tres en raya/.
 module Mttt.Bloque.Data
   ( Ficha (X, O), -- TODO: Es inofensivo exportar los constructores?¿
-    esX,
     Bloque,
     showBloque,
     showListaPosBloque,
@@ -30,19 +29,8 @@ where
 import Data.Array (Array, elems, listArray, (!), (//))
 import Data.List (elemIndex, intersperse, transpose)
 import Data.Maybe (fromJust, isJust, isNothing)
+import Mttt.Common.Data
 import Mttt.Common.Utils
-
--- | Tipo que representa una ficha del juego
-data Ficha = X | O deriving (Enum, Eq, Read)
-
-instance Show Ficha where
-  show X = "✗"
-  show O = "○"
-
--- | Determina si una 'Ficha' es X ('True') o O ('False')
-esX :: Ficha -> Bool
-esX X = True
-esX _ = False
 
 -- | Tipo para un tablero de /tres en raya/
 type Bloque = Array Pos (Maybe Ficha)

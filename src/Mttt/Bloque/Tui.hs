@@ -9,7 +9,9 @@ module Mttt.Bloque.Tui where
 
 import Data.Maybe (fromJust, isJust)
 import Mttt.Bloque.Data
-import Mttt.Common.Utils (Pos, int2pos, prompt)
+import Mttt.Common.Data
+import Mttt.Common.Tui
+import Mttt.Common.Utils
 
 {-
   BLOQUE: Generalidades

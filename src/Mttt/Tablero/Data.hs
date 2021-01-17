@@ -28,6 +28,7 @@ import Data.Array (Array, listArray, (!), (//))
 import Data.List (elemIndex, intercalate, transpose)
 import Data.Maybe (fromJust, isJust, isNothing)
 import Mttt.Bloque.Data
+import Mttt.Common.Data
 import Mttt.Common.Utils
 
 -- | Tipo para un tablero de /meta tres en raya/

@@ -3,6 +3,7 @@ module Main where
 import Mttt.Bloque.Data
 import Mttt.Bloque.Gui
 import Mttt.Bloque.Tui
+import Mttt.Common.Data
 import Mttt.Common.Gui
 import Mttt.Common.Tui
 import Mttt.Common.Utils

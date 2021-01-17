@@ -17,6 +17,7 @@ module Mttt.Common.Gui where
 import Data.Bifunctor (bimap)
 import Graphics.Gloss
 import Graphics.Gloss.Interface.IO.Interact
+import Mttt.Common.Data
 import Mttt.Common.Utils
 
 {-

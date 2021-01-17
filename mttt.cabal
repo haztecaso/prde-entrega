@@ -19,6 +19,7 @@ library
       Mttt.Bloque.Data
       Mttt.Bloque.Gui
       Mttt.Bloque.Tui
+      Mttt.Common.Data
       Mttt.Common.Gui
       Mttt.Common.Tui
       Mttt.Common.Utils

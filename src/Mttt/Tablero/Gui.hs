@@ -20,6 +20,7 @@ import Graphics.Gloss
 import Graphics.Gloss.Interface.IO.Interact
 import Mttt.Bloque.Data (bloqueVacio)
 import Mttt.Bloque.Gui
+import Mttt.Common.Data
 import Mttt.Common.Gui
 import Mttt.Common.Utils
 import Mttt.Tablero.Data

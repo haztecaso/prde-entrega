@@ -19,6 +19,7 @@ import Data.Maybe (fromJust, isJust)
 import Graphics.Gloss
 import Graphics.Gloss.Interface.IO.Interact
 import Mttt.Bloque.Data
+import Mttt.Common.Data
 import Mttt.Common.Gui
 import Mttt.Common.Utils
 
