@@ -96,10 +96,3 @@ dibujaBloquesActivos e =
   where
     tam' = tam e / 3
     pos = maybe listaIndices (\x -> [x]) $ bloqueActivo $ tableroET e
-
--- | Ventana para jugar al meta tres en raya
-tableroVentana ::
-  -- | Tamaño de la ventana
-  Int ->
-  Display
-tableroVentana tam = InWindow "Meta tres en raya" (tam, tam) (0, 0)

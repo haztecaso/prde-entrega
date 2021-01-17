@@ -110,13 +110,6 @@ modTemaEB estado
     t = temaEB estado
     n = neutro t
 
--- | Ventana para jugar al tres en raya
-bloqueVentana ::
-  -- | Tamaño de la ventana
-  Int ->
-  Display
-bloqueVentana tam = InWindow "Tres en raya" (tam, tam) (0, 0)
-
 -- | Función que ejecuta la jugada de un 'AgenteBloque'.
 modificaEBAgente ::
   -- | 'AgenteBloque' con el que calcular la jugada
