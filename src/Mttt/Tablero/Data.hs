@@ -50,19 +50,15 @@ instance Show Tablero where
           bs = bloques t
 
 instance Juego Tablero (Pos, Pos) where
-  turno t
-    | isNothing (ganador t) && (xs - os) == 1 = Just O
-    | isNothing (ganador t) && (xs - os) == 0 = Just X
-    | otherwise = Nothing
+  contarFichas t = foldr1 suma [contarFichas $ bloques t ! i | i <- listaIndices]
     where
-      (xs, os) = contarFichasTablero t
+      suma (a, b) (c, d) = (a + c, b + d)
 
-  tablas t = null (casillasDisponiblesTablero t) && isNothing (ganador t)
-
-  fin t
-    | isJust (ganador t) = True
-    | tablas t = True
-    | otherwise = False
+  posicionesLibres t
+    | isJust (bloqueActivo t) = [(activo, p) | p <- posicionesLibres (bloques t ! activo)]
+    | otherwise = [(p1, p2) | p1 <- listaIndices, p2 <- posicionesLibres (bloques t ! p1)]
+    where
+      activo = fromJust $ bloqueActivo t
 
   ganador t
     | Just X `elem` ganadores = Just X
@@ -75,13 +71,20 @@ instance Juego Tablero (Pos, Pos) where
         | map ganador l == [Just O, Just O, Just O] = Just O
         | otherwise = Nothing
 
+  tablas t = null (posicionesLibres t) && isNothing (ganador t)
+
+  fin t
+    | isJust (ganador t) = True
+    | tablas t = True
+    | otherwise = False
+
   mov t (p1, p2)
     | isNothing bloque = Nothing
     | validPos && Just p1 == bloqueActivo t = Just nuevo
     | validPos && isNothing (bloqueActivo t) = Just nuevo
     | otherwise = Nothing
     where
-      bloque = movMaybeFichaBloque (turno t) (bloques t ! p1) p2
+      bloque = movLibreBloque (turno t) (bloques t ! p1) p2
       siguienteBloque p
         | fin (bloques t ! p) = Nothing -- Si una partida de un bloque ha acabado se puede jugar en cualquier bloque
         | otherwise = Just p
@@ -94,23 +97,15 @@ instance Juego Tablero (Pos, Pos) where
 
   expandir t
     | fin t = []
-    | otherwise = map (fromJust . mov t) $ casillasDisponiblesTablero t
+    | otherwise = map (fromJust . mov t) $ posicionesLibres t
 
+-- | 'Tablero' vacío
 tableroVacio :: Tablero
 tableroVacio =
   T
     { bloques = listArray ((1, 1), (3, 3)) [bloqueVacio | _ <- listaIndices],
       bloqueActivo = Nothing
     }
-
--- | Cuenta las fichas de cada tipo que hay en un 'Tablero'.
-contarFichasTablero ::
-  Tablero ->
-  -- | El primer valor corresponde al número de X's y el segundo a las O's
-  (Int, Int)
-contarFichasTablero t = foldr1 suma [contarFichasBloque $ bloques t ! i | i <- listaIndices]
-  where
-    suma (a, b) (c, d) = (a + c, b + d)
 
 -- | Devuelve todas las lineas rectas de un 'Tablero'
 lineasTablero :: Tablero -> [[Bloque]]
@@ -120,29 +115,23 @@ lineasTablero t = filas ++ columnas ++ diagonales
     columnas = transpose filas
     diagonales = [[bloques t ! (x, x) | x <- [1 .. 3]], [bloques t ! (x, 4 - x) | x <- [1 .. 3]]]
 
--- | Lista de casillas de un bloque donde se puede jugar.
-casillasDisponiblesTablero :: Tablero -> [(Pos, Pos)]
-casillasDisponiblesTablero t
-  | isJust (bloqueActivo t) = [(activo, p) | p <- casillasLibresBloque (bloques t ! activo)]
-  | otherwise = [(p1, p2) | p1 <- listaIndices, p2 <- casillasLibresBloque (bloques t ! p1)]
-  where
-    activo = fromJust $ bloqueActivo t
-
 -- Dados dos bloques devuelve la posición en la que se ha jugado.
 posMovimientoTablero :: Tablero -> Tablero -> (Pos, Pos)
 posMovimientoTablero tablero expandido =
   libres !! fromJust (elemIndex expandido siguientes)
   where
     siguientes = expandir tablero
-    libres = casillasDisponiblesTablero tablero
+    libres = posicionesLibres tablero
 
-{-
-tableroTest' = (fromJust $ mov tableroVacio (2, 2) (1, 1))
-tableroTest'' = (fromJust $ mov tableroTest' (1, 1) (1, 1))
-tableroTest''' = (fromJust $ mov tableroTest'' (1, 1) (2, 3))
-tableroTest'''' = (fromJust $ mov tableroTest''' (2, 3) (3, 1))
-tableroTest = (fromJust $ mov tableroTest'''' (3, 1) (2, 2))
--}
+tableroTest' = fromJust $ mov tableroVacio ((2, 2), (1, 1))
+
+tableroTest'' = fromJust $ mov tableroTest' ((1, 1), (1, 1))
+
+tableroTest''' = fromJust $ mov tableroTest'' ((1, 1), (2, 3))
+
+tableroTest'''' = fromJust $ mov tableroTest''' ((2, 3), (3, 1))
+
+tableroTest = fromJust $ mov tableroTest'''' ((3, 1), (2, 2))
 
 {- FUNCIONES HEURÍSTICAS -}
 
@@ -169,11 +158,11 @@ data AgenteTablero = AgenteTablero
   }
 
 -- | Agente que devuelve la primera posición disponible donde jugar,
--- en el orden generado por 'casillasDisponiblesTablero'.
+-- en el orden generado por 'posicionesLibres'.
 agenteTTonto :: AgenteTablero
 agenteTTonto =
   AgenteTablero
-    { funAT = head . casillasDisponiblesTablero,
+    { funAT = head . posicionesLibres,
       nombreAT = "tonto"
     }
 

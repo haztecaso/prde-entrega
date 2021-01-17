@@ -30,7 +30,7 @@ showListaPosBloque b ps = unlines [intersperse ' ' [casilla (x, y) | y <- [1 .. 
 -- | TODO: arreglar
 preguntarMovB :: Bloque -> IO Pos
 preguntarMovB b = do
-  putStr $ showListaPosBloque b $ casillasLibresBloque b
+  putStr $ showListaPosBloque b $ posicionesLibres b
   let jugador = fromJust $ turno b -- Atención: fromJust puede lanzar errores! Usar esta función con cuidado...
   putStr $ "\n[Turno de " ++ show jugador ++ "] "
   n <- prompt "Número de casilla donde jugar: "

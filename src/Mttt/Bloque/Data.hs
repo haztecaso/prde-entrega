@@ -9,13 +9,10 @@
 --
 -- Implementación del juego /tres en raya/.
 module Mttt.Bloque.Data
-  ( Ficha (X, O), -- TODO: Es inofensivo exportar los constructores?¿
-    Bloque,
-    casillaBloque,
-    contarFichasBloque,
-    movMaybeFichaBloque,
-    casillasLibresBloque,
+  ( Bloque,
     bloqueVacio,
+    casillaBloque,
+    movLibreBloque,
     AgenteBloque (funAB, nombreAB),
     agenteBTonto,
     agenteBMinimax,
@@ -36,12 +33,14 @@ instance Show Bloque where
   show (B b) = unlines [intersperse ' ' [showMaybeFicha $ b ! (x, y) | y <- [1 .. 3]] | x <- [1 .. 3]]
 
 instance Juego Bloque Pos where
-  turno b
-    | isNothing (ganador b) && (xs - os) == 1 = Just O
-    | isNothing (ganador b) && (xs - os) == 0 = Just X
-    | otherwise = Nothing
+  contarFichas (B b) = foldr1 suma $ map f $ elems b
     where
-      (xs, os) = contarFichasBloque b
+      f Nothing = (0, 0)
+      f (Just X) = (1, 0)
+      f (Just O) = (0, 1)
+      suma (a, b) (c, d) = (a + c, b + d)
+
+  posicionesLibres (B b) = map fst $ filter snd [((x, y), isNothing $ b ! (x, y)) | (x, y) <- listaIndices]
 
   ganador b
     | Just X `elem` ganadores = Just X
@@ -69,20 +68,18 @@ instance Juego Bloque Pos where
 
   expandir b
     | fin b = []
-    | otherwise = map (fromJust . mov b) $ casillasLibresBloque b
-
--- | Obtener valor de una casilla
-casillaBloque :: Bloque -> Pos -> Maybe Ficha
-casillaBloque (B b) p = b ! p
+    | otherwise = map (fromJust . mov b) $ posicionesLibres b
 
 -- | 'Bloque' vacío
 bloqueVacio :: Bloque
 bloqueVacio = B $ listArray ((1, 1), (3, 3)) [Nothing | _ <- listaIndices]
 
--- | Insertar una `Ficha` nueva en un 'Bloque'.
---
--- Si el movimiento es válido se devuelve un 'Just Bloque'.
--- En caso contrario se devuelve 'Nothing'
+-- | Obtener valor de una casilla
+casillaBloque :: Bloque -> Pos -> Maybe Ficha
+casillaBloque (B b) p = b ! p
+
+-- | Insertar una `Ficha` nueva en un 'Bloque'. Esta función es la parte común
+-- de las funciones `mov` y `movLibreBloque`.
 movFichaBloque ::
   Ficha ->
   Bloque ->
@@ -95,22 +92,18 @@ movFichaBloque ficha (B b) (x, y)
     Just (B (b // [((x, y), Just ficha)]))
   | otherwise = Nothing
 
--- | Insertar una `Maybe Ficha` nueva en un 'Bloque'.
+-- | Insertar una `Maybe Ficha` nueva en un 'Bloque', ignorando el turno.
 -- Se comporta como `movFichaBloque` si recibe un Just y en caso contrario
 -- devuelve un Nothing.
-movMaybeFichaBloque ::
+movLibreBloque ::
   Maybe Ficha ->
   Bloque ->
   -- | Posición en la que se añade la ficha
   Pos ->
   Maybe Bloque
-movMaybeFichaBloque ficha
+movLibreBloque ficha
   | isJust ficha = movFichaBloque $ fromJust ficha
   | otherwise = \_ -> \_ -> Nothing
-
--- | Lista de posiciones vacías de un 'Bloque'
-casillasLibresBloque :: Bloque -> [Pos]
-casillasLibresBloque (B b) = map fst $ filter snd [((x, y), isNothing $ b ! (x, y)) | (x, y) <- listaIndices]
 
 -- Dados dos bloques devuelve la posición en la que se ha jugado.
 -- Esto no es nada bonito, ya que estamos expandiendo el problema
@@ -122,19 +115,7 @@ posMovimientoBloque bloque expandido =
   libres !! fromJust (elemIndex expandido siguientes)
   where
     siguientes = expandir bloque
-    libres = casillasLibresBloque bloque
-
--- | Cuenta las fichas de cada tipo que hay en un 'Bloque'.
-contarFichasBloque ::
-  Bloque ->
-  -- | El primer valor corresponde al número de X's y el segundo a las O's
-  (Int, Int)
-contarFichasBloque (B b) = foldr1 suma $ map f $ elems b
-  where
-    f Nothing = (0, 0)
-    f (Just X) = (1, 0)
-    f (Just O) = (0, 1)
-    suma (a, b) (c, d) = (a + c, b + d)
+    libres = posicionesLibres bloque
 
 -- | Devuelve todas las lineas rectas de un 'Bloque'
 lineasBloque :: Bloque -> [[Maybe Ficha]]
@@ -168,11 +149,11 @@ data AgenteBloque = AgenteBloque
   }
 
 -- | Agente que devuelve la primera posición disponible donde jugar,
--- en el orden generado por 'casillasLibresBloque'.
+-- en el orden generado por 'posicionesLibres'.
 agenteBTonto :: AgenteBloque
 agenteBTonto =
   AgenteBloque
-    { funAB = head . casillasLibresBloque,
+    { funAB = head . posicionesLibres,
       nombreAB = "tonto"
     }
 

@@ -6,12 +6,28 @@
 -- Copyright   : (c) Adrián Lattes y David Diez
 -- License     : GPL-3
 -- Stability   : experimental
-module Mttt.Common.Data where
+module Mttt.Common.Data
+  ( Ficha (X, O),
+    esX,
+    showMaybeFicha,
+    Pos,
+    pos2int,
+    int2pos,
+    listaIndices,
+    Juego (contarFichas, posicionesLibres, ganador, tablas, fin, mov, expandir),
+    turno,
+  )
+where
 
+import Data.Maybe (isNothing)
 import Mttt.Common.Utils
 
 -- | Tipo que representa una ficha del juego
-data Ficha = X | O deriving (Enum, Eq, Read)
+data Ficha = X | O deriving (Eq)
+
+instance Show Ficha where
+  show X = "✗"
+  show O = "○"
 
 -- | Determina si una 'Ficha' es X ('True') o O ('False')
 esX :: Ficha -> Bool
@@ -23,15 +39,8 @@ showMaybeFicha :: Maybe Ficha -> Char
 showMaybeFicha Nothing = '_'
 showMaybeFicha (Just f) = head (show f)
 
-instance Show Ficha where
-  show X = "✗"
-  show O = "○"
-
 -- | Tipo sinónimo para representar posiciones de 'Bloque'.
 type Pos = (Int, Int)
-
--- | Tipo sinónimo para representar posiciones de 'Tablero'.
-type Pos' = (Pos, Pos)
 
 -- Utilidad para obtener el índice de una posición
 pos2int :: Pos -> Int
@@ -53,8 +62,12 @@ listaIndices = [(x, y) | x <- [1 .. 3], y <- [1 .. 3]]
 -- parámetros. De este modo podemos tener instancias de esta clase que utilizan
 -- tipos distintos para las posiciones de los tableros.
 class Show juego => Juego juego pos | juego -> pos where
-  -- | Determina a que 'Ficha' le toca jugar.
-  turno :: juego -> Maybe Ficha
+  -- | Cuenta las fichas de cada tipo que hay en el juego. El primer valor es la
+  -- cantidad de 'X's y el segundo de 'O's.
+  contarFichas :: juego -> (Int, Int)
+
+  -- | Posiciones donde se puede jugar
+  posicionesLibres :: juego -> [pos]
 
   -- | Determina quien es el ganador, en caso de haberlo.
   ganador :: juego -> Maybe Ficha
@@ -72,3 +85,11 @@ class Show juego => Juego juego pos | juego -> pos where
 
   -- | Lista de posibles siguientes posiciones.
   expandir :: juego -> [juego]
+
+turno :: Juego j pos => j -> Maybe Ficha
+turno j
+  | isNothing (ganador j) && (xs - os) == 1 = Just O
+  | isNothing (ganador j) && (xs - os) == 0 = Just X
+  | otherwise = Nothing
+  where
+    (xs, os) = contarFichas j
