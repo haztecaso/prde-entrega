@@ -70,7 +70,7 @@ instance Estado EstadoBloque where
         | isJust casilla = dibujaFicha (modTemaEB e) (tam e * 0.2) origen (fromJust casilla)
         | otherwise = Blank
         where
-          casilla = bloqueEB e ! pos
+          casilla = casillaBloque (bloqueEB e) pos
           origen = posPoint (tam e / 3) pos
 
   modifica p e

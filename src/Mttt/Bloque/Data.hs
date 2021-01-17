@@ -8,9 +8,7 @@
 module Mttt.Bloque.Data
   ( Ficha (X, O), -- TODO: Es inofensivo exportar los constructores?¿
     Bloque,
-    showBloque,
-    showListaPosBloque,
-    putBloque,
+    casillaBloque,
     contarFichasBloque,
     turnoBloque,
     movMaybeFichaBloque,
@@ -33,32 +31,19 @@ import Mttt.Common.Data
 import Mttt.Common.Utils
 
 -- | Tipo para un tablero de /tres en raya/
-type Bloque = Array Pos (Maybe Ficha)
+data Bloque = B (Array Pos (Maybe Ficha))
+  deriving (Eq)
 
--- | Utilidad para imprimir una /casilla/ de un 'Bloque' en pantalla
-showMaybeFicha :: Maybe Ficha -> Char
-showMaybeFicha Nothing = '_'
-showMaybeFicha (Just f) = head (show f)
+instance Show Bloque where
+  show (B b) = unlines [intersperse ' ' [showMaybeFicha $ b ! (x, y) | y <- [1 .. 3]] | x <- [1 .. 3]]
 
--- | Representación en caracteres de un 'Bloque'
-showBloque :: Bloque -> String
-showBloque b = unlines [intersperse ' ' [showMaybeFicha $ b ! (x, y) | y <- [1 .. 3]] | x <- [1 .. 3]]
-
--- | Dibujo de un 'Bloque' resaltando unas 'Pos'.
-showListaPosBloque :: Bloque -> [Pos] -> String
-showListaPosBloque b ps = unlines [intersperse ' ' [casilla (x, y) | y <- [1 .. 3]] | x <- [1 .. 3]]
-  where
-    casilla pos
-      | isJust (b ! pos) = showMaybeFicha $ b ! pos
-      | otherwise = head $ show $ pos2int pos
-
--- | Utilidad para imprimir en pantalla un 'Bloque'
-putBloque :: Bloque -> IO ()
-putBloque = putStr . showBloque
+-- | Obtener valor de una casilla
+casillaBloque :: Bloque -> Pos -> Maybe Ficha
+casillaBloque (B b) p = b ! p
 
 -- | 'Bloque' vacío
 bloqueVacio :: Bloque
-bloqueVacio = listArray ((1, 1), (3, 3)) [Nothing | _ <- listaIndices]
+bloqueVacio = B $ listArray ((1, 1), (3, 3)) [Nothing | _ <- listaIndices]
 
 -- | Insertar una `Ficha` nueva en un 'Bloque'.
 --
@@ -70,10 +55,10 @@ movFichaBloque ::
   -- | Posición en la que se añade la ficha
   Pos ->
   Maybe Bloque
-movFichaBloque ficha b (x, y)
+movFichaBloque ficha (B b) (x, y)
   | ((x, y) `elem` listaIndices)
       && isNothing (b ! (x, y)) =
-    Just (b // [((x, y), Just ficha)])
+    Just (B (b // [((x, y), Just ficha)]))
   | otherwise = Nothing
 
 -- | Insertar una `Maybe Ficha` nueva en un 'Bloque'.
@@ -107,7 +92,7 @@ movBloque b
 
 -- | Lista de posiciones vacías de un 'Bloque'
 casillasLibresBloque :: Bloque -> [Pos]
-casillasLibresBloque b = map fst $ filter snd [((x, y), isNothing $ b ! (x, y)) | (x, y) <- listaIndices]
+casillasLibresBloque (B b) = map fst $ filter snd [((x, y), isNothing $ b ! (x, y)) | (x, y) <- listaIndices]
 
 -- | Posibles jugadas
 expandirBloque :: Bloque -> [Bloque]
@@ -132,7 +117,7 @@ contarFichasBloque ::
   Bloque ->
   -- | El primer valor corresponde al número de X's y el segundo a las O's
   (Int, Int)
-contarFichasBloque b = foldr1 suma $ map f $ elems b
+contarFichasBloque (B b) = foldr1 suma $ map f $ elems b
   where
     f Nothing = (0, 0)
     f (Just X) = (1, 0)
@@ -150,7 +135,7 @@ turnoBloque b
 
 -- | Determina si la partida ha acabado en tablas.
 tablasBloque :: Bloque -> Bool
-tablasBloque b = notElem Nothing b && isNothing (ganadorBloque b)
+tablasBloque (B b) = notElem Nothing b && isNothing (ganadorBloque $ B b)
 
 -- | Determina si la partida ha acabado o no
 finBloque :: Bloque -> Bool
@@ -161,7 +146,7 @@ finBloque b
 
 -- | Devuelve todas las lineas rectas de un 'Bloque'
 lineasBloque :: Bloque -> [[Maybe Ficha]]
-lineasBloque b = filas ++ columnas ++ diagonales
+lineasBloque (B b) = filas ++ columnas ++ diagonales
   where
     filas = [[b ! (x, y) | x <- [1 .. 3]] | y <- [1 .. 3]]
     columnas = transpose filas

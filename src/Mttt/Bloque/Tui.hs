@@ -7,6 +7,7 @@
 -- Interfaz de texto del /tres en raya/.
 module Mttt.Bloque.Tui where
 
+import Data.List (intersperse)
 import Data.Maybe (fromJust, isJust)
 import Mttt.Bloque.Data
 import Mttt.Common.Data
@@ -16,6 +17,14 @@ import Mttt.Common.Utils
 {-
   BLOQUE: Generalidades
 -}
+
+-- | Dibujo de un 'Bloque' resaltando unas 'Pos'.
+showListaPosBloque :: Bloque -> [Pos] -> String
+showListaPosBloque b ps = unlines [intersperse ' ' [casilla (x, y) | y <- [1 .. 3]] | x <- [1 .. 3]]
+  where
+    casilla pos
+      | isJust (casillaBloque b pos) = showMaybeFicha $ casillaBloque b pos
+      | otherwise = head $ show $ pos2int pos
 
 -- | Pregunta donde se quiere jugar.
 -- | TODO: arreglar
@@ -63,7 +72,7 @@ tuiBloqueMulti = do
   (b, partida) <- loopBPartidaMulti bloqueVacio []
   putStr "Jugadas: "
   print $ reverse partida
-  putBloque b
+  print b
   putStrLn $ "\n[FIN] " ++ bloqueMsgMulti b
 
 {-
@@ -113,6 +122,6 @@ tuiBloqueAgente agente fichaAgente = do
   putStrLn $ "Jugando contra agente " ++ nombreAB agente
   (b, partida) <- loopBPartidaAgente bloqueVacio agente fichaAgente []
   print $ reverse partida
-  putBloque b
+  print b
 
 -- print $ "\n[FIN] " ++ bloqueMsgAgente b fichaAgente

@@ -7,8 +7,6 @@
 -- Implementación del juego /meta tres en raya/.
 module Mttt.Tablero.Data
   ( Tablero (bloques, bloqueActivo),
-    showTablero,
-    putTablero,
     tableroVacio,
     tableroTest,
     turnoTablero,
@@ -40,29 +38,18 @@ data Tablero = T
     -- cualquier 'Bloque'.
     bloqueActivo :: Maybe Pos
   }
-  deriving (Eq, Read, Show)
+  deriving (Eq)
 
--- | Representación en caracteres de un 'Tablero'
-showTablero :: Tablero -> String
-showTablero t =
-  showTablero' t 1
-    ++ "──────┼───────┼──────\n"
-    ++ showTablero' t 2
-    ++ "──────┼───────┼──────\n"
-    ++ showTablero' t 3
-
--- | Función auxiliar para imprimir una linea de un tablero
-showTablero' :: Tablero -> Int -> String
-showTablero' t n =
-  unlines $
-    map (intercalate " │ ") $
-      transpose [lines $ showBloque $ bs ! (n, i) | i <- [1 .. 3]]
-  where
-    bs = bloques t
-
--- | Utilidad para imprimir en pantalla un 'Tablero'
-putTablero :: Tablero -> IO ()
-putTablero = putStr . showTablero
+instance Show Tablero where
+  show t = linea 1 ++ sep ++ linea 2 ++ sep ++ linea 3
+    where
+      sep = "──────┼───────┼──────\n"
+      linea n =
+        unlines $
+          map (intercalate " │ ") $
+            transpose [lines $ show $ bs ! (n, i) | i <- [1 .. 3]]
+        where
+          bs = bloques t
 
 -- | 'Tablero' vacío
 tableroVacio :: Tablero

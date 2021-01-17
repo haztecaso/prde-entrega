@@ -10,6 +10,16 @@ import Mttt.Common.Utils
 -- | Tipo que representa una ficha del juego
 data Ficha = X | O deriving (Enum, Eq, Read)
 
+-- | Determina si una 'Ficha' es X ('True') o O ('False')
+esX :: Ficha -> Bool
+esX X = True
+esX _ = False
+
+-- | Utilidad para imprimir una /casilla/ de un 'Bloque' en pantalla
+showMaybeFicha :: Maybe Ficha -> Char
+showMaybeFicha Nothing = '_'
+showMaybeFicha (Just f) = head (show f)
+
 instance Show Ficha where
   show X = "✗"
   show O = "○"
@@ -29,11 +39,6 @@ int2pos n = (n `div` 3 + 1, n `mod` 3 + 1)
 -- | Lista de indices de un 'Tablero' o 'Bloque'
 listaIndices :: [(Int, Int)]
 listaIndices = [(x, y) | x <- [1 .. 3], y <- [1 .. 3]]
-
--- | Determina si una 'Ficha' es X ('True') o O ('False')
-esX :: Ficha -> Bool
-esX X = True
-esX _ = False
 
 class Show j => Juego j where
   turno :: j -> Ficha
