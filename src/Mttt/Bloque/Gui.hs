@@ -66,19 +66,19 @@ instance Estado EstadoBloque where
   dibuja e = pictures $ [dibujaCasilla pos | pos <- listaIndices]
     where
       dibujaCasilla pos
-        | isJust casilla = dibujaFicha (tema e) (tam e * 0.2) origen (fromJust casilla)
+        | isJust casilla = dibujaFicha (modTemaEB e) (tam e * 0.2) origen (fromJust casilla)
         | otherwise = Blank
         where
           casilla = bloqueEB e ! pos
           origen = posPoint (tam e / 3) pos
 
-  modifica pos estado
-    | isJust nuevo = estado {bloqueEB = fromJust nuevo}
-    | finBloque b = estado {bloqueEB = bloqueVacio}
-    | otherwise = estado
+  modifica p e
+    | isJust nuevo = e {bloqueEB = fromJust nuevo}
+    | finBloque b = e {bloqueEB = bloqueVacio}
+    | otherwise = e
     where
-      b = bloqueEB estado
-      nuevo = movBloque b (pointPosEB pos estado)
+      b = bloqueEB e
+      nuevo = movBloque b $ pointPos p (tam e) (pos e)
 
 estadoBloqueInicial ::
   -- | Tamaño
@@ -92,17 +92,6 @@ estadoBloqueInicial tam tema =
       tamEB = tam,
       temaEB = tema
     }
-
--- | Dada una posición del puntero y un 'EstadoBloque' devuelve la
--- 'Pos' de la casilla del 'Bloque' donde está el puntero.
-pointPosEB ::
-  -- | Posición del puntero en la pantalla
-  Point ->
-  EstadoBloque ->
-  -- | Posición del 'bloqueEB'
-  Pos
-pointPosEB puntero estado =
-  pointPos puntero (tamEB estado) (posEB estado)
 
 -- Pintar el ganador de la partida. Estaría bien que se pinten solo las casillas
 -- ganadoras, pero para esto habría que cambiar el modo en que se usan los

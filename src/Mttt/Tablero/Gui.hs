@@ -40,27 +40,40 @@ instance Estado EstadoTablero where
   tam = tamET
   tema = temaET
 
-  dibuja estado =
+  dibuja e =
     pictures $
-      dibujaBloquesActivos estado :
-        [dibuja' $ estadoBloque pos | pos <- listaIndices]
+      dibujaBloquesActivos e : [dibuja' $ eBloque pos | pos <- listaIndices]
     where
-      estadoBloque pos =
+      eBloque pos =
         EB
-          { bloqueEB = bloques (tableroET estado) ! pos,
-            posEB = posPoint (tam estado / 3) pos,
-            tamEB = tam estado / 3 * 0.8,
-            temaEB = tema estado
+          { bloqueEB = bloques (tableroET e) ! pos,
+            posEB = posPoint (tam e / 3) pos,
+            tamEB = tam e / 3 * 0.8,
+            temaEB = tema e
           }
 
-  modifica pos estado
-    | isJust nuevo = estado {tableroET = fromJust nuevo}
-    | finTablero t = estado {tableroET = tableroVacio}
-    | otherwise = estado
+  modifica pos e
+    | isJust nuevo = e {tableroET = fromJust nuevo}
+    | finTablero t = e {tableroET = tableroVacio}
+    | otherwise = e
     where
-      t = tableroET estado
-      positions = pointPosET pos estado
+      t = tableroET e
+      positions = pointPosET pos e
       nuevo = movTablero t (fst positions) (snd positions)
+
+-- | Dada una posición del puntero y un 'EstadoTablero' devuelve las
+-- 'Pos' del 'Bloque' y casilla donde está el puntero.
+pointPosET ::
+  -- | Posición del puntero en la pantalla
+  Point ->
+  EstadoTablero ->
+  -- | Posición del puntero en el 'bloqueEB'
+  (Pos, Pos)
+pointPosET p e =
+  (posBloque, posFicha)
+  where
+    posBloque = pointPos p (tam e) (pos e)
+    posFicha = (2, 2)
 
 estadoTableroInicial ::
   -- | Tamaño
@@ -76,28 +89,13 @@ estadoTableroInicial tam tema =
 
 -- | Resalta los bloques activos de un 'EstadoTablero'
 dibujaBloquesActivos :: EstadoTablero -> Picture
-dibujaBloquesActivos estado =
-  color (bright $ bright $ fondo tema) $
+dibujaBloquesActivos e =
+  color (bright $ bright $ fondo $ tema e) $
     pictures
-      [translateP (posPoint tam p) $ cuadrado $ tam * 0.9 | p <- pos]
+      [translateP (posPoint tam' p) $ cuadrado $ tam' * 0.9 | p <- pos]
   where
-    tam = tamET estado / 3
-    tema = temaET estado
-    pos = maybe listaIndices (\x -> [x]) $ bloqueActivo $ tableroET estado
-
--- | Dada una posición del puntero y un 'EstadoTablero' devuelve las
--- 'Pos' del 'Bloque' y casilla donde está el puntero.
-pointPosET ::
-  -- | Posición del puntero en la pantalla
-  Point ->
-  EstadoTablero ->
-  -- | Posición del puntero en el 'bloqueEB'
-  (Pos, Pos)
-pointPosET p estado =
-  (posBloque, posFicha)
-  where
-    posBloque = pointPos p (tamET estado) (pos estado)
-    posFicha = (2, 2)
+    tam' = tam e / 3
+    pos = maybe listaIndices (\x -> [x]) $ bloqueActivo $ tableroET e
 
 -- | Ventana para jugar al meta tres en raya
 tableroVentana ::
