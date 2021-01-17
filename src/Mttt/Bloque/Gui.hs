@@ -7,44 +7,11 @@
 -- Interfaz gráfica del /tres en raya/.
 module Mttt.Bloque.Gui where
 
--- module Mttt.Gui (
---     Tema
---   , temaClaro
---   , temaOscuro
---   , guiBoard
--- ) where
-
-import Data.Array
 import Data.Maybe (fromJust, isJust)
-import Graphics.Gloss
-import Graphics.Gloss.Interface.IO.Interact
+import Graphics.Gloss (Picture (Blank), Point, color, pictures, play)
 import Mttt.Bloque.Data
-import Mttt.Common.Data
+import Mttt.Common.Data (Ficha (O, X), Pos, casilla, fin, ganador, listaIndices, mov, tablas, turno)
 import Mttt.Common.Gui
-import Mttt.Common.Utils
-
-{-
-  PARTE RELATIVA AL TIPO Ficha
--}
-
--- | Dibuja una ficha
-dibujaFicha ::
-  -- | Tema con el que dibujar la 'Ficha'
-  Tema ->
-  -- | Tamaño de la ficha
-  Float ->
-  -- | Posición de la ficha (esquina inferior izquierda)
-  Point ->
-  -- | 'Ficha' a dibujar
-  Ficha ->
-  Picture
-dibujaFicha tema tam pos ficha
-  | esX ficha = cruz pos tam (tam * 0.10) (principal tema)
-  | otherwise = circulo pos tam (tam * 0.10) (secundario tema)
-
-{-
-  PARTE RELATIVA AL TIPO Bloque
--}
 
 -- | Tipo que encapsula los datos necesarios para dibujar un 'Bloque' en pantalla
 data EstadoBloque = EB
@@ -67,10 +34,10 @@ instance Estado EstadoBloque where
   dibuja e = pictures $ [dibujaCasilla pos | pos <- listaIndices]
     where
       dibujaCasilla pos
-        | isJust casilla = dibujaFicha (modTemaEB e) (tam e * 0.2) origen (fromJust casilla)
+        | isJust casilla' = dibujaFicha (modTemaEB e) (tam e * 0.2) origen (fromJust casilla')
         | otherwise = Blank
         where
-          casilla = casillaBloque (bloqueEB e) pos
+          casilla' = casilla (bloqueEB e) pos
           origen = posPoint (tam e / 3) pos
 
   modifica p e

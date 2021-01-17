@@ -9,11 +9,15 @@
 --
 -- Implementación del juego /meta tres en raya/.
 module Mttt.Tablero.Data
-  ( Tablero (bloques, bloqueActivo),
+  ( -- * 'Tablero': el tipo para el meta tres en raya
+    Tablero (bloqueActivo),
     tableroVacio,
-    lineasTablero,
+
+    -- * Funciones heurísticas
     HeurTablero (funHT, descHT),
     heurTablero0,
+
+    -- * Agentes inteligentes
     AgenteTablero (funAT, nombreAT),
     agenteTTonto,
     agenteTMinimax,
@@ -49,10 +53,12 @@ instance Show Tablero where
         where
           bs = bloques t
 
-instance Juego Tablero (Pos, Pos) where
+instance Juego Tablero (Pos, Pos) Bloque where
   contarFichas t = foldr1 suma [contarFichas $ bloques t ! i | i <- listaIndices]
     where
       suma (a, b) (c, d) = (a + c, b + d)
+
+  casilla t p = bloques t ! p
 
   posicionesLibres t
     | isJust (bloqueActivo t) = [(activo, p) | p <- posicionesLibres (bloques t ! activo)]

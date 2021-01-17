@@ -20,10 +20,10 @@ import Mttt.Common.Utils
 
 -- | Dibujo de un 'Bloque' resaltando unas 'Pos'.
 showListaPosBloque :: Bloque -> [Pos] -> String
-showListaPosBloque b ps = unlines [intersperse ' ' [casilla (x, y) | y <- [1 .. 3]] | x <- [1 .. 3]]
+showListaPosBloque b ps = unlines [intersperse ' ' [casilla' (x, y) | y <- [1 .. 3]] | x <- [1 .. 3]]
   where
-    casilla pos
-      | isJust (casillaBloque b pos) = showMaybeFicha $ casillaBloque b pos
+    casilla' pos
+      | isJust (casilla b pos) = showMaybeFicha $ casilla b pos
       | otherwise = head $ show $ pos2int pos
 
 -- | Pregunta donde se quiere jugar.

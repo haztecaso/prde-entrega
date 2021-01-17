@@ -9,10 +9,15 @@
 --
 -- Implementación del juego /tres en raya/.
 module Mttt.Bloque.Data
-  ( Bloque,
+  ( -- * 'Bloque': el tipo para el tres en raya
+    Bloque,
     bloqueVacio,
-    casillaBloque,
     movLibreBloque,
+
+    -- * Funciones heurísticas
+    heurBloque,
+
+    -- * Agentes inteligentes
     AgenteBloque (funAB, nombreAB),
     agenteBTonto,
     agenteBMinimax,
@@ -32,13 +37,15 @@ data Bloque = B (Array Pos (Maybe Ficha))
 instance Show Bloque where
   show (B b) = unlines [intersperse ' ' [showMaybeFicha $ b ! (x, y) | y <- [1 .. 3]] | x <- [1 .. 3]]
 
-instance Juego Bloque Pos where
+instance Juego Bloque Pos (Maybe Ficha) where
   contarFichas (B b) = foldr1 suma $ map f $ elems b
     where
       f Nothing = (0, 0)
       f (Just X) = (1, 0)
       f (Just O) = (0, 1)
       suma (a, b) (c, d) = (a + c, b + d)
+
+  casilla (B b) p = b ! p
 
   posicionesLibres (B b) = map fst $ filter snd [((x, y), isNothing $ b ! (x, y)) | (x, y) <- listaIndices]
 
@@ -73,10 +80,6 @@ instance Juego Bloque Pos where
 -- | 'Bloque' vacío
 bloqueVacio :: Bloque
 bloqueVacio = B $ listArray ((1, 1), (3, 3)) [Nothing | _ <- listaIndices]
-
--- | Obtener valor de una casilla
-casillaBloque :: Bloque -> Pos -> Maybe Ficha
-casillaBloque (B b) p = b ! p
 
 -- | Insertar una `Ficha` nueva en un 'Bloque'. Esta función es la parte común
 -- de las funciones `mov` y `movLibreBloque`.
@@ -138,7 +141,7 @@ heurBloque f b
   | ganador b == Just O = - a
   | otherwise = 0
   where
-    a = if (esX f) then 1 else -1
+    a = if f == X then 1 else -1
 
 {- AGENTES -}
 

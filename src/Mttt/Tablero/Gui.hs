@@ -7,22 +7,13 @@
 -- Interfaz gráfica del /meta tres en raya/.
 module Mttt.Tablero.Gui where
 
--- module Mttt.Gui (
---     Tema
---   , temaClaro
---   , temaOscuro
---   , guiBoard
--- ) where
-
-import Data.Array
+import Data.Array ((!))
 import Data.Maybe (fromJust, isJust)
-import Graphics.Gloss
-import Graphics.Gloss.Interface.IO.Interact
+import Graphics.Gloss (Picture, Point, bright, color, pictures)
 import Mttt.Bloque.Data (bloqueVacio)
-import Mttt.Bloque.Gui
-import Mttt.Common.Data
+import Mttt.Bloque.Gui (EstadoBloque (EB, bloqueEB, posEB, tamEB, temaEB))
+import Mttt.Common.Data (Pos, casilla, fin, listaIndices, mov)
 import Mttt.Common.Gui
-import Mttt.Common.Utils
 import Mttt.Tablero.Data
 
 -- | Tipo que encapsula los datos necesarios para dibujar un 'Tablero' en
@@ -47,7 +38,7 @@ instance Estado EstadoTablero where
     where
       eBloque pos =
         EB
-          { bloqueEB = bloques (tableroET e) ! pos,
+          { bloqueEB = casilla (tableroET e) pos,
             posEB = posPoint (tam e / 3) pos,
             tamEB = tam e / 3 * 0.8,
             temaEB = tema e

@@ -6,15 +6,21 @@
 -- Copyright   : (c) Adrián Lattes y David Diez
 -- License     : GPL-3
 -- Stability   : experimental
+--
+-- Tipos de datos, clases y funciones asociadas útiles para los dos juegos.
 module Mttt.Common.Data
-  ( Ficha (X, O),
-    esX,
+  ( -- * Tipo 'Ficha' y funciones asociadas.
+    Ficha (X, O),
     showMaybeFicha,
+
+    -- * Tipo 'Pos' y utilidades
     Pos,
     pos2int,
     int2pos,
     listaIndices,
-    Juego (contarFichas, posicionesLibres, ganador, tablas, fin, mov, expandir),
+
+    -- * Clase 'Juego'
+    Juego (contarFichas, casilla, posicionesLibres, ganador, tablas, fin, mov, expandir),
     turno,
   )
 where
@@ -28,11 +34,6 @@ data Ficha = X | O deriving (Eq)
 instance Show Ficha where
   show X = "✗"
   show O = "○"
-
--- | Determina si una 'Ficha' es X ('True') o O ('False')
-esX :: Ficha -> Bool
-esX X = True
-esX _ = False
 
 -- | Utilidad para imprimir una /casilla/ de un 'Bloque' en pantalla
 showMaybeFicha :: Maybe Ficha -> Char
@@ -61,10 +62,15 @@ listaIndices = [(x, y) | x <- [1 .. 3], y <- [1 .. 3]]
 -- inferir bien los tipos, hemos definido una dependencia funcional entre dichos
 -- parámetros. De este modo podemos tener instancias de esta clase que utilizan
 -- tipos distintos para las posiciones de los tableros.
-class Show juego => Juego juego pos | juego -> pos where
+class Show juego => Juego juego pos casilla | juego -> pos casilla where
   -- | Cuenta las fichas de cada tipo que hay en el juego. El primer valor es la
   -- cantidad de 'X's y el segundo de 'O's.
   contarFichas :: juego -> (Int, Int)
+
+  -- | Obtener el valor de una casilla. Aquí el tipo es 'Pos' en vez de 'pos'
+  -- porque en este caso las casillas siempre están indexadas por valores de
+  -- tipo 'Pos'.
+  casilla :: juego -> Pos -> casilla
 
   -- | Posiciones donde se puede jugar
   posicionesLibres :: juego -> [pos]
@@ -86,7 +92,7 @@ class Show juego => Juego juego pos | juego -> pos where
   -- | Lista de posibles siguientes posiciones.
   expandir :: juego -> [juego]
 
-turno :: Juego j pos => j -> Maybe Ficha
+turno :: Juego j p c => j -> Maybe Ficha
 turno j
   | isNothing (ganador j) && (xs - os) == 1 = Just O
   | isNothing (ganador j) && (xs - os) == 0 = Just X

@@ -5,24 +5,28 @@
 -- Stability   : experimental
 --
 -- Definiciones generales de la intefaz gráfica.
-module Mttt.Common.Gui where
-
--- module Mttt.Gui (
---     Tema
---   , temaClaro
---   , temaOscuro
---   , guiBoard
--- ) where
+module Mttt.Common.Gui
+  ( ventana,
+    translateP,
+    Tema (fondo, contraste, principal, secundario, neutro),
+    temaClaro,
+    temaOscuro,
+    temaBicolor,
+    cuadrado,
+    dibujaFicha,
+    posPoint,
+    pointPos,
+    Estado (tam, pos, tema, dibuja, modifica),
+    dibuja',
+    modificaEvent,
+    guiMulti,
+  )
+where
 
 import Data.Bifunctor (bimap)
-import Graphics.Gloss
+import Graphics.Gloss (Picture, display, play)
 import Graphics.Gloss.Interface.IO.Interact
-import Mttt.Common.Data
-import Mttt.Common.Utils
-
-{-
-  DEFINICIONES GENERALES
--}
+import Mttt.Common.Data (Ficha (O, X), Pos)
 
 ventana ::
   -- | Tamaño de la ventana
@@ -147,6 +151,21 @@ circulo pos tam gros col =
   translate x y $ color col $ thickCircle ((tam - gros) / 2) gros
   where
     (x, y) = pos
+
+-- | Dibuja una ficha
+dibujaFicha ::
+  -- | Tema con el que dibujar la 'Ficha'
+  Tema ->
+  -- | Tamaño de la ficha
+  Float ->
+  -- | Posición de la ficha (esquina inferior izquierda)
+  Point ->
+  -- | 'Ficha' a dibujar
+  Ficha ->
+  Picture
+dibujaFicha tema tam pos ficha
+  | ficha == X = cruz pos tam (tam * 0.10) (principal tema)
+  | otherwise = circulo pos tam (tam * 0.10) (secundario tema)
 
 -- | Dibuja una cuadrícula
 cuadricula ::
