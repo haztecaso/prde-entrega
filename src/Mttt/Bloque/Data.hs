@@ -25,7 +25,7 @@ module Mttt.Bloque.Data
 where
 
 import Data.Array (Array, elems, listArray, (!), (//))
-import Data.List (elemIndex, intersperse, transpose)
+import Data.List (intersperse, transpose)
 import Data.Maybe (fromJust, isJust, isNothing)
 import Mttt.Common.Data
 import Mttt.Common.Utils
@@ -47,14 +47,16 @@ instance Juego Bloque Pos (Maybe Ficha) where
 
   casilla (B b) p = b ! p
 
-  posicionesLibres (B b) = map fst $ filter snd [((x, y), isNothing $ b ! (x, y)) | (x, y) <- listaIndices]
+  casillasLibres (B b) = map fst $ filter snd [((x, y), isNothing $ b ! (x, y)) | (x, y) <- listaIndices]
+
+  posicionesLibres = casillasLibres
 
   ganador b
     | Just X `elem` ganadores = Just X
     | Just O `elem` ganadores = Just O
     | otherwise = Nothing
     where
-      ganadores = map ganadorLinea $ lineasBloque b
+      ganadores = map ganadorLinea $ lineas b
       ganadorLinea l
         | l == [Just X, Just X, Just X] = Just X
         | l == [Just O, Just O, Just O] = Just O
@@ -75,11 +77,18 @@ instance Juego Bloque Pos (Maybe Ficha) where
 
   expandir b
     | fin b = []
-    | otherwise = map (fromJust . mov b) $ posicionesLibres b
+    | otherwise = map (fromJust . mov b) $ casillasLibres b
 
 -- | 'Bloque' vacío
 bloqueVacio :: Bloque
 bloqueVacio = B $ listArray ((1, 1), (3, 3)) [Nothing | _ <- listaIndices]
+
+lineas :: Bloque -> [[Maybe Ficha]]
+lineas (B b) = filas ++ columnas ++ diagonales
+  where
+    filas = [[b ! (x, y) | x <- [1 .. 3]] | y <- [1 .. 3]]
+    columnas = transpose filas
+    diagonales = [[b ! (x, x) | x <- [1 .. 3]], [b ! (x, 4 - x) | x <- [1 .. 3]]]
 
 -- | Insertar una `Ficha` nueva en un 'Bloque'. Esta función es la parte común
 -- de las funciones `mov` y `movLibreBloque`.
@@ -106,26 +115,6 @@ movLibreBloque ficha
   | isJust ficha = movFichaBloque $ fromJust ficha
   | otherwise = \_ -> \_ -> Nothing
 
--- Dados dos bloques devuelve la posición en la que se ha jugado.
--- Esto no es nada bonito, ya que estamos expandiendo el problema
--- innecesariamente y haciendo una búsqueda en un array. Para evitar esto se
--- podría adaptar el algoritmo minimax para que devuelva automaticamente la
--- posición en la que jugar, en vez de los estados...
-posMovimientoBloque :: Bloque -> Bloque -> Pos
-posMovimientoBloque bloque expandido =
-  libres !! fromJust (elemIndex expandido siguientes)
-  where
-    siguientes = expandir bloque
-    libres = posicionesLibres bloque
-
--- | Devuelve todas las lineas rectas de un 'Bloque'
-lineasBloque :: Bloque -> [[Maybe Ficha]]
-lineasBloque (B b) = filas ++ columnas ++ diagonales
-  where
-    filas = [[b ! (x, y) | x <- [1 .. 3]] | y <- [1 .. 3]]
-    columnas = transpose filas
-    diagonales = [[b ! (x, x) | x <- [1 .. 3]], [b ! (x, 4 - x) | x <- [1 .. 3]]]
-
 {- FUNCIONES HEURÍSTICAS -}
 
 -- | Función heurística para el tres en raya
@@ -150,11 +139,11 @@ data AgenteBloque = AgenteBloque
   }
 
 -- | Agente que devuelve la primera posición disponible donde jugar,
--- en el orden generado por 'posicionesLibres'.
+-- en el orden generado por 'casillasLibres'.
 agenteBTonto :: AgenteBloque
 agenteBTonto =
   AgenteBloque
-    { funAB = head . posicionesLibres,
+    { funAB = head . casillasLibres,
       nombreAB = "tonto"
     }
 
@@ -164,7 +153,6 @@ agenteBMinimax :: AgenteBloque
 agenteBMinimax =
   AgenteBloque
     { funAB = \b ->
-        posMovimientoBloque b $
-          minimax 9 expandir (heurBloque $ fromJust $ turno b) b,
+        mov2pos b $ minimax 9 expandir (heurBloque $ fromJust $ turno b) b,
       nombreAB = "minimax"
     }

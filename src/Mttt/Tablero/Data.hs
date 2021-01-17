@@ -25,7 +25,7 @@ module Mttt.Tablero.Data
 where
 
 import Data.Array (Array, listArray, (!), (//))
-import Data.List (elemIndex, intercalate, transpose)
+import Data.List (intercalate, transpose)
 import Data.Maybe (fromJust, isJust, isNothing)
 import Mttt.Bloque.Data
 import Mttt.Common.Data
@@ -35,9 +35,8 @@ import Mttt.Common.Utils
 data Tablero = T
   { -- | Bloques del tablero
     bloques :: Array Pos Bloque,
-    -- | 'Pos' del 'Bloque' activo para jugar.
-    -- Si es 'Nothing' se puede jugar en
-    -- cualquier 'Bloque'.
+    -- | 'Pos' del 'Bloque' activo para jugar. Si es 'Nothing' se puede jugar en
+    -- cualquier 'Bloque' que no haya llegado a su 'fin'.
     bloqueActivo :: Maybe Pos
   }
   deriving (Eq)
@@ -60,18 +59,18 @@ instance Juego Tablero (Pos, Pos) Bloque where
 
   casilla t p = bloques t ! p
 
-  posicionesLibres t
-    | isJust (bloqueActivo t) = [(activo, p) | p <- posicionesLibres (bloques t ! activo)]
-    | otherwise = [(p1, p2) | p1 <- listaIndices, p2 <- posicionesLibres (bloques t ! p1)]
-    where
-      activo = fromJust $ bloqueActivo t
+  casillasLibres t
+    | isJust (bloqueActivo t) = [fromJust (bloqueActivo t)]
+    | otherwise = [p | p <- listaIndices, not (fin $ casilla t p)]
+
+  posicionesLibres t = [(p1, p2) | p1 <- casillasLibres t, p2 <- posicionesLibres (bloques t ! p1)]
 
   ganador t
     | Just X `elem` ganadores = Just X
     | Just O `elem` ganadores = Just O
     | otherwise = Nothing
     where
-      ganadores = map ganadorLinea $ lineasTablero t
+      ganadores = map ganadorLinea $ lineas t
       ganadorLinea l
         | map ganador l == [Just X, Just X, Just X] = Just X
         | map ganador l == [Just O, Just O, Just O] = Just O
@@ -84,22 +83,23 @@ instance Juego Tablero (Pos, Pos) Bloque where
     | tablas t = True
     | otherwise = False
 
-  mov t (p1, p2)
-    | isNothing bloque = Nothing
-    | validPos && Just p1 == bloqueActivo t = Just nuevo
-    | validPos && isNothing (bloqueActivo t) = Just nuevo
+  mov t (p1, p2) --TODO: Arreglar, fallos variados...
+    | validPos && Just p1 == bloqueActivo t = nuevo
+    | validPos && isNothing (bloqueActivo t) = nuevo
     | otherwise = Nothing
     where
+      validPos = p1 `elem` casillasLibres t && p2 `elem` listaIndices
       bloque = movLibreBloque (turno t) (bloques t ! p1) p2
-      siguienteBloque p
-        | fin (bloques t ! p) = Nothing -- Si una partida de un bloque ha acabado se puede jugar en cualquier bloque
-        | otherwise = Just p
-      validPos = p1 `elem` listaIndices && p2 `elem` listaIndices
+      siguienteBloqueActivo
+        | fin (bloques t ! p2) = Nothing
+        | isJust bloque && fin (fromJust bloque) = Nothing
+        | otherwise = Just p2
       nuevo =
-        T
-          { bloques = bloques t // [(p1, fromJust bloque)],
-            bloqueActivo = siguienteBloque p2
-          }
+        Just
+          T
+            { bloques = bloques t // [(p1, fromJust bloque)],
+              bloqueActivo = siguienteBloqueActivo
+            }
 
   expandir t
     | fin t = []
@@ -113,21 +113,12 @@ tableroVacio =
       bloqueActivo = Nothing
     }
 
--- | Devuelve todas las lineas rectas de un 'Tablero'
-lineasTablero :: Tablero -> [[Bloque]]
-lineasTablero t = filas ++ columnas ++ diagonales
+lineas :: Tablero -> [[Bloque]]
+lineas t = filas ++ columnas ++ diagonales
   where
     filas = [[bloques t ! (x, y) | x <- [1 .. 3]] | y <- [1 .. 3]]
     columnas = transpose filas
     diagonales = [[bloques t ! (x, x) | x <- [1 .. 3]], [bloques t ! (x, 4 - x) | x <- [1 .. 3]]]
-
--- Dados dos bloques devuelve la posición en la que se ha jugado.
-posMovimientoTablero :: Tablero -> Tablero -> (Pos, Pos)
-posMovimientoTablero tablero expandido =
-  libres !! fromJust (elemIndex expandido siguientes)
-  where
-    siguientes = expandir tablero
-    libres = posicionesLibres tablero
 
 tableroTest' = fromJust $ mov tableroVacio ((2, 2), (1, 1))
 
@@ -138,8 +129,6 @@ tableroTest''' = fromJust $ mov tableroTest'' ((1, 1), (2, 3))
 tableroTest'''' = fromJust $ mov tableroTest''' ((2, 3), (3, 1))
 
 tableroTest = fromJust $ mov tableroTest'''' ((3, 1), (2, 2))
-
-{- FUNCIONES HEURÍSTICAS -}
 
 -- | Tipo para funciones heurísticas de 'Tablero'.
 data HeurTablero = HeurTablero
@@ -154,8 +143,6 @@ heurTablero0 =
     { funHT = const 0,
       descHT = "0"
     }
-
-{- AGENTES -}
 
 -- | Tipo para Agentes de 'Tablero'.
 data AgenteTablero = AgenteTablero
@@ -177,6 +164,6 @@ agenteTTonto =
 agenteTMinimax :: HeurTablero -> Int -> AgenteTablero
 agenteTMinimax h prof =
   AgenteTablero
-    { funAT = \t -> posMovimientoTablero t (minimax prof expandir (funHT h) t),
+    { funAT = \t -> mov2pos t (minimax prof expandir (funHT h) t),
       nombreAT = "minimax - heur " ++ descHT h ++ " (profundidad " ++ show prof ++ ")"
     }

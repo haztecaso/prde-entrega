@@ -11,12 +11,11 @@ module Mttt.Tablero.Gui
   )
 where
 
-import Data.Array ((!))
 import Data.Maybe (fromJust, isJust)
 import Graphics.Gloss (Picture, Point, bright, color, pictures)
 import Mttt.Bloque.Data (bloqueVacio)
 import Mttt.Bloque.Gui (EstadoBloque (EB, bloqueEB, centroEB, tamEB, temaEB))
-import Mttt.Common.Data (Pos, casilla, fin, listaIndices, mov)
+import Mttt.Common.Data (Pos, casilla, casillasLibres, fin, listaIndices, mov)
 import Mttt.Common.Gui
 import Mttt.Tablero.Data
 
@@ -38,7 +37,7 @@ instance Estado EstadoTablero where
 
   dibuja e =
     pictures $
-      dibujaBloquesActivos e : [dibuja' $ eBloque pos | pos <- listaIndices]
+      dibujaCasillasLibres e : [dibuja' $ eBloque pos | pos <- listaIndices]
     where
       eBloque pos =
         EB
@@ -47,6 +46,7 @@ instance Estado EstadoTablero where
             tamEB = tam e / 3 * 0.8,
             temaEB = tema e
           }
+
   modifica p e
     | isJust nuevo = e {tableroET = fromJust nuevo}
     | fin t = e {tableroET = tableroVacio}
@@ -56,8 +56,6 @@ instance Estado EstadoTablero where
       positions = pointPos' p $ tam e
       nuevo = mov t (fst positions, snd positions)
 
--- | Dada una posición del puntero y un 'EstadoTablero' devuelve las
--- 'Pos' del 'Bloque' y casilla donde está el puntero.
 pointPos' ::
   -- | Posición del puntero en la pantalla
   Point ->
@@ -65,14 +63,12 @@ pointPos' ::
   Float ->
   -- | Posición del puntero en el 'bloqueEB'
   (Pos, Pos)
-pointPos' p t =
-  ( posBloque,
-    pointPos p (t / 3 * 0.8) (centroBloque)
-  )
+pointPos' p t = (posBloque, pointPos p (t / 3 * 0.8) (centroBloque))
   where
     posBloque = pointPos p t (0, 0)
     centroBloque = sumP (posPoint (t / 3) posBloque) (- t / 2, - t / 2)
 
+-- | Función para construir un 'EstadoTablero' con un 'tableroVacio'
 estadoTableroInicial ::
   -- | Tamaño
   Float ->
@@ -86,11 +82,12 @@ estadoTableroInicial tam tema =
     }
 
 -- | Resalta los bloques activos de un 'EstadoTablero'
-dibujaBloquesActivos :: EstadoTablero -> Picture
-dibujaBloquesActivos e =
+dibujaCasillasLibres :: EstadoTablero -> Picture
+dibujaCasillasLibres e =
   color (bright $ bright $ fondo $ tema e) $
     pictures
-      [translateP (posPoint tam' p) $ cuadrado $ tam' * 0.9 | p <- pos]
+      [translateP (posPoint t p) $ cuadrado $ t * 0.9 | p <- pos]
   where
-    tam' = tam e / 3
-    pos = maybe listaIndices (\x -> [x]) $ bloqueActivo $ tableroET e
+    t = tam e / 3
+    f = \x -> [x]
+    pos = maybe (casillasLibres $ tableroET e) f $ bloqueActivo $ tableroET e

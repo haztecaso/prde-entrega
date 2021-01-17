@@ -20,12 +20,24 @@ module Mttt.Common.Data
     listaIndices,
 
     -- * Clase 'Juego'
-    Juego (contarFichas, casilla, posicionesLibres, ganador, tablas, fin, mov, expandir),
+    Juego
+      ( contarFichas,
+        casilla,
+        casillasLibres,
+        posicionesLibres,
+        ganador,
+        tablas,
+        fin,
+        mov,
+        expandir
+      ),
     turno,
+    mov2pos,
   )
 where
 
-import Data.Maybe (isNothing)
+import Data.List (elemIndex)
+import Data.Maybe (fromJust, isNothing)
 import Mttt.Common.Utils
 
 -- | Tipo que representa una ficha del juego
@@ -62,7 +74,7 @@ listaIndices = [(x, y) | x <- [1 .. 3], y <- [1 .. 3]]
 -- inferir bien los tipos, hemos definido una dependencia funcional entre dichos
 -- parámetros. De este modo podemos tener instancias de esta clase que utilizan
 -- tipos distintos para las posiciones de los tableros.
-class Show juego => Juego juego pos casilla | juego -> pos casilla where
+class (Show juego, Eq juego) => Juego juego pos casilla | juego -> pos casilla where
   -- | Cuenta las fichas de cada tipo que hay en el juego. El primer valor es la
   -- cantidad de 'X's y el segundo de 'O's.
   contarFichas :: juego -> (Int, Int)
@@ -72,7 +84,10 @@ class Show juego => Juego juego pos casilla | juego -> pos casilla where
   -- tipo 'Pos'.
   casilla :: juego -> Pos -> casilla
 
-  -- | Posiciones donde se puede jugar
+  -- | Casillas (indexadas por 'Pos') donde se puede jugar
+  casillasLibres :: juego -> [Pos]
+
+  -- | Posiciones ('pos') donde se puede jugar.
   posicionesLibres :: juego -> [pos]
 
   -- | Determina quien es el ganador, en caso de haberlo.
@@ -99,3 +114,12 @@ turno j
   | otherwise = Nothing
   where
     (xs, os) = contarFichas j
+
+-- | Dados dos juegos devuelve la posición en la que se ha jugado.
+--
+-- Esto no es nada bonito, ya que estamos expandiendo el problema
+-- innecesariamente y haciendo una búsqueda en un array. Para evitar esto se
+-- podría adaptar el algoritmo minimax para que devuelva automaticamente la
+-- posición en la que jugar, en vez de los propios juegos...
+mov2pos :: Juego j p c => j -> j -> p
+mov2pos j1 j2 = posicionesLibres j1 !! fromJust (elemIndex j2 $ expandir j1)
