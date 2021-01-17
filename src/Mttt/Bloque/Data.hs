@@ -1,3 +1,6 @@
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+
 -- |
 -- Module      : Mttt.Bloque.Data
 -- Copyright   : (c) Adrián Lattes y David Diez
@@ -32,7 +35,7 @@ data Bloque = B (Array Pos (Maybe Ficha))
 instance Show Bloque where
   show (B b) = unlines [intersperse ' ' [showMaybeFicha $ b ! (x, y) | y <- [1 .. 3]] | x <- [1 .. 3]]
 
-instance Juego Bloque where
+instance Juego Bloque Pos where
   turno b
     | isNothing (ganador b) && (xs - os) == 1 = Just O
     | isNothing (ganador b) && (xs - os) == 0 = Just X

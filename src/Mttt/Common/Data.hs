@@ -1,3 +1,6 @@
+{-# LANGUAGE FunctionalDependencies #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+
 -- |
 -- Module      : Mttt.Utils.Data
 -- Copyright   : (c) Adrián Lattes y David Diez
@@ -42,23 +45,30 @@ int2pos n = (n `div` 3 + 1, n `mod` 3 + 1)
 listaIndices :: [(Int, Int)]
 listaIndices = [(x, y) | x <- [1 .. 3], y <- [1 .. 3]]
 
-class Show j => Juego j where
+-- | Clase que acomuna la interfaz de los tipos 'Bloque' y 'Tablero'.
+--
+-- __Atención__: estamos usando algunas extensiones del lenguaje para poder
+-- definir clases con más de un parámetro. Además, para que el compilador pueda
+-- inferir bien los tipos, hemos definido una dependencia funcional entre dichos
+-- parámetros. De este modo podemos tener instancias de esta clase que utilizan
+-- tipos distintos para las posiciones de los tableros.
+class Show juego => Juego juego pos | juego -> pos where
   -- | Determina a que 'Ficha' le toca jugar.
-  turno :: j -> Maybe Ficha
+  turno :: juego -> Maybe Ficha
 
   -- | Determina quien es el ganador, en caso de haberlo.
-  ganador :: j -> Maybe Ficha
+  ganador :: juego -> Maybe Ficha
 
   -- | Determina si la partida ha acabado en tablas.
-  tablas :: j -> Bool
+  tablas :: juego -> Bool
 
   -- | Determina si la partida ha acabado o no
-  fin :: j -> Bool
+  fin :: juego -> Bool
 
   -- | Insertar una ficha nueva, usando 'turno' para decidir que 'Ficha'
   -- colocar. Si el movimiento es válido se devuelve 'Just f' y en caso
   -- contrario 'Nothing'.
-  mov :: j -> Pos -> Maybe j
+  mov :: juego -> pos -> Maybe juego
 
   -- | Lista de posibles siguientes posiciones.
-  expandir :: j -> [j]
+  expandir :: juego -> [juego]

@@ -1,3 +1,6 @@
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+
 -- |
 -- Module      : Mttt.Tablero.Data
 -- Copyright   : (c) Adrián Lattes y David Diez
@@ -46,7 +49,7 @@ instance Show Tablero where
         where
           bs = bloques t
 
-instance Juego Tablero where
+instance Juego Tablero (Pos, Pos) where
   turno t
     | isNothing (ganador t) && (xs - os) == 1 = Just O
     | isNothing (ganador t) && (xs - os) == 0 = Just X
@@ -72,31 +75,26 @@ instance Juego Tablero where
         | map ganador l == [Just O, Just O, Just O] = Just O
         | otherwise = Nothing
 
-  mov t _ = Just t
-  expandir t = [t]
+  mov t (p1, p2)
+    | isNothing bloque = Nothing
+    | validPos && Just p1 == bloqueActivo t = Just nuevo
+    | validPos && isNothing (bloqueActivo t) = Just nuevo
+    | otherwise = Nothing
+    where
+      bloque = movMaybeFichaBloque (turno t) (bloques t ! p1) p2
+      siguienteBloque p
+        | fin (bloques t ! p) = Nothing -- Si una partida de un bloque ha acabado se puede jugar en cualquier bloque
+        | otherwise = Just p
+      validPos = p1 `elem` listaIndices && p2 `elem` listaIndices
+      nuevo =
+        T
+          { bloques = bloques t // [(p1, fromJust bloque)],
+            bloqueActivo = siguienteBloque p2
+          }
 
-{- TODO: Arreglar!
-mov t (p1, p2)
-  | isNothing bloque = Nothing
-  | validPos && Just p1 == bloqueActivo t = Just nuevo
-  | validPos && isNothing (bloqueActivo t) = Just nuevo
-  | otherwise = Nothing
-  where
-    bloque = movMaybeFichaBloque (turno t) (bloques t ! p1) p2
-    siguienteBloque p
-      | fin (bloques t ! p) = Nothing -- Si una partida de un bloque ha acabado se puede jugar en cualquier bloque
-      | otherwise = Just p
-    validPos = p1 `elem` listaIndices && p2 `elem` listaIndices
-    nuevo =
-      T
-        { bloques = bloques t // [(p1, fromJust bloque)],
-          bloqueActivo = siguienteBloque p2
-        }
-
-expandir t
-  | fin t = []
-  | otherwise = map (fromJust . uncurry (mov t)) $ casillasDisponiblesTablero t
--}
+  expandir t
+    | fin t = []
+    | otherwise = map (fromJust . mov t) $ casillasDisponiblesTablero t
 
 tableroVacio :: Tablero
 tableroVacio =

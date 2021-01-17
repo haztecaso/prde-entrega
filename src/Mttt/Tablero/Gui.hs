@@ -52,7 +52,6 @@ instance Estado EstadoTablero where
             tamEB = tam e / 3 * 0.8,
             temaEB = tema e
           }
-
   modifica pos e
     | isJust nuevo = e {tableroET = fromJust nuevo}
     | fin t = e {tableroET = tableroVacio}
@@ -60,10 +59,7 @@ instance Estado EstadoTablero where
     where
       t = tableroET e
       positions = pointPosET pos e
-      nuevo = Nothing
-
--- TODO: arreglar
--- nuevo = mov t (fst positions) (snd positions)
+      nuevo = mov t (fst positions, snd positions) -- TODO: arreglar
 
 -- | Dada una posición del puntero y un 'EstadoTablero' devuelve las
 -- 'Pos' del 'Bloque' y casilla donde está el puntero.
