@@ -8,12 +8,7 @@
 module Mttt.Tablero.Data
   ( Tablero (bloques, bloqueActivo),
     tableroVacio,
-    tableroTest,
-    turnoTablero,
-    ganadorTablero,
     lineasTablero,
-    finTablero,
-    movTablero,
     HeurTablero (funHT, descHT),
     heurTablero0,
     AgenteTablero (funAT, nombreAT),
@@ -51,7 +46,58 @@ instance Show Tablero where
         where
           bs = bloques t
 
--- | 'Tablero' vacío
+instance Juego Tablero where
+  turno t
+    | isNothing (ganador t) && (xs - os) == 1 = Just O
+    | isNothing (ganador t) && (xs - os) == 0 = Just X
+    | otherwise = Nothing
+    where
+      (xs, os) = contarFichasTablero t
+
+  tablas t = null (casillasDisponiblesTablero t) && isNothing (ganador t)
+
+  fin t
+    | isJust (ganador t) = True
+    | tablas t = True
+    | otherwise = False
+
+  ganador t
+    | Just X `elem` ganadores = Just X
+    | Just O `elem` ganadores = Just O
+    | otherwise = Nothing
+    where
+      ganadores = map ganadorLinea $ lineasTablero t
+      ganadorLinea l
+        | map ganador l == [Just X, Just X, Just X] = Just X
+        | map ganador l == [Just O, Just O, Just O] = Just O
+        | otherwise = Nothing
+
+  mov t _ = Just t
+  expandir t = [t]
+
+{- TODO: Arreglar!
+mov t (p1, p2)
+  | isNothing bloque = Nothing
+  | validPos && Just p1 == bloqueActivo t = Just nuevo
+  | validPos && isNothing (bloqueActivo t) = Just nuevo
+  | otherwise = Nothing
+  where
+    bloque = movMaybeFichaBloque (turno t) (bloques t ! p1) p2
+    siguienteBloque p
+      | fin (bloques t ! p) = Nothing -- Si una partida de un bloque ha acabado se puede jugar en cualquier bloque
+      | otherwise = Just p
+    validPos = p1 `elem` listaIndices && p2 `elem` listaIndices
+    nuevo =
+      T
+        { bloques = bloques t // [(p1, fromJust bloque)],
+          bloqueActivo = siguienteBloque p2
+        }
+
+expandir t
+  | fin t = []
+  | otherwise = map (fromJust . uncurry (mov t)) $ casillasDisponiblesTablero t
+-}
+
 tableroVacio :: Tablero
 tableroVacio =
   T
@@ -76,68 +122,6 @@ lineasTablero t = filas ++ columnas ++ diagonales
     columnas = transpose filas
     diagonales = [[bloques t ! (x, x) | x <- [1 .. 3]], [bloques t ! (x, 4 - x) | x <- [1 .. 3]]]
 
--- | Determina quien ha ganado la partida si es que alguien ha ganado.
-ganadorTablero :: Tablero -> Maybe Ficha
-ganadorTablero t
-  | Just X `elem` ganadores = Just X
-  | Just O `elem` ganadores = Just O
-  | otherwise = Nothing
-  where
-    ganadores = map ganadorLinea $ lineasTablero t
-    ganadorLinea l
-      | map ganadorBloque l == [Just X, Just X, Just X] = Just X
-      | map ganadorBloque l == [Just O, Just O, Just O] = Just O
-      | otherwise = Nothing
-
--- | Determina a quien le toca
-turnoTablero :: Tablero -> Maybe Ficha
-turnoTablero t
-  | isNothing (ganadorTablero t) && (xs - os) == 1 = Just O
-  | isNothing (ganadorTablero t) && (xs - os) == 0 = Just X
-  | otherwise = Nothing
-  where
-    (xs, os) = contarFichasTablero t
-
--- | Determina si la partida ha acabado en tablas.
-tablasTablero :: Tablero -> Bool
-tablasTablero t = null (casillasDisponiblesTablero t) && isNothing (ganadorTablero t)
-
--- | Determina si la partida ha acabado o no
-finTablero :: Tablero -> Bool
-finTablero t
-  | isJust (ganadorTablero t) = True
-  | tablasTablero t = True
-  | otherwise = False
-
--- | Insertar una ficha nueva en un 'Tablero'. La función hace uso de
--- 'turnoTablero' para decidir que 'Ficha' colocar.
---
--- Si el movimiento es válido se devuelve un 'Just Tablero'.
--- En caso contrario se devuelve 'Nothing'
-movTablero ::
-  Tablero ->
-  -- | 'Bloque' en que jugar
-  Pos ->
-  -- | Posición del 'Bloque' seleccionado donde poner la ficha
-  Pos ->
-  Maybe Tablero
-movTablero t p1 p2
-  | isNothing bloque = Nothing
-  | validPos && Just p1 == bloqueActivo t = Just nuevo
-  | validPos && isNothing (bloqueActivo t) = Just nuevo
-  | otherwise = Nothing
-  where
-    bloque = movMaybeFichaBloque (turnoTablero t) (bloques t ! p1) p2
-    siguienteBloque p
-      | finBloque (bloques t ! p) = Nothing -- Si una partida de un bloque ha acabado se puede jugar en cualquier bloque
-      | otherwise = Just p
-    validPos = p1 `elem` listaIndices && p2 `elem` listaIndices
-    nuevo =
-      T
-        { bloques = bloques t // [(p1, fromJust bloque)],
-          bloqueActivo = siguienteBloque p2
-        }
-
 -- | Lista de casillas de un bloque donde se puede jugar.
 casillasDisponiblesTablero :: Tablero -> [(Pos, Pos)]
 casillasDisponiblesTablero t
@@ -146,29 +130,21 @@ casillasDisponiblesTablero t
   where
     activo = fromJust $ bloqueActivo t
 
--- | Posibles jugadas
-expandirTablero :: Tablero -> [Tablero]
-expandirTablero t
-  | finTablero t = []
-  | otherwise = map (fromJust . uncurry (movTablero t)) $ casillasDisponiblesTablero t
-
 -- Dados dos bloques devuelve la posición en la que se ha jugado.
 posMovimientoTablero :: Tablero -> Tablero -> (Pos, Pos)
 posMovimientoTablero tablero expandido =
   libres !! fromJust (elemIndex expandido siguientes)
   where
-    siguientes = expandirTablero tablero
+    siguientes = expandir tablero
     libres = casillasDisponiblesTablero tablero
 
-tableroTest' = (fromJust $ movTablero tableroVacio (2, 2) (1, 1))
-
-tableroTest'' = (fromJust $ movTablero tableroTest' (1, 1) (1, 1))
-
-tableroTest''' = (fromJust $ movTablero tableroTest'' (1, 1) (2, 3))
-
-tableroTest'''' = (fromJust $ movTablero tableroTest''' (2, 3) (3, 1))
-
-tableroTest = (fromJust $ movTablero tableroTest'''' (3, 1) (2, 2))
+{-
+tableroTest' = (fromJust $ mov tableroVacio (2, 2) (1, 1))
+tableroTest'' = (fromJust $ mov tableroTest' (1, 1) (1, 1))
+tableroTest''' = (fromJust $ mov tableroTest'' (1, 1) (2, 3))
+tableroTest'''' = (fromJust $ mov tableroTest''' (2, 3) (3, 1))
+tableroTest = (fromJust $ mov tableroTest'''' (3, 1) (2, 2))
+-}
 
 {- FUNCIONES HEURÍSTICAS -}
 
@@ -208,6 +184,6 @@ agenteTTonto =
 agenteTMinimax :: HeurTablero -> Int -> AgenteTablero
 agenteTMinimax h prof =
   AgenteTablero
-    { funAT = \t -> posMovimientoTablero t (minimax prof expandirTablero (funHT h) t),
+    { funAT = \t -> posMovimientoTablero t (minimax prof expandir (funHT h) t),
       nombreAT = "minimax - heur " ++ descHT h ++ " (profundidad " ++ show prof ++ ")"
     }

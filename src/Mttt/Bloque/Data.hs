@@ -10,13 +10,8 @@ module Mttt.Bloque.Data
     Bloque,
     casillaBloque,
     contarFichasBloque,
-    turnoBloque,
     movMaybeFichaBloque,
-    movBloque,
     casillasLibresBloque,
-    ganadorBloque,
-    finBloque,
-    tablasBloque,
     bloqueVacio,
     AgenteBloque (funAB, nombreAB),
     agenteBTonto,
@@ -36,6 +31,42 @@ data Bloque = B (Array Pos (Maybe Ficha))
 
 instance Show Bloque where
   show (B b) = unlines [intersperse ' ' [showMaybeFicha $ b ! (x, y) | y <- [1 .. 3]] | x <- [1 .. 3]]
+
+instance Juego Bloque where
+  turno b
+    | isNothing (ganador b) && (xs - os) == 1 = Just O
+    | isNothing (ganador b) && (xs - os) == 0 = Just X
+    | otherwise = Nothing
+    where
+      (xs, os) = contarFichasBloque b
+
+  ganador b
+    | Just X `elem` ganadores = Just X
+    | Just O `elem` ganadores = Just O
+    | otherwise = Nothing
+    where
+      ganadores = map ganadorLinea $ lineasBloque b
+      ganadorLinea l
+        | l == [Just X, Just X, Just X] = Just X
+        | l == [Just O, Just O, Just O] = Just O
+        | otherwise = Nothing
+
+  tablas (B b) = notElem Nothing b && isNothing (ganador $ B b)
+
+  fin b
+    | isJust (ganador b) = True
+    | tablas b = True
+    | otherwise = False
+
+  mov b
+    | isJust ficha = movFichaBloque (fromJust $ turno b) b
+    | otherwise = \_ -> Nothing
+    where
+      ficha = turno b
+
+  expandir b
+    | fin b = []
+    | otherwise = map (fromJust . mov b) $ casillasLibresBloque b
 
 -- | Obtener valor de una casilla
 casillaBloque :: Bloque -> Pos -> Maybe Ficha
@@ -74,31 +105,9 @@ movMaybeFichaBloque ficha
   | isJust ficha = movFichaBloque $ fromJust ficha
   | otherwise = \_ -> \_ -> Nothing
 
--- | Insertar una ficha nueva en un 'Bloque'. La función hace uso de
--- 'turnoBloque' para decidir que 'Ficha' colocar.
---
--- Si el movimiento es válido se devuelve un 'Just Bloque'.
--- En caso contrario se devuelve 'Nothing'
-movBloque ::
-  Bloque ->
-  -- | Posición en la que se añade la ficha
-  Pos ->
-  Maybe Bloque
-movBloque b
-  | isJust ficha = movFichaBloque (fromJust $ turnoBloque b) b
-  | otherwise = \_ -> Nothing
-  where
-    ficha = turnoBloque b
-
 -- | Lista de posiciones vacías de un 'Bloque'
 casillasLibresBloque :: Bloque -> [Pos]
 casillasLibresBloque (B b) = map fst $ filter snd [((x, y), isNothing $ b ! (x, y)) | (x, y) <- listaIndices]
-
--- | Posibles jugadas
-expandirBloque :: Bloque -> [Bloque]
-expandirBloque b
-  | finBloque b = []
-  | otherwise = map (fromJust . movBloque b) $ casillasLibresBloque b
 
 -- Dados dos bloques devuelve la posición en la que se ha jugado.
 -- Esto no es nada bonito, ya que estamos expandiendo el problema
@@ -109,7 +118,7 @@ posMovimientoBloque :: Bloque -> Bloque -> Pos
 posMovimientoBloque bloque expandido =
   libres !! fromJust (elemIndex expandido siguientes)
   where
-    siguientes = expandirBloque bloque
+    siguientes = expandir bloque
     libres = casillasLibresBloque bloque
 
 -- | Cuenta las fichas de cada tipo que hay en un 'Bloque'.
@@ -124,26 +133,6 @@ contarFichasBloque (B b) = foldr1 suma $ map f $ elems b
     f (Just O) = (0, 1)
     suma (a, b) (c, d) = (a + c, b + d)
 
--- | Determina a quien le toca
-turnoBloque :: Bloque -> Maybe Ficha
-turnoBloque b
-  | isNothing (ganadorBloque b) && (xs - os) == 1 = Just O
-  | isNothing (ganadorBloque b) && (xs - os) == 0 = Just X
-  | otherwise = Nothing
-  where
-    (xs, os) = contarFichasBloque b
-
--- | Determina si la partida ha acabado en tablas.
-tablasBloque :: Bloque -> Bool
-tablasBloque (B b) = notElem Nothing b && isNothing (ganadorBloque $ B b)
-
--- | Determina si la partida ha acabado o no
-finBloque :: Bloque -> Bool
-finBloque b
-  | isJust (ganadorBloque b) = True
-  | tablasBloque b = True
-  | otherwise = False
-
 -- | Devuelve todas las lineas rectas de un 'Bloque'
 lineasBloque :: Bloque -> [[Maybe Ficha]]
 lineasBloque (B b) = filas ++ columnas ++ diagonales
@@ -151,19 +140,6 @@ lineasBloque (B b) = filas ++ columnas ++ diagonales
     filas = [[b ! (x, y) | x <- [1 .. 3]] | y <- [1 .. 3]]
     columnas = transpose filas
     diagonales = [[b ! (x, x) | x <- [1 .. 3]], [b ! (x, 4 - x) | x <- [1 .. 3]]]
-
--- | Determina quien ha ganado la partida si es que alguien ha ganado.
-ganadorBloque :: Bloque -> Maybe Ficha
-ganadorBloque b
-  | Just X `elem` ganadores = Just X
-  | Just O `elem` ganadores = Just O
-  | otherwise = Nothing
-  where
-    ganadores = map ganadorLinea $ lineasBloque b
-    ganadorLinea l
-      | l == [Just X, Just X, Just X] = Just X
-      | l == [Just O, Just O, Just O] = Just O
-      | otherwise = Nothing
 
 {- FUNCIONES HEURÍSTICAS -}
 
@@ -174,11 +150,10 @@ heurBloque ::
   Bloque ->
   Int
 heurBloque f b
-  | ganador == Just X = a
-  | ganador == Just O = - a
+  | ganador b == Just X = a
+  | ganador b == Just O = - a
   | otherwise = 0
   where
-    ganador = ganadorBloque b
     a = if (esX f) then 1 else -1
 
 {- AGENTES -}
@@ -205,6 +180,6 @@ agenteBMinimax =
   AgenteBloque
     { funAB = \b ->
         posMovimientoBloque b $
-          minimax 9 expandirBloque (heurBloque $ fromJust $ turnoBloque b) b,
+          minimax 9 expandir (heurBloque $ fromJust $ turno b) b,
       nombreAB = "minimax"
     }

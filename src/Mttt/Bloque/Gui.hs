@@ -75,11 +75,11 @@ instance Estado EstadoBloque where
 
   modifica p e
     | isJust nuevo = e {bloqueEB = fromJust nuevo}
-    | finBloque b = e {bloqueEB = bloqueVacio}
+    | fin b = e {bloqueEB = bloqueVacio}
     | otherwise = e
     where
       b = bloqueEB e
-      nuevo = movBloque b $ pointPos p (tam e) (pos e)
+      nuevo = mov b $ pointPos p (tam e) (pos e)
 
 estadoBloqueInicial ::
   -- | Tamaño
@@ -101,9 +101,9 @@ modTemaEB ::
   EstadoBloque ->
   Tema
 modTemaEB estado
-  | ganadorBloque b == Just X = t {secundario = n}
-  | ganadorBloque b == Just O = t {principal = n}
-  | tablasBloque b = t {secundario = n, principal = n}
+  | ganador b == Just X = t {secundario = n}
+  | ganador b == Just O = t {principal = n}
+  | tablas b = t {secundario = n, principal = n}
   | otherwise = t
   where
     b = bloqueEB estado
@@ -129,8 +129,8 @@ modificaEBAgente ::
   EstadoBloque ->
   EstadoBloque
 modificaEBAgente agente fichaAgente _ estado =
-  if turnoBloque b == Just fichaAgente && not (finBloque b)
-    then (estado {bloqueEB = fromJust $ movBloque b $ funAB agente b})
+  if turno b == Just fichaAgente && not (fin b)
+    then (estado {bloqueEB = fromJust $ mov b $ funAB agente b})
     else estado
   where
     b = bloqueEB estado

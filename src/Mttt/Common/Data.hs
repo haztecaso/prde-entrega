@@ -24,9 +24,11 @@ instance Show Ficha where
   show X = "✗"
   show O = "○"
 
--- | Tipo sinónimo para representar posiciones en los tableros.
--- Puede ser utilizado tanto para 'Tablero' como para 'Bloque'
+-- | Tipo sinónimo para representar posiciones de 'Bloque'.
 type Pos = (Int, Int)
+
+-- | Tipo sinónimo para representar posiciones de 'Tablero'.
+type Pos' = (Pos, Pos)
 
 -- Utilidad para obtener el índice de una posición
 pos2int :: Pos -> Int
@@ -41,8 +43,22 @@ listaIndices :: [(Int, Int)]
 listaIndices = [(x, y) | x <- [1 .. 3], y <- [1 .. 3]]
 
 class Show j => Juego j where
-  turno :: j -> Ficha
+  -- | Determina a que 'Ficha' le toca jugar.
+  turno :: j -> Maybe Ficha
+
+  -- | Determina quien es el ganador, en caso de haberlo.
   ganador :: j -> Maybe Ficha
+
+  -- | Determina si la partida ha acabado en tablas.
   tablas :: j -> Bool
+
+  -- | Determina si la partida ha acabado o no
   fin :: j -> Bool
-  mov :: j -> Pos -> Ficha -> j
+
+  -- | Insertar una ficha nueva, usando 'turno' para decidir que 'Ficha'
+  -- colocar. Si el movimiento es válido se devuelve 'Just f' y en caso
+  -- contrario 'Nothing'.
+  mov :: j -> Pos -> Maybe j
+
+  -- | Lista de posibles siguientes posiciones.
+  expandir :: j -> [j]

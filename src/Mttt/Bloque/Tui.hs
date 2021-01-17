@@ -31,7 +31,7 @@ showListaPosBloque b ps = unlines [intersperse ' ' [casilla (x, y) | y <- [1 .. 
 preguntarMovB :: Bloque -> IO Pos
 preguntarMovB b = do
   putStr $ showListaPosBloque b $ casillasLibresBloque b
-  let jugador = fromJust $ turnoBloque b -- Atención: fromJust puede lanzar errores! Usar esta función con cuidado...
+  let jugador = fromJust $ turno b -- Atención: fromJust puede lanzar errores! Usar esta función con cuidado...
   putStr $ "\n[Turno de " ++ show jugador ++ "] "
   n <- prompt "Número de casilla donde jugar: "
   return (int2pos $ read n)
@@ -39,7 +39,7 @@ preguntarMovB b = do
 -- | Modifica un 'Bloque' insertando una ficha si es posible.
 jugarBloque :: Bloque -> Pos -> IO Bloque
 jugarBloque b pos = do
-  let nuevo = movBloque b pos
+  let nuevo = mov b pos
   maybe (putStrLn "¡Movimiento incorrecto!" >> return b) return nuevo
 
 {-
@@ -55,14 +55,14 @@ loopBPartidaMulti ::
 loopBPartidaMulti b jugadas = do
   pos <- preguntarMovB b
   nuevo <- jugarBloque b pos
-  if finBloque nuevo
+  if fin nuevo
     then return (nuevo, jugadas)
     else loopBPartidaMulti nuevo $ pos : jugadas
 
 bloqueMsgMulti :: Bloque -> String
 bloqueMsgMulti b
-  | tablasBloque b = "Tablas"
-  | isJust $ ganadorBloque b = show (fromJust $ ganadorBloque b) ++ " ha ganado"
+  | tablas b = "Tablas"
+  | isJust $ ganador b = show (fromJust $ ganador b) ++ " ha ganado"
   | otherwise = "Partida en curso"
 
 -- | TODO: revisar
@@ -91,11 +91,11 @@ loopBPartidaAgente ::
   IO (Bloque, [Pos])
 loopBPartidaAgente b agente fichaAgente jugadas = do
   pos <-
-    if turnoBloque b == Just fichaAgente
+    if turno b == Just fichaAgente
       then return (funAB agente b)
       else preguntarMovB b
   nuevo <- jugarBloque b pos
-  if finBloque nuevo
+  if fin nuevo
     then return (nuevo, jugadas)
     else loopBPartidaAgente nuevo agente fichaAgente (pos : jugadas)
 

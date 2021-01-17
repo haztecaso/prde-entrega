@@ -55,12 +55,15 @@ instance Estado EstadoTablero where
 
   modifica pos e
     | isJust nuevo = e {tableroET = fromJust nuevo}
-    | finTablero t = e {tableroET = tableroVacio}
+    | fin t = e {tableroET = tableroVacio}
     | otherwise = e
     where
       t = tableroET e
       positions = pointPosET pos e
-      nuevo = movTablero t (fst positions) (snd positions)
+      nuevo = Nothing
+
+-- TODO: arreglar
+-- nuevo = mov t (fst positions) (snd positions)
 
 -- | Dada una posición del puntero y un 'EstadoTablero' devuelve las
 -- 'Pos' del 'Bloque' y casilla donde está el puntero.
@@ -83,7 +86,7 @@ estadoTableroInicial ::
   EstadoTablero
 estadoTableroInicial tam tema =
   ET
-    { tableroET = tableroTest,
+    { tableroET = tableroVacio,
       tamET = tam,
       temaET = tema
     }
