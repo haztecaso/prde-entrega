@@ -1,11 +1,11 @@
 -- |
--- Module      : Mttt.Utils
+-- Module      : Mttt.Inteligencia
 -- Copyright   : (c) Adrián Lattes y David Diez
 -- License     : GPL-3
 -- Stability   : experimental
 --
 -- Utilidades
-module Mttt.Common.Utils where
+module Mttt.Inteligencia where
 
 {- ALGORITMOS -}
 

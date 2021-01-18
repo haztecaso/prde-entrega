@@ -1,15 +1,15 @@
 -- |
--- Module      : Mttt.Common.Tui
+-- Module      : Mttt.Tui
 -- Copyright   : (c) Adrián Lattes y David Diez
 -- License     : GPL-3
 -- Stability   : experimental
 --
 -- Definiciones generales de la intefaz de texto.
-module Mttt.Common.Tui where
+module Mttt.Tui where
 
 import Data.List (intersperse)
 import Data.Maybe (fromJust, isJust, listToMaybe)
-import Mttt.Common.Data
+import Mttt.Common
 import System.IO (hFlush, stdout)
 
 -- | Utilidad para evitar los errores generados por 'read'.

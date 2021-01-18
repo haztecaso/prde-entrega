@@ -2,13 +2,13 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 
 -- |
--- Module      : Mttt.Tablero.Data
+-- Module      : Mttt.Tablero
 -- Copyright   : (c) Adrián Lattes y David Diez
 -- License     : GPL-3
 -- Stability   : experimental
 --
 -- Implementación del juego /meta tres en raya/.
-module Mttt.Tablero.Data
+module Mttt.Tablero
   ( -- * 'Tablero': el tipo para el meta tres en raya
     Tablero (bloqueActivo),
     tableroVacio,
@@ -24,9 +24,8 @@ where
 import Data.Array (Array, listArray, (!), (//))
 import Data.List (intercalate, transpose)
 import Data.Maybe (fromJust, isJust, isNothing)
-import Mttt.Bloque.Data (Bloque, bloqueVacio, movLibreBloque)
-import Mttt.Common.Data
-import Mttt.Common.Utils
+import Mttt.Bloque (Bloque, bloqueVacio, movLibreBloque)
+import Mttt.Common
 
 -- | Tipo para un tablero de /meta tres en raya/
 data Tablero = T

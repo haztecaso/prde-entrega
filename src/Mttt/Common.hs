@@ -2,13 +2,13 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 
 -- |
--- Module      : Mttt.Utils.Data
+-- Module      : Mttt.Common
 -- Copyright   : (c) Adrián Lattes y David Diez
 -- License     : GPL-3
 -- Stability   : experimental
 --
 -- Tipos de datos, clases y funciones asociadas útiles para los dos juegos.
-module Mttt.Common.Data
+module Mttt.Common
   ( -- * Tipo 'Ficha' y funciones asociadas.
     Ficha (X, O),
     showMaybeFicha,
@@ -42,7 +42,7 @@ where
 
 import Data.List (elemIndex)
 import Data.Maybe (fromJust, isNothing)
-import Mttt.Common.Utils
+import Mttt.Inteligencia
 
 -- | Tipo que representa una ficha del juego
 data Ficha = X | O deriving (Eq)

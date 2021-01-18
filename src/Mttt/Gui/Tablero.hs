@@ -1,11 +1,11 @@
 -- |
--- Module      : Mttt.Tablero.Gui
+-- Module      : Mttt.Gui.Tablero
 -- Copyright   : (c) Adrián Lattes y David Diez
 -- License     : GPL-3
 -- Stability   : experimental
 --
 -- Interfaz gráfica del /meta tres en raya/.
-module Mttt.Tablero.Gui
+module Mttt.Gui.Tablero
   ( EstadoTablero,
     estadoTableroInicial,
     guiAgenteTablero,
@@ -14,12 +14,11 @@ where
 
 import Data.Maybe (fromJust, isJust)
 import Graphics.Gloss (Picture (Blank, Scale, Text), Point, bright, color, pictures)
-import Mttt.Bloque.Data (bloqueVacio)
-import Mttt.Bloque.Gui (EstadoBloque (EB, bloqueEB, centroEB, tamEB, temaEB))
-import Mttt.Common.Data
-import Mttt.Common.Data (Ficha (O, X), Pos, casilla, casillasLibres, fin, listaIndices, mov, turno)
-import Mttt.Common.Gui
-import Mttt.Tablero.Data
+import Mttt.Bloque (bloqueVacio)
+import Mttt.Common
+import Mttt.Gui.Bloque (EstadoBloque (EB, bloqueEB, centroEB, tamEB, temaEB))
+import Mttt.Gui.Common
+import Mttt.Tablero
 
 -- | Tipo que encapsula los datos necesarios para dibujar un 'Tablero' en
 -- pantalla

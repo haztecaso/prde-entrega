@@ -5,7 +5,7 @@ cabal-version: 1.12
 -- see: https://github.com/sol/hpack
 
 name:           mttt
-version:        0.6.0
+version:        0.7.0
 description:    Please see the README
 homepage:       https://haztecaso.com/mttt/
 author:         Adrián Lattes y David Díez
@@ -16,14 +16,15 @@ extra-source-files:
 
 library
   exposed-modules:
-      Mttt.Bloque.Data
-      Mttt.Bloque.Gui
-      Mttt.Common.Data
-      Mttt.Common.Gui
-      Mttt.Common.Tui
-      Mttt.Common.Utils
-      Mttt.Tablero.Data
-      Mttt.Tablero.Gui
+      Mttt
+      Mttt.Bloque
+      Mttt.Common
+      Mttt.Gui.Bloque
+      Mttt.Gui.Common
+      Mttt.Gui.Tablero
+      Mttt.Inteligencia
+      Mttt.Tablero
+      Mttt.Tui
   other-modules:
       Paths_mttt
   hs-source-dirs:

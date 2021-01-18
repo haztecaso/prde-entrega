@@ -5,7 +5,7 @@
 -- Stability   : experimental
 --
 -- Interfaz gráfica del /tres en raya/.
-module Mttt.Bloque.Gui
+module Mttt.Gui.Bloque
   ( EstadoBloque (EB, bloqueEB, centroEB, tamEB, temaEB),
     estadoBloqueInicial,
     guiAgenteBloque,
@@ -14,9 +14,9 @@ where
 
 import Data.Maybe (fromJust, isJust)
 import Graphics.Gloss (Picture (Blank), Point, color, pictures, play)
-import Mttt.Bloque.Data
-import Mttt.Common.Data
-import Mttt.Common.Gui
+import Mttt.Bloque
+import Mttt.Common
+import Mttt.Gui.Common
 
 -- | Tipo que encapsula los datos necesarios para dibujar un 'Bloque' en pantalla
 data EstadoBloque = EB

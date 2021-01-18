@@ -1,11 +1,11 @@
 -- |
--- Module      : Mttt.Common.Gui
+-- Module      : Mttt.Gui.Common
 -- Copyright   : (c) Adrián Lattes y David Diez
 -- License     : GPL-3
 -- Stability   : experimental
 --
 -- Definiciones generales de la intefaz gráfica.
-module Mttt.Common.Gui
+module Mttt.Gui.Common
   ( ventana,
     translateP,
     sumP,
@@ -29,7 +29,7 @@ where
 import Data.Bifunctor (bimap)
 import Graphics.Gloss (Picture, display, play)
 import Graphics.Gloss.Interface.IO.Interact
-import Mttt.Common.Data
+import Mttt.Common
 
 ventana ::
   -- | Tamaño de la ventana

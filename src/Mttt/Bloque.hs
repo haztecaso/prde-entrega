@@ -2,13 +2,13 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 
 -- |
--- Module      : Mttt.Bloque.Data
+-- Module      : Mttt.Bloque
 -- Copyright   : (c) Adrián Lattes y David Diez
 -- License     : GPL-3
 -- Stability   : experimental
 --
 -- Implementación del juego /tres en raya/.
-module Mttt.Bloque.Data
+module Mttt.Bloque
   ( -- * 'Bloque': el tipo para el tres en raya
     Bloque,
     bloqueVacio,
@@ -22,8 +22,7 @@ where
 import Data.Array (Array, elems, listArray, (!), (//))
 import Data.List (intersperse, transpose)
 import Data.Maybe (fromJust, isJust, isNothing)
-import Mttt.Common.Data
-import Mttt.Common.Utils
+import Mttt.Common
 
 -- | Tipo para un tablero de /tres en raya/
 data Bloque = B (Array Pos (Maybe Ficha))
