@@ -1,11 +1,11 @@
 name:        mttt
 version:     0.7.0
 author:      "Adrián Lattes y David Díez"
-description: "Please see the README"
+description: "Entrega de programación declarativa: implementación en Haskell del juego `meta tres en raya`. En el archivo readme.md hay más información sobre el juego y el código."
 homepage: "https://haztecaso.com/mttt/"
 
 extra-source-files:
-- README.md
+- readme.md
 
 # Metadata used when publishing your package
 # synopsis:            Short description of your package

@@ -28,16 +28,15 @@ module Mttt.Common
         ganador,
         tablas,
         fin,
-        mov,
-        expandir
+        mov
       ),
+    expandir,
     turno,
-    movTonto,
+    movTurno,
     mov2pos,
 
     -- * Agentes
     Agente (A, f, nombre),
-    agenteTonto,
     agenteMinimax,
   )
 where
@@ -109,13 +108,9 @@ class
   -- | Determina si la partida ha acabado o no
   fin :: juego -> Bool
 
-  -- | Insertar una ficha nueva, usando 'turno' para decidir que 'Ficha'
-  -- colocar. Si el movimiento es válido se devuelve 'Just f' y en caso
-  -- contrario 'Nothing'.
-  mov :: juego -> pos -> Maybe juego
-
-  -- | Lista de posibles siguientes posiciones.
-  expandir :: juego -> [juego]
+  -- | Insertar una ficha nueva. Si el movimiento es válido se devuelve
+  -- 'Just juego' y en caso contrario 'Nothing'.
+  mov :: juego -> Ficha -> pos -> Maybe juego
 
 -- | Devuelve la 'Ficha' a la que le toca jugar
 turno :: Juego j p c => j -> Maybe Ficha
@@ -126,8 +121,17 @@ turno j
   where
     (xs, os) = contarFichas j
 
-movTonto :: Juego j p c => j -> j
-movTonto j = fromJust (mov j $ (head . posicionesLibres) j)
+-- | Insertar una ficha nueva, usando 'turno' para decidir que 'Ficha'
+-- colocar. Si el movimiento es válido se devuelve 'Just f' y en caso
+-- contrario 'Nothing'.
+movTurno :: Juego j p c => j -> p -> Maybe j
+movTurno j p = maybe Nothing (\f -> mov j f p) (turno j)
+
+-- | Lista de posibles siguientes posiciones.
+expandir :: Juego j p c => j -> [j]
+expandir t
+  | fin t = []
+  | otherwise = maybe [] id (sequence $ map (movTurno t) (posicionesLibres t))
 
 -- | Dados dos juegos devuelve la posición en la que se ha jugado.
 --
@@ -151,11 +155,6 @@ ajustaHeur ::
 ajustaHeur heur f = (* x) . heur
   where
     x = if f == X then 1 else -1
-
--- | Agente que devuelve la primera posición disponible donde jugar,
--- en el orden generado por 'posicionesLibres'.
-agenteTonto :: Juego j p c => Ficha -> Agente j
-agenteTonto = \_ -> A {f = movTonto, nombre = "Agente tonto"}
 
 agenteMinimax ::
   -- | 'Ficha' del agente

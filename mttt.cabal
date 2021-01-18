@@ -6,13 +6,13 @@ cabal-version: 1.12
 
 name:           mttt
 version:        0.7.0
-description:    Please see the README
+description:    Entrega de programación declarativa: implementación en Haskell del juego `meta tres en raya`. En el archivo readme.md hay más información sobre el juego y el código.
 homepage:       https://haztecaso.com/mttt/
 author:         Adrián Lattes y David Díez
 maintainer:     Adrián Lattes y David Díez
 build-type:     Simple
 extra-source-files:
-    README.md
+    readme.md
 
 library
   exposed-modules:

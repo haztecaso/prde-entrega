@@ -13,7 +13,6 @@ module Mttt.Gui.Tablero
   )
 where
 
-import Data.Maybe (fromJust, isJust)
 import Graphics.Gloss (Picture (Blank, Scale, Text), Point, bright, color, pictures)
 import Mttt.Bloque (bloqueVacio)
 import Mttt.Common
@@ -53,13 +52,13 @@ instance Estado EstadoTablero where
           }
 
   modifica p e
-    | isJust nuevo = e {tableroET = fromJust nuevo}
     | fin t = e {tableroET = tableroVacio}
+    | otherwise = maybe e (\n -> e {tableroET = n}) nuevo
     | otherwise = e
     where
       t = tableroET e
       positions = pointPos' p $ tam e
-      nuevo = mov t (fst positions, snd positions)
+      nuevo = movTurno t (fst positions, snd positions)
 
 pointPos' ::
   -- | Posición del puntero en la pantalla

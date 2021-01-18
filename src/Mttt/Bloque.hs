@@ -10,7 +10,6 @@ module Mttt.Bloque
   ( -- * 'Bloque': el tipo para el tres en raya
     Bloque,
     bloqueVacio,
-    movLibreBloque,
 
     -- * Funciones heurísticas
     heur0,
@@ -19,7 +18,7 @@ where
 
 import Data.Array (Array, elems, listArray, (!), (//))
 import Data.List (intersperse, transpose)
-import Data.Maybe (fromJust, isJust, isNothing)
+import Data.Maybe (isJust, isNothing)
 import Mttt.Common
 
 -- | Tipo para un tablero de /tres en raya/
@@ -61,15 +60,9 @@ instance Juego Bloque Pos (Maybe Ficha) where
     | tablas b = True
     | otherwise = False
 
-  mov b
-    | isJust ficha = movFichaBloque (fromJust $ turno b) b
-    | otherwise = \_ -> Nothing
-    where
-      ficha = turno b
-
-  expandir b
-    | fin b = []
-    | otherwise = map (fromJust . mov b) $ casillasLibres b
+  mov (B b) f p
+    | p `elem` listaIndices && isNothing (b ! p) = Just (B (b // [(p, Just f)]))
+    | otherwise = Nothing
 
 -- | 'Bloque' vacío
 bloqueVacio :: Bloque
@@ -81,31 +74,6 @@ lineas (B b) = filas ++ columnas ++ diagonales
     filas = [[b ! (x, y) | x <- [1 .. 3]] | y <- [1 .. 3]]
     columnas = transpose filas
     diagonales = [[b ! (x, x) | x <- [1 .. 3]], [b ! (x, 4 - x) | x <- [1 .. 3]]]
-
--- | Insertar una `Ficha` nueva en un 'Bloque'. Esta función es la parte común
--- de las funciones `mov` y `movLibreBloque`.
-movFichaBloque ::
-  Ficha ->
-  Bloque ->
-  -- | Posición en la que se añade la ficha
-  Pos ->
-  Maybe Bloque
-movFichaBloque ficha (B b) (x, y)
-  | ((x, y) `elem` listaIndices)
-      && isNothing (b ! (x, y)) =
-    Just (B (b // [((x, y), Just ficha)]))
-  | otherwise = Nothing
-
--- | Insertar una `Maybe Ficha` nueva en un 'Bloque', ignorando el turno.
-movLibreBloque ::
-  Maybe Ficha ->
-  Bloque ->
-  -- | Posición en la que se añade la ficha
-  Pos ->
-  Maybe Bloque
-movLibreBloque ficha
-  | isJust ficha = movFichaBloque $ fromJust ficha
-  | otherwise = \_ -> \_ -> Nothing
 
 {- FUNCIONES HEURÍSTICAS -}
 

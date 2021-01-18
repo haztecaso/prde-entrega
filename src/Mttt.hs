@@ -58,5 +58,10 @@ nuevoJuego True True False p = tuiAgente (agenteMinimax p "heur0" B.heur0 expand
 nuevoJuego True False True _ = guiMulti $ estadoBloqueInicial 350 temaOscuro
 nuevoJuego True False False p = guiAgenteBloque (estadoBloqueInicial 350 temaOscuro) p (agenteMinimax p "heur1" B.heur0 expandir 9)
 nuevoJuego False False True _ = guiMulti $ estadoTableroInicial 350 temaOscuro
+nuevoJuego False False False p = do
+  agente <- getAgenteTablero
+  guiAgenteTablero (estadoTableroInicial 350 temaOscuro) p (agente p)
 nuevoJuego False True True _ = tuiMulti tableroVacio
-nuevoJuego _ _ _ _ = putStrLn "¡¡¡PENDIENTE DE IMPLEMENTAR!!!"
+nuevoJuego False True False p = do
+  agente <- getAgenteTablero
+  tuiAgente (agente p) p tableroVacio

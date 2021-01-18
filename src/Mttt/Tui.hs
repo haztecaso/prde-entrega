@@ -16,7 +16,7 @@ module Mttt.Tui
 where
 
 import Data.List (intersperse)
-import Data.Maybe (fromJust, isJust, listToMaybe)
+import Data.Maybe (isJust, listToMaybe)
 import Mttt.Common
 import System.IO (hFlush, stdout)
 
@@ -62,7 +62,7 @@ printCasillasLibres j =
 -- | Pregunta donde se quiere jugar.
 preguntarJugada :: Juego juego pos c => juego -> IO pos
 preguntarJugada j = do
-  let jugador = fromJust $ turno j -- Atención: este fromJust no debería causar problemas
+  let jugador = maybe "??" show (turno j)
   putStr $ "[Turno de " ++ show jugador ++ "] "
   posStr <- prompt "Posición donde jugar: "
   let pos = maybeRead $ '(' : posStr ++ ")"
@@ -74,12 +74,11 @@ jugar j = do
   print j
   printCasillasLibres j
   pos <- preguntarJugada j
-  let intento = mov j pos
-  if isJust intento
-    then return (fromJust intento, pos)
-    else do
-      putStrLn "¡Movimiento incorrecto!"
-      jugar j
+  let intento = movTurno j pos
+  maybe
+    (putStrLn "¡Movimiento incorrecto!" >> jugar j)
+    (\j -> return (j, pos))
+    intento
 
 -- | Loop para jugar una partida en modo multijugador.
 loopMulti ::
@@ -98,8 +97,11 @@ loopMulti juego jugadas = do
 mensajeFin :: Juego j p c => j -> String
 mensajeFin j
   | tablas j = "Tablas."
-  | isJust $ ganador j = show (fromJust $ ganador j) ++ " ha ganado."
-  | otherwise = "Algo va mal: la partida no ha acabado todavía."
+  | otherwise =
+    maybe
+      "Algo va mal: la partida no ha acabado todavía."
+      (\f -> show f ++ " ha ganado.")
+      (ganador j)
 
 -- | Función IO para jugar una partida en modo multijugador.
 tuiMulti :: Juego j p c => j -> IO ()
@@ -142,8 +144,11 @@ mensajeFinAgente ::
   String
 mensajeFinAgente j f
   | tablas j = "Tablas."
-  | isJust $ ganador j = mensajeGanador (fromJust $ ganador j)
-  | otherwise = "Algo va mal: la partida no ha acabado todavía."
+  | otherwise =
+    maybe
+      "Algo va mal: la partida no ha acabado todavía."
+      (\f -> mensajeGanador f)
+      (ganador j)
   where
     mensajeGanador ficha
       | f == ficha = "El agente te ha ganado."

@@ -2,9 +2,10 @@ TO DO
 -----
 
 - Tablero
-  - Error si se intenta jugar en una casilla ocupada
   - Definir funciones heurísticas
-  - AgenteMinimax
+
+- Tui
+  - Arreglar tuiAgente
 
 - IA
   - Definición de funciones heurísticas

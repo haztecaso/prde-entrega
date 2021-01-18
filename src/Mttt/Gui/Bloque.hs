@@ -13,7 +13,6 @@ module Mttt.Gui.Bloque
   )
 where
 
-import Data.Maybe (fromJust, isJust)
 import Graphics.Gloss (Picture (Blank), Point, color, pictures, play)
 import Mttt.Bloque
 import Mttt.Common
@@ -39,20 +38,21 @@ instance Estado EstadoBloque where
 
   dibuja e = pictures $ [dibujaCasilla pos | pos <- listaIndices]
     where
-      dibujaCasilla pos
-        | isJust casilla' = dibujaFicha (modTema e) (tam e * 0.2) origen (fromJust casilla')
-        | otherwise = Blank
+      dibujaCasilla pos =
+        maybe
+          Blank
+          (dibujaFicha (modTema e) (tam e * 0.2) origen)
+          casilla'
         where
           casilla' = casilla (bloqueEB e) pos
           origen = posPoint (tam e / 3) pos
 
   modifica p e
-    | isJust nuevo = e {bloqueEB = fromJust nuevo}
     | fin b = e {bloqueEB = bloqueVacio}
-    | otherwise = e
+    | otherwise = maybe e (\n -> e {bloqueEB = n}) nuevo
     where
       b = bloqueEB e
-      nuevo = mov b $ pointPos p (tam e) (centro e)
+      nuevo = movTurno b $ pointPos p (tam e) (centro e)
 
 -- | Función para construir un 'EstadoBloque' con un 'bloqueVacio'tableroVacio'
 estadoBloqueInicial ::

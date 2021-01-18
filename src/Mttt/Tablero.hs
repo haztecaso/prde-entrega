@@ -13,16 +13,13 @@ module Mttt.Tablero
 
     -- * Funciones heurísticas
     heur0,
-
-    -- * Agentes inteligentes
-    agenteTonto,
   )
 where
 
 import Data.Array (Array, listArray, (!), (//))
 import Data.List (intercalate, transpose)
 import Data.Maybe (fromJust, isJust, isNothing)
-import Mttt.Bloque (Bloque, bloqueVacio, movLibreBloque)
+import Mttt.Bloque (Bloque, bloqueVacio)
 import Mttt.Common
 
 -- | Tipo para un tablero de /meta tres en raya/
@@ -53,9 +50,7 @@ instance Juego Tablero (Pos, Pos) Bloque where
 
   casilla t p = bloques t ! p
 
-  casillasLibres t
-    | isJust (bloqueActivo t) = [fromJust (bloqueActivo t)]
-    | otherwise = [p | p <- listaIndices, not (fin $ casilla t p)]
+  casillasLibres t = maybe [p | p <- listaIndices, not (fin $ casilla t p)] (\b -> [b]) (bloqueActivo t)
 
   posicionesLibres t = [(p1, p2) | p1 <- casillasLibres t, p2 <- posicionesLibres (bloques t ! p1)]
 
@@ -77,27 +72,25 @@ instance Juego Tablero (Pos, Pos) Bloque where
     | tablas t = True
     | otherwise = False
 
-  mov t (p1, p2) --TODO: Arreglar, fallos variados...
+  mov t f (p1, p2)
     | validPos && Just p1 == bloqueActivo t = nuevo
     | validPos && isNothing (bloqueActivo t) = nuevo
     | otherwise = Nothing
     where
       validPos = p1 `elem` casillasLibres t && p2 `elem` listaIndices
-      bloque = movLibreBloque (turno t) (bloques t ! p1) p2
+      bloque = mov (bloques t ! p1) f p2
       siguienteBloqueActivo
         | fin (bloques t ! p2) = Nothing
-        | isJust bloque && fin (fromJust bloque) = Nothing
+        | isJust bloque && fin (fromJust bloque) = Nothing --TODO: ¿Cómo evitar fromJust?
         | otherwise = Just p2
       nuevo =
-        Just
-          T
-            { bloques = bloques t // [(p1, fromJust bloque)],
-              bloqueActivo = siguienteBloqueActivo
-            }
-
-  expandir t
-    | fin t = []
-    | otherwise = map (fromJust . mov t) $ posicionesLibres t
+        ( \b ->
+            T
+              { bloques = bloques t // [(p1, b)],
+                bloqueActivo = siguienteBloqueActivo
+              }
+        )
+          <$> bloque
 
 -- | 'Tablero' vacío
 tableroVacio :: Tablero
