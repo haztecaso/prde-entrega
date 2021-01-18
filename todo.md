@@ -1,11 +1,8 @@
 TO DO
 -----
 
-- Gui
-  - Dibujar turno
-- Tablero.Tui
-  - Completar
 - Tablero
+  - Error si se intenta jugar en una casilla ocupada
   - Definir funciones heurísticas
   - AgenteMinimax
 

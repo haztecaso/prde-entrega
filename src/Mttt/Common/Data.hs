@@ -74,7 +74,11 @@ listaIndices = [(x, y) | x <- [1 .. 3], y <- [1 .. 3]]
 -- inferir bien los tipos, hemos definido una dependencia funcional entre dichos
 -- parámetros. De este modo podemos tener instancias de esta clase que utilizan
 -- tipos distintos para las posiciones de los tableros.
-class (Show juego, Eq juego) => Juego juego pos casilla | juego -> pos casilla where
+class
+  (Show juego, Eq juego, Read pos, Show pos) =>
+  Juego juego pos casilla
+    | juego -> pos casilla
+  where
   -- | Cuenta las fichas de cada tipo que hay en el juego. El primer valor es la
   -- cantidad de 'X's y el segundo de 'O's.
   contarFichas :: juego -> (Int, Int)

@@ -79,13 +79,14 @@ nuevoJuego ::
   -- | Ficha del Agente
   Ficha ->
   IO ()
-nuevoJuego True True True _ = tuiBloqueMulti
+nuevoJuego True True True _ = tuiMulti bloqueVacio
 nuevoJuego True True False p = do
   tuiBloqueAgente agenteBMinimax p
 nuevoJuego True False True _ = guiMulti $ estadoBloqueInicial 350 temaOscuro
 nuevoJuego True False False p = do
   guiBloqueAgente temaOscuro 350 agenteBMinimax p
 nuevoJuego False False True _ = guiMulti $ estadoTableroInicial 350 temaOscuro
+nuevoJuego False True True _ = tuiMulti tableroVacio
 nuevoJuego _ _ _ _ = putStrLn "¡¡¡PENDIENTE DE IMPLEMENTAR!!!"
 
 main :: IO ()

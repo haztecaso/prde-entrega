@@ -118,17 +118,10 @@ lineas t = filas ++ columnas ++ diagonales
   where
     filas = [[bloques t ! (x, y) | x <- [1 .. 3]] | y <- [1 .. 3]]
     columnas = transpose filas
-    diagonales = [[bloques t ! (x, x) | x <- [1 .. 3]], [bloques t ! (x, 4 - x) | x <- [1 .. 3]]]
-
-tableroTest' = fromJust $ mov tableroVacio ((2, 2), (1, 1))
-
-tableroTest'' = fromJust $ mov tableroTest' ((1, 1), (1, 1))
-
-tableroTest''' = fromJust $ mov tableroTest'' ((1, 1), (2, 3))
-
-tableroTest'''' = fromJust $ mov tableroTest''' ((2, 3), (3, 1))
-
-tableroTest = fromJust $ mov tableroTest'''' ((3, 1), (2, 2))
+    diagonales =
+      [ [bloques t ! (x, x) | x <- [1 .. 3]],
+        [bloques t ! (x, 4 - x) | x <- [1 .. 3]]
+      ]
 
 -- | Tipo para funciones heurísticas de 'Tablero'.
 data HeurTablero = HeurTablero
