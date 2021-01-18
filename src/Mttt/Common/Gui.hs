@@ -37,7 +37,7 @@ ventana ::
   Display
 ventana tam = InWindow "Meta tres en raya" (tamV, tamV) (0, 0)
   where
-    tamV = floor $ 1.15 * tam
+    tamV = floor $ 1.25 * tam
 
 -- | Transladar a un 'Punto'
 translateP :: Point -> Picture -> Picture

@@ -53,7 +53,7 @@ instance Estado EstadoBloque where
       b = bloqueEB e
       nuevo = mov b $ pointPos p (tam e) (centro e)
 
--- | Función para construir un 'EstadoBloque' con un 'bloqueVacio'
+-- | Función para construir un 'EstadoBloque' con un 'bloqueVacio'tableroVacio'
 estadoBloqueInicial ::
   -- | Tamaño
   Float ->

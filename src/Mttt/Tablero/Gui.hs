@@ -12,10 +12,10 @@ module Mttt.Tablero.Gui
 where
 
 import Data.Maybe (fromJust, isJust)
-import Graphics.Gloss (Picture, Point, bright, color, pictures)
+import Graphics.Gloss (Picture (Blank, Scale, Text), Point, bright, color, pictures)
 import Mttt.Bloque.Data (bloqueVacio)
 import Mttt.Bloque.Gui (EstadoBloque (EB, bloqueEB, centroEB, tamEB, temaEB))
-import Mttt.Common.Data (Pos, casilla, casillasLibres, fin, listaIndices, mov)
+import Mttt.Common.Data (Ficha (O, X), Pos, casilla, casillasLibres, fin, listaIndices, mov, turno)
 import Mttt.Common.Gui
 import Mttt.Tablero.Data
 
@@ -37,7 +37,7 @@ instance Estado EstadoTablero where
 
   dibuja e =
     pictures $
-      dibujaCasillasLibres e : [dibuja' $ eBloque pos | pos <- listaIndices]
+      dibujaTurno e : dibujaCasillasLibres e : [dibuja' $ eBloque pos | pos <- listaIndices]
     where
       eBloque pos =
         EB
@@ -91,3 +91,15 @@ dibujaCasillasLibres e =
     t = tam e / 3
     f = \x -> [x]
     pos = maybe (casillasLibres $ tableroET e) f $ bloqueActivo $ tableroET e
+
+dibujaTurno :: EstadoTablero -> Picture
+dibujaTurno e
+  | turno (tableroET e) == Just X = tf c1 (Text "Turno de X")
+  | turno (tableroET e) == Just O = tf c2 (Text "Turno de O")
+  | otherwise = Blank
+  where
+    c1 = principal $ temaET e
+    c2 = secundario $ temaET e
+    t = tam e
+    s = t / 2000
+    tf c p = color c $ translateP (0, - t / 14) $ Scale s s p

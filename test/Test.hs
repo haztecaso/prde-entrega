@@ -1,12 +1,24 @@
+import Data.Maybe
 import Graphics.Gloss.Interface.IO.Game (playIO)
 import Graphics.Gloss.Interface.IO.Interact
-import Mttt.Common.Data (Pos)
+import Mttt.Common.Data
 import Mttt.Common.Gui
+import Mttt.Tablero.Data
 import Mttt.Tablero.Gui
+
+tableroTest' = fromJust $ mov tableroVacio ((2, 2), (1, 1))
+
+tableroTest'' = fromJust $ mov tableroTest' ((1, 1), (1, 1))
+
+tableroTest''' = fromJust $ mov tableroTest'' ((1, 1), (2, 3))
+
+tableroTest'''' = fromJust $ mov tableroTest''' ((2, 3), (3, 1))
+
+tableroTest = fromJust $ mov tableroTest'''' ((3, 1), (2, 2))
 
 testTableroModifica :: IO ()
 testTableroModifica = do
-  guiMultiIO (estadoTableroInicial 700 temaOscuro)
+  guiMultiIO (estadoTableroInicial 350 temaOscuro)
 
 dibujaIO :: Estado e => e -> IO Picture
 dibujaIO e = return (dibuja' e)
