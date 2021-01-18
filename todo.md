@@ -1,8 +1,6 @@
 TO DO
 -----
 
-- Tablero
-  - Definir funciones heurísticas
 
 - Tui
   - Arreglar tuiAgente
@@ -19,7 +17,6 @@ TO DO
 - Revisar todos los comentarios de TODO
 - Revisar formato codigo
 - Revisar warnings
-- Ver si hay funciones sin documentar
 
 ### Organización del código
 
