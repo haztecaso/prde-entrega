@@ -6,12 +6,8 @@ TO DO
   - Definir funciones heurísticas
   - AgenteMinimax
 
-### Desarrollo
-
 - IA
-  - Jugador aleatorio
   - Definición de funciones heurísticas
-  - MiniMax
   - Poda Alpha-Beta
   - ¿Reducciones del árbol, definiciones de jugadas equivalentes?
 
@@ -24,11 +20,8 @@ TO DO
 - Revisar formato codigo
 - Revisar warnings
 - Ver si hay funciones sin documentar
-- Atención con la pereza
-  - Tipos de datos estrictos?
 
 ### Organización del código
 
 - Decidir bien los nombres de las cosas
   - Tipos (Bloque, Tablero, ...)
-  - Módulos
