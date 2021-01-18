@@ -5,7 +5,7 @@ cabal-version: 1.12
 -- see: https://github.com/sol/hpack
 
 name:           mttt
-version:        0.4.0
+version:        0.6.0
 description:    Please see the README
 homepage:       https://haztecaso.com/mttt/
 author:         Adrián Lattes y David Díez
