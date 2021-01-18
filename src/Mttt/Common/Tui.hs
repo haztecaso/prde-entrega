@@ -36,19 +36,19 @@ putOps' (x : xs) n = do
   putOps' xs (n + 1)
 
 -- | Seleccionar una opción
-selOpcion :: [String] -> IO Int
-selOpcion ops = do
+getOpcion :: [String] -> IO Int
+getOpcion ops = do
   putOps ops
   n <- prompt "Selecciona una opción: "
   if (read n >= 0) && (read n < length ops)
     then return (read n)
-    else selOpcion ops
+    else getOpcion ops
 
 printCasillasLibres :: Juego juego p c => juego -> IO ()
 printCasillasLibres j =
-  print
-    ( "Casillas donde jugar: "
-        ++ (concat $ intersperse " " [show c | c <- casillasLibres j])
+  putStrLn
+    ( "Casillas donde se puede jugar: "
+        ++ (concat $ intersperse " - " $ map (tail . init) [show c | c <- casillasLibres j])
     )
 
 -- | Pregunta donde se quiere jugar.
@@ -74,9 +74,14 @@ jugar j = do
       jugar j
 
 -- | Loop para jugar una partida en modo multijugador.
-loopMulti :: Juego j p c => j -> [p] -> IO (j, [p])
-loopMulti j jugadas = do
-  (siguiente, pos) <- jugar j
+loopMulti ::
+  Juego j p c =>
+  j ->
+  -- | Lista de jugadas ordenadas de la más reciente a la más antigua
+  [p] ->
+  IO (j, [p])
+loopMulti juego jugadas = do
+  (siguiente, pos) <- jugar juego
   if fin siguiente
     then return (siguiente, pos : jugadas)
     else loopMulti siguiente $ pos : jugadas
@@ -88,6 +93,7 @@ mensajeFin j
   | isJust $ ganador j = show (fromJust $ ganador j) ++ " ha ganado."
   | otherwise = "Algo va mal: la partida no ha acabado todavía."
 
+-- | Función IO para jugar una partida en modo multijugador.
 tuiMulti :: Juego j p c => j -> IO ()
 tuiMulti j = do
   (final, jugadas) <- loopMulti j []
@@ -96,4 +102,57 @@ tuiMulti j = do
   putStrLn "Lista de jugadas: "
   print $ reverse jugadas
 
--- loopAgente :: Juego j p c => j -> Agente j -> IO (j, [p])
+-- | Loop para jugar una partida contra un agente.
+loopAgente ::
+  Juego j p c =>
+  -- | 'Agente' contra el que jugar
+  Agente j ->
+  -- | 'Ficha' del agente
+  Ficha ->
+  j ->
+  -- | Lista de jugadas ordenadas de la más reciente a la más antigua
+  [p] ->
+  IO (j, [p])
+loopAgente agente ficha juego jugadas = do
+  (siguiente, pos) <-
+    if turno juego == Just ficha
+      then return (juego', mov2pos juego juego')
+      else jugar juego
+  if fin siguiente
+    then return (siguiente, pos : jugadas)
+    else loopMulti siguiente $ pos : jugadas
+  where
+    juego' = f agente juego
+
+-- | Mensaje que enseñar al final de una partida contra un agente.
+mensajeFinAgente ::
+  Juego j p c =>
+  -- | Juego final
+  j ->
+  -- | 'Ficha' del agente
+  Ficha ->
+  String
+mensajeFinAgente j f
+  | tablas j = "Tablas."
+  | isJust $ ganador j = mensajeGanador (fromJust $ ganador j)
+  | otherwise = "Algo va mal: la partida no ha acabado todavía."
+  where
+    mensajeGanador ficha
+      | f == ficha = "El agente te ha ganado."
+      | otherwise = "Has ganado al agente."
+
+-- | Función IO para jugar una partida contra un agente.
+tuiAgente ::
+  Juego j p c =>
+  -- | 'Agente' contra el que jugar
+  Agente j ->
+  -- | 'Ficha' del agente
+  Ficha ->
+  j ->
+  IO ()
+tuiAgente agente ficha j = do
+  (final, jugadas) <- loopAgente agente ficha j []
+  print final
+  putStrLn $ "\n[FIN] " ++ mensajeFinAgente final ficha
+  putStrLn "Lista de jugadas: "
+  print $ reverse jugadas

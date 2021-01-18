@@ -32,7 +32,11 @@ module Mttt.Common.Data
         expandir
       ),
     turno,
+    movTonto,
     mov2pos,
+    Agente (A, f, nombre),
+    agenteTonto,
+    agenteMinimax,
   )
 where
 
@@ -111,6 +115,7 @@ class
   -- | Lista de posibles siguientes posiciones.
   expandir :: juego -> [juego]
 
+-- | Devuelve la 'Ficha' a la que le toca jugar
 turno :: Juego j p c => j -> Maybe Ficha
 turno j
   | isNothing (ganador j) && (xs - os) == 1 = Just O
@@ -118,6 +123,9 @@ turno j
   | otherwise = Nothing
   where
     (xs, os) = contarFichas j
+
+movTonto :: Juego j p c => j -> j
+movTonto j = fromJust (mov j $ (head . posicionesLibres) j)
 
 -- | Dados dos juegos devuelve la posición en la que se ha jugado.
 --
@@ -127,3 +135,40 @@ turno j
 -- posición en la que jugar, en vez de los propios juegos...
 mov2pos :: Juego j p c => j -> j -> p
 mov2pos j1 j2 = posicionesLibres j1 !! fromJust (elemIndex j2 $ expandir j1)
+
+data Agente a = A {f :: (a -> a), nombre :: String}
+
+-- | Ajusta una función heurística para que corresponda a la ficha dada.
+ajustaHeur ::
+  -- | Función heurística
+  (a -> Int) ->
+  -- | 'Ficha' del agente
+  Ficha ->
+  -- | Función heurística ajustada
+  (a -> Int)
+ajustaHeur heur f = (* x) . heur
+  where
+    x = if f == X then 1 else -1
+
+-- | Agente que devuelve la primera posición disponible donde jugar,
+-- en el orden generado por 'posicionesLibres'.
+agenteTonto :: Juego j p c => Ficha -> Agente j
+agenteTonto = \_ -> A {f = movTonto, nombre = "Agente tonto"}
+
+agenteMinimax ::
+  -- | 'Ficha' del agente
+  Ficha ->
+  -- | Nombre de la función heurística
+  String ->
+  -- | Función heurística
+  (a -> Int) ->
+  -- | Función de expansión
+  (a -> [a]) ->
+  -- | Profundidad del 'minimax'
+  Int ->
+  Agente a
+agenteMinimax ficha nombreHeur heur exp prof =
+  A
+    { f = \j -> minimax prof exp (ajustaHeur heur ficha) j,
+      nombre = "minimax-" ++ nombreHeur ++ " (prof " ++ show prof ++ ")"
+    }

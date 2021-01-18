@@ -14,20 +14,17 @@ module Mttt.Tablero.Data
     tableroVacio,
 
     -- * Funciones heurísticas
-    HeurTablero (funHT, descHT),
-    heurTablero0,
+    heur0,
 
     -- * Agentes inteligentes
-    AgenteTablero (funAT, nombreAT),
-    agenteTTonto,
-    agenteTMinimax,
+    agenteTonto,
   )
 where
 
 import Data.Array (Array, listArray, (!), (//))
 import Data.List (intercalate, transpose)
 import Data.Maybe (fromJust, isJust, isNothing)
-import Mttt.Bloque.Data
+import Mttt.Bloque.Data (Bloque, bloqueVacio, movLibreBloque)
 import Mttt.Common.Data
 import Mttt.Common.Utils
 
@@ -123,40 +120,10 @@ lineas t = filas ++ columnas ++ diagonales
         [bloques t ! (x, 4 - x) | x <- [1 .. 3]]
       ]
 
--- | Tipo para funciones heurísticas de 'Tablero'.
-data HeurTablero = HeurTablero
-  { funHT :: Tablero -> Int,
-    descHT :: String
-  }
+{- FUNCIONES HEURÍSTICAS -}
 
--- | Función heuristica tonta, para testeos
-heurTablero0 :: HeurTablero
-heurTablero0 =
-  HeurTablero
-    { funHT = const 0,
-      descHT = "0"
-    }
-
--- | Tipo para Agentes de 'Tablero'.
-data AgenteTablero = AgenteTablero
-  { funAT :: Tablero -> (Pos, Pos),
-    nombreAT :: String
-  }
-
--- | Agente que devuelve la primera posición disponible donde jugar,
--- en el orden generado por 'posicionesLibres'.
-agenteTTonto :: AgenteTablero
-agenteTTonto =
-  AgenteTablero
-    { funAT = head . posicionesLibres,
-      nombreAT = "tonto"
-    }
-
--- | Dada una 'HeurTablero' y una profundidad devuelve el 'AgenteTablero'
--- que juega con el minimax.
-agenteTMinimax :: HeurTablero -> Int -> AgenteTablero
-agenteTMinimax h prof =
-  AgenteTablero
-    { funAT = \t -> mov2pos t (minimax prof expandir (funHT h) t),
-      nombreAT = "minimax - heur " ++ descHT h ++ " (profundidad " ++ show prof ++ ")"
-    }
+heur0 ::
+  -- | 'Ficha' con la que juega el agente
+  Tablero ->
+  Int
+heur0 _ = 0

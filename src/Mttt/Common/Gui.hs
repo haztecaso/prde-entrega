@@ -22,14 +22,14 @@ module Mttt.Common.Gui
     dibuja',
     modificaEvent,
     guiMulti,
-    -- guiAgente,
+    guiAgente,
   )
 where
 
 import Data.Bifunctor (bimap)
 import Graphics.Gloss (Picture, display, play)
 import Graphics.Gloss.Interface.IO.Interact
-import Mttt.Common.Data (Ficha (O, X), Pos)
+import Mttt.Common.Data
 
 ventana ::
   -- | Tamaño de la ventana
@@ -240,7 +240,7 @@ class Estado e where
 
 -- | Display de un estado. Útil para hacer testing.
 displayEstado :: Estado e => e -> IO ()
-displayEstado estado = display (ventana $ tam estado) (fondo $ tema estado) (dibuja' estado)
+displayEstado e = display (ventana $ tam e) (fondo $ tema e) (dibuja' e)
 
 -- | Parte común de los dibujos. Posiciona correctamente y añade una cuadrícula
 -- al dibujo de un estado.
@@ -260,15 +260,42 @@ modificaEvent (EventKey (MouseButton LeftButton) Up _ point) = modifica point
 modificaEvent _ = id
 
 -- | Función IO para jugar en modo multijugador
-guiMulti :: Estado e => e -> IO ()
-guiMulti e = play (ventana $ tam e) (fondo $ tema e) 15 e dibuja' modificaEvent (const id)
-
-{-
-guiAgente ::
+guiMulti ::
   Estado e =>
-  -- | Estado actual
+  -- | Estado inicial
   e ->
-  -- | 'Ficha' del 'AgenteBloque'
-  Ficha ->
   IO ()
-  -}
+guiMulti e =
+  play
+    (ventana $ tam e)
+    (fondo $ tema e)
+    15
+    e
+    dibuja'
+    modificaEvent
+    (const id)
+
+-- | Función IO para jugar contra un agente
+--
+-- __Nota:__ Debido a que la librería /gloss/ es algo limitada hemos tenido que
+-- usar de una manera un poco cutre la función 'play'.
+guiAgente ::
+  (Juego j p c, Estado e) =>
+  -- | Función que modifica un estado
+  (Agente j -> Ficha -> Float -> e -> e) ->
+  -- | Estado inicial
+  e ->
+  -- | 'Ficha' del 'Agente'
+  Ficha ->
+  -- | 'Agente' contra el que jugar
+  Agente j ->
+  IO ()
+guiAgente modificaAgente e f a =
+  play
+    (ventana $ tam e)
+    (fondo $ tema e)
+    15
+    e
+    dibuja'
+    modificaEvent
+    $ modificaAgente a f

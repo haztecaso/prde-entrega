@@ -8,6 +8,7 @@
 module Mttt.Tablero.Gui
   ( EstadoTablero,
     estadoTableroInicial,
+    guiAgenteTablero,
   )
 where
 
@@ -15,6 +16,7 @@ import Data.Maybe (fromJust, isJust)
 import Graphics.Gloss (Picture (Blank, Scale, Text), Point, bright, color, pictures)
 import Mttt.Bloque.Data (bloqueVacio)
 import Mttt.Bloque.Gui (EstadoBloque (EB, bloqueEB, centroEB, tamEB, temaEB))
+import Mttt.Common.Data
 import Mttt.Common.Data (Ficha (O, X), Pos, casilla, casillasLibres, fin, listaIndices, mov, turno)
 import Mttt.Common.Gui
 import Mttt.Tablero.Data
@@ -37,7 +39,10 @@ instance Estado EstadoTablero where
 
   dibuja e =
     pictures $
-      dibujaTurno e : dibujaCasillasLibres e : [dibuja' $ eBloque pos | pos <- listaIndices]
+      dibujaTurno e :
+      dibujaCasillasTerminadas e :
+      dibujaCasillasLibres e :
+        [dibuja' $ eBloque pos | pos <- listaIndices]
     where
       eBloque pos =
         EB
@@ -92,6 +97,19 @@ dibujaCasillasLibres e =
     f = \x -> [x]
     pos = maybe (casillasLibres $ tableroET e) f $ bloqueActivo $ tableroET e
 
+-- | Resalta los bloques terminados de un 'EstadoTablero'
+dibujaCasillasTerminadas :: EstadoTablero -> Picture
+dibujaCasillasTerminadas e =
+  pictures $
+    [ dibujaFicha (tema e) (t * 0.8) (posPoint t p) f
+      | f <- [X, O],
+        p <- (pos f)
+    ]
+  where
+    t = tam e / 3
+    ganador' pos = ganador $ casilla (tableroET e) pos
+    pos ficha = [p | p <- listaIndices, ganador' p == Just ficha]
+
 dibujaTurno :: EstadoTablero -> Picture
 dibujaTurno e
   | turno (tableroET e) == Just X = tf c1 (Text "Turno de X")
@@ -103,3 +121,32 @@ dibujaTurno e
     t = tam e
     s = t / 2000
     tf c p = color c $ translateP (0, - t / 14) $ Scale s s p
+
+-- | Función que ejecuta la jugada de un 'Agente Tablero'.
+modificaEstadoTableroAgente ::
+  -- | 'AgenteBloque' con el que calcular la jugada
+  Agente Tablero ->
+  -- | 'Ficha' del 'AgenteBloque'
+  Ficha ->
+  -- | Frame actual del juego (parámetro ignorado)
+  Float ->
+  -- | Estado actual del tablero
+  EstadoTablero ->
+  EstadoTablero
+modificaEstadoTableroAgente agente fichaAgente _ estado =
+  if turno t == Just fichaAgente && not (fin t)
+    then (estado {tableroET = f agente t})
+    else estado
+  where
+    t = tableroET estado
+
+-- | Función IO para jugar al /tres en raya/ contra un agente
+guiAgenteTablero ::
+  -- | Estado inicial
+  EstadoTablero ->
+  -- | 'Ficha' del 'Agente'
+  Ficha ->
+  -- | 'Agente' contra el que jugar
+  Agente Tablero ->
+  IO ()
+guiAgenteTablero = guiAgente modificaEstadoTableroAgente

@@ -15,12 +15,7 @@ module Mttt.Bloque.Data
     movLibreBloque,
 
     -- * Funciones heurísticas
-    heurBloque,
-
-    -- * Agentes inteligentes
-    AgenteBloque (funAB, nombreAB),
-    agenteBTonto,
-    agenteBMinimax,
+    heur0,
   )
 where
 
@@ -118,41 +113,11 @@ movLibreBloque ficha
 {- FUNCIONES HEURÍSTICAS -}
 
 -- | Función heurística para el tres en raya
-heurBloque ::
+heur0 ::
   -- | 'Ficha' con la que juega el agente
-  Ficha ->
   Bloque ->
   Int
-heurBloque f b
-  | ganador b == Just X = a
-  | ganador b == Just O = - a
+heur0 b
+  | ganador b == Just X = 1
+  | ganador b == Just O = -1
   | otherwise = 0
-  where
-    a = if f == X then 1 else -1
-
-{- AGENTES -}
-
--- | Tipo para Agentes de 'Bloque'.
-data AgenteBloque = AgenteBloque
-  { funAB :: Bloque -> Pos,
-    nombreAB :: String
-  }
-
--- | Agente que devuelve la primera posición disponible donde jugar,
--- en el orden generado por 'casillasLibres'.
-agenteBTonto :: AgenteBloque
-agenteBTonto =
-  AgenteBloque
-    { funAB = head . casillasLibres,
-      nombreAB = "tonto"
-    }
-
--- | Agente que juega usando el algoritmo minimax y la función heurística
--- `heurBloque`
-agenteBMinimax :: AgenteBloque
-agenteBMinimax =
-  AgenteBloque
-    { funAB = \b ->
-        mov2pos b $ minimax 9 expandir (heurBloque $ fromJust $ turno b) b,
-      nombreAB = "minimax"
-    }

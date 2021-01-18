@@ -19,7 +19,6 @@ minimaxInt prof expandir evaluar peor mejor prob
 
 -- | Parte /externa/ del algoritmo minimax visto en clase
 minimax ::
-  Ord b =>
   -- | Profundidad de búsqueda
   Int ->
   -- | Función  de expansión. Dado un estado devuelve todos los posibles
@@ -27,7 +26,7 @@ minimax ::
   (a -> [a]) ->
   -- | Función heurística. Dado un estado devuelve una puntuación asociada a tal
   -- estado.
-  (a -> b) ->
+  (a -> Int) ->
   -- | Estado de entrada
   a ->
   a
