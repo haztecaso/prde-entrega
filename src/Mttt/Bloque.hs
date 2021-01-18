@@ -6,8 +6,6 @@
 -- Copyright   : (c) Adrián Lattes y David Diez
 -- License     : GPL-3
 -- Stability   : experimental
---
--- Implementación del juego /tres en raya/.
 module Mttt.Bloque
   ( -- * 'Bloque': el tipo para el tres en raya
     Bloque,

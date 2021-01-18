@@ -6,21 +6,26 @@
 --
 -- Definiciones generales de la intefaz gráfica.
 module Mttt.Gui.Common
-  ( ventana,
+  ( -- * Utilidades
     translateP,
     sumP,
-    Tema (fondo, contraste, principal, secundario, neutro),
-    temaClaro,
-    temaOscuro,
-    temaBicolor,
     cuadrado,
     dibujaFicha,
     posPoint,
     pointPos,
+
+    -- * Temas
+    Tema (fondo, contraste, principal, secundario, neutro),
+    temaClaro,
+    temaOscuro,
+    temaBicolor,
+
+    -- * Estados
     Estado (tam, centro, tema, dibuja, modifica),
     displayEstado,
     dibuja',
-    modificaEvent,
+
+    -- * Interfaz gráfica
     guiMulti,
     guiAgente,
   )

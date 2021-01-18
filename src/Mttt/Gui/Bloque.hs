@@ -3,11 +3,12 @@
 -- Copyright   : (c) Adrián Lattes y David Diez
 -- License     : GPL-3
 -- Stability   : experimental
---
--- Interfaz gráfica del /tres en raya/.
 module Mttt.Gui.Bloque
-  ( EstadoBloque (EB, bloqueEB, centroEB, tamEB, temaEB),
+  ( -- * Estado
+    EstadoBloque (EB, bloqueEB, centroEB, tamEB, temaEB),
     estadoBloqueInicial,
+
+    -- * Interfaz gráfica
     guiAgenteBloque,
   )
 where

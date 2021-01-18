@@ -3,11 +3,12 @@
 -- Copyright   : (c) Adrián Lattes y David Diez
 -- License     : GPL-3
 -- Stability   : experimental
---
--- Interfaz gráfica del /meta tres en raya/.
 module Mttt.Gui.Tablero
-  ( EstadoTablero,
+  ( -- * Estado
+    EstadoTablero,
     estadoTableroInicial,
+
+    -- * Interfaz gráfica
     guiAgenteTablero,
   )
 where

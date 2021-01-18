@@ -4,7 +4,8 @@
 -- License     : GPL-3
 -- Stability   : experimental
 --
--- Módulo más general de la librería
+-- Módulo de alto nivel útil para lanzar los juegos en sus distintas
+-- modalidades.
 module Mttt (nuevoJuego) where
 
 import Mttt.Bloque (Bloque, bloqueVacio)

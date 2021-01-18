@@ -6,8 +6,6 @@
 -- Copyright   : (c) Adrián Lattes y David Diez
 -- License     : GPL-3
 -- Stability   : experimental
---
--- Implementación del juego /meta tres en raya/.
 module Mttt.Tablero
   ( -- * 'Tablero': el tipo para el meta tres en raya
     Tablero (bloqueActivo),

@@ -34,6 +34,8 @@ module Mttt.Common
     turno,
     movTonto,
     mov2pos,
+
+    -- * Agentes
     Agente (A, f, nombre),
     agenteTonto,
     agenteMinimax,

@@ -3,9 +3,17 @@
 -- Copyright   : (c) Adrián Lattes y David Diez
 -- License     : GPL-3
 -- Stability   : experimental
---
--- Definiciones generales de la intefaz de texto.
-module Mttt.Tui where
+module Mttt.Tui
+  ( -- * Utilidades
+    maybeRead,
+    prompt,
+    getOpcion,
+
+    -- * Interfaz de texto
+    tuiMulti,
+    tuiAgente,
+  )
+where
 
 import Data.List (intersperse)
 import Data.Maybe (fromJust, isJust, listToMaybe)

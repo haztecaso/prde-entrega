@@ -4,10 +4,8 @@
 -- License     : GPL-3
 -- Stability   : experimental
 --
--- Utilidades
-module Mttt.Inteligencia where
-
-{- ALGORITMOS -}
+-- Funciones para implementar inteligencias artificiales
+module Mttt.Inteligencia (minimax) where
 
 -- | Parte /interna/ del algoritmo minimax visto en clase
 minimaxInt :: Ord b => Int -> (a -> [a]) -> (a -> b) -> ([b] -> b) -> ([b] -> b) -> a -> b
