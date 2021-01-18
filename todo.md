@@ -10,7 +10,6 @@ TO DO
 - IA
   - Definición de funciones heurísticas
   - Poda Alpha-Beta
-  - ¿Reducciones del árbol, definiciones de jugadas equivalentes?
 
 - Tests
   - Comparar funciones heurísticas

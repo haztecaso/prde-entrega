@@ -16,7 +16,7 @@ module Mttt.Tablero
   )
 where
 
-import Data.Array (Array, listArray, (!), (//))
+import Data.Array (Array, elems, listArray, (!), (//))
 import Data.List (intercalate, transpose)
 import Data.Maybe (fromJust, isJust, isNothing)
 import Mttt.Bloque (Bloque, bloqueVacio)
@@ -79,7 +79,7 @@ instance Juego Tablero (Pos, Pos) Bloque where
     where
       validPos = p1 `elem` casillasLibres t && p2 `elem` listaIndices
       bloque = mov (bloques t ! p1) f p2
-      siguienteBloqueActivo
+      siguiente --TODO: ¡Arreglar!
         | fin (bloques t ! p2) = Nothing
         | isJust bloque && fin (fromJust bloque) = Nothing --TODO: ¿Cómo evitar fromJust?
         | otherwise = Just p2
@@ -87,7 +87,7 @@ instance Juego Tablero (Pos, Pos) Bloque where
         ( \b ->
             T
               { bloques = bloques t // [(p1, b)],
-                bloqueActivo = siguienteBloqueActivo
+                bloqueActivo = siguiente
               }
         )
           <$> bloque
@@ -112,8 +112,31 @@ lineas t = filas ++ columnas ++ diagonales
 
 {- FUNCIONES HEURÍSTICAS -}
 
+pesoPos :: Pos -> Int
+pesoPos (2, 2) = 4
+pesoPos (2, _) = 3
+pesoPos (_, 2) = 3
+pesoPos (_, _) = 2
+
+pesoCasilla :: Bloque -> Pos -> Int
+pesoCasilla b p
+  | casilla b p == Just X = pesoPos p
+  | casilla b p == Just O = - pesoPos p
+  | otherwise = 0
+
+-- | Función heurística aceptable para 'Tablero'
 heur0 ::
-  -- | 'Ficha' con la que juega el agente
   Tablero ->
   Int
-heur0 _ = 0
+heur0 t
+  | ganador t == Just X = c
+  | ganador t == Just O = - c
+  | tablas t = 0
+  | otherwise = sum $ map ev (elems $ bloques t)
+  where
+    c = 10000
+    ev :: Bloque -> Int
+    ev b
+      | ganador b == Just X = 24
+      | ganador b == Just O = -24
+      | otherwise = sum [pesoCasilla b p | p <- listaIndices]

@@ -155,6 +155,7 @@ mensajeFinAgente j f
       | otherwise = "Has ganado al agente."
 
 -- | Función IO para jugar una partida contra un agente.
+-- TODO: 'Arreglar!
 tuiAgente ::
   Juego j p c =>
   -- | 'Agente' contra el que jugar

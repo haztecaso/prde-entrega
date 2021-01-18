@@ -36,6 +36,7 @@ getProf = do
     m = "¡Profundidad incorrecta! La profundidad tiene que ser un entero > 1."
     repetir = putStrLn m >> getProf
 
+-- | Útil para cuando se definan más funciones heurísticas
 getAgenteTablero :: IO (Ficha -> Agente Tablero)
 getAgenteTablero = do
   (nombreHeur, heur) <- getHeurTablero
@@ -56,12 +57,8 @@ nuevoJuego ::
 nuevoJuego True True True _ = tuiMulti bloqueVacio
 nuevoJuego True True False p = tuiAgente (agenteMinimax p "heur0" B.heur0 expandir 9) p bloqueVacio
 nuevoJuego True False True _ = guiMulti $ estadoBloqueInicial 350 temaOscuro
-nuevoJuego True False False p = guiAgenteBloque (estadoBloqueInicial 350 temaOscuro) p (agenteMinimax p "heur1" B.heur0 expandir 9)
+nuevoJuego True False False p = guiAgenteBloque (estadoBloqueInicial 350 temaOscuro) p (agenteMinimax p "heur0" B.heur0 expandir 9)
 nuevoJuego False False True _ = guiMulti $ estadoTableroInicial 350 temaOscuro
-nuevoJuego False False False p = do
-  agente <- getAgenteTablero
-  guiAgenteTablero (estadoTableroInicial 350 temaOscuro) p (agente p)
+nuevoJuego False False False p = guiAgenteTablero (estadoTableroInicial 350 temaOscuro) p (agenteMinimax p "heur0" T.heur0 expandir 5)
 nuevoJuego False True True _ = tuiMulti tableroVacio
-nuevoJuego False True False p = do
-  agente <- getAgenteTablero
-  tuiAgente (agente p) p tableroVacio
+nuevoJuego False True False p = tuiAgente (agenteMinimax p "heur0" T.heur0 expandir 5) p tableroVacio

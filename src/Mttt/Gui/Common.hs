@@ -44,7 +44,7 @@ ventana tam = InWindow "Meta tres en raya" (tamV, tamV) (0, 0)
   where
     tamV = floor $ 1.25 * tam
 
--- | Transladar a un 'Punto'
+-- | Transladar a un 'Point'
 translateP :: Point -> Picture -> Picture
 translateP (x, y) = translate x y
 
@@ -196,11 +196,11 @@ cuadricula p t g c =
 
 -- | Convertir de 'Pos' a posición 'Point'
 posPoint ::
-  -- | Tamaño de la 'Ficha' o 'Bloque'
+  -- | Tamaño de la 'Ficha' o 'Mttt.Bloque.Bloque'
   Float ->
-  -- | Posición de la 'Ficha' o 'Bloque'
+  -- | Posición de la 'Ficha' o 'Mttt.Bloque.Bloque'
   Pos ->
-  -- | Posición del centro de la 'Ficha' o 'Bloque' en el dibujo
+  -- | Posición del centro de la 'Ficha' o 'Mttt.Bloque.Bloque' en el dibujo
   Point
 posPoint tam pos = (tam * (y -1 + 0.5), tam * (3 - x + 0.5))
   where
@@ -213,7 +213,7 @@ pointPos ::
   Point ->
   -- | Tamaño
   Float ->
-  -- | Centro del 'Bloque' o 'Tablero'
+  -- | Centro
   Point ->
   Pos
 pointPos (x, y) tam (cx, cy) =
@@ -224,9 +224,10 @@ pointPos (x, y) tam (cx, cy) =
   where
     floor' (a, b) = (floor a, floor b)
 
--- | Clase para los estados de 'Bloque' y 'Tablero'. Seguramente haya una manera
--- mejor de definir los estados, sin pasar los getters de los tipos
--- 'EstadoBloque' y 'EstadoTablero'.
+-- | Clase para los estados 'Mttt.Gui.Bloque.EstadoBloque' y
+-- 'Mttt.Gui.Estado.EstadoTablero'. Seguramente haya una manera mejor de definir
+-- los estados, sin pasar los getters de los tipos
+-- 'Mttt.Gui.Bloque.EstadoBloque' y 'Mttt.Gui.Tablero.EstadoTablero'.
 class Estado e where
   -- | Tamaño del tablero
   tam :: e -> Float

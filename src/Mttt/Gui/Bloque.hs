@@ -54,7 +54,7 @@ instance Estado EstadoBloque where
       b = bloqueEB e
       nuevo = movTurno b $ pointPos p (tam e) (centro e)
 
--- | Función para construir un 'EstadoBloque' con un 'bloqueVacio'tableroVacio'
+-- | Función para construir un 'EstadoBloque' con un 'bloqueVacio'
 estadoBloqueInicial ::
   -- | Tamaño
   Float ->
@@ -85,9 +85,9 @@ modTema estado
 
 -- | Función que ejecuta la jugada de un 'Agente Bloque'.
 modificaEstadoBloqueAgente ::
-  -- | 'AgenteBloque' con el que calcular la jugada
+  -- | 'Agente Bloque' con el que calcular la jugada
   Agente Bloque ->
-  -- | 'Ficha' del 'AgenteBloque'
+  -- | 'Ficha' del 'Agente Bloque'
   Ficha ->
   -- | Frame actual del juego (parámetro ignorado)
   Float ->

@@ -52,31 +52,32 @@ instance Show Ficha where
   show X = "✗"
   show O = "○"
 
--- | Utilidad para imprimir una /casilla/ de un 'Bloque' en pantalla
+-- | Utilidad para imprimir una /casilla/ en pantalla
 showMaybeFicha :: Maybe Ficha -> Char
 showMaybeFicha Nothing = '_'
 showMaybeFicha (Just f) = head (show f)
 
--- | Tipo sinónimo para representar posiciones de 'Bloque'.
+-- | Tipo sinónimo para representar posiciones.
 type Pos = (Int, Int)
 
--- Utilidad para obtener el índice de una posición
+-- | Utilidad para obtener el índice de una posición
 pos2int :: Pos -> Int
 pos2int (x, y) = (y -1) + 3 * (x -1)
 
--- Utilidad para obtener la posición de un índice
+-- | Utilidad para obtener la posición de un índice
 int2pos :: Int -> Pos
 int2pos n = (n `div` 3 + 1, n `mod` 3 + 1)
 
--- | Lista de indices de un 'Tablero' o 'Bloque'
+-- | Lista de indices
 listaIndices :: [(Int, Int)]
 listaIndices = [(x, y) | x <- [1 .. 3], y <- [1 .. 3]]
 
--- | Clase que acomuna la interfaz de los tipos 'Bloque' y 'Tablero'.
+-- | Clase que acomuna la interfaz de los tipos 'Mttt.Bloque.Bloque' y
+-- 'Mttt.Tablero.Tablero'.
 --
--- __Atención__: estamos usando algunas extensiones del lenguaje para poder
--- definir clases con más de un parámetro. Además, para que el compilador pueda
--- inferir bien los tipos, hemos definido una dependencia funcional entre dichos
+-- __Atención__: estamos usando extensiones del lenguaje para poder definir
+-- clases con más de un parámetro. Además, para que el compilador pueda inferir
+-- bien los tipos, hemos definido una dependencia funcional entre dichos
 -- parámetros. De este modo podemos tener instancias de esta clase que utilizan
 -- tipos distintos para las posiciones de los tableros.
 class
@@ -88,15 +89,14 @@ class
   -- cantidad de 'X's y el segundo de 'O's.
   contarFichas :: juego -> (Int, Int)
 
-  -- | Obtener el valor de una casilla. Aquí el tipo es 'Pos' en vez de 'pos'
-  -- porque en este caso las casillas siempre están indexadas por valores de
-  -- tipo 'Pos'.
+  -- | Obtener el valor de una casilla. Aquí el tipo es 'Pos' porque en este
+  -- caso las casillas siempre están indexadas por valores de tipo 'Pos'.
   casilla :: juego -> Pos -> casilla
 
   -- | Casillas (indexadas por 'Pos') donde se puede jugar
   casillasLibres :: juego -> [Pos]
 
-  -- | Posiciones ('pos') donde se puede jugar.
+  -- | Posiciones donde se puede jugar.
   posicionesLibres :: juego -> [pos]
 
   -- | Determina quien es el ganador, en caso de haberlo.
@@ -142,6 +142,7 @@ expandir t
 mov2pos :: Juego j p c => j -> j -> p
 mov2pos j1 j2 = posicionesLibres j1 !! fromJust (elemIndex j2 $ expandir j1)
 
+-- | Tipo para los agentes inteligentes.
 data Agente a = A {f :: (a -> a), nombre :: String}
 
 -- | Ajusta una función heurística para que corresponda a la ficha dada.
@@ -156,6 +157,7 @@ ajustaHeur heur f = (* x) . heur
   where
     x = if f == X then 1 else -1
 
+-- | Genera un 'Agente' a partir de un función heurística.
 agenteMinimax ::
   -- | 'Ficha' del agente
   Ficha ->

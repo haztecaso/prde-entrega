@@ -123,9 +123,9 @@ dibujaTurno e
 
 -- | Función que ejecuta la jugada de un 'Agente Tablero'.
 modificaEstadoTableroAgente ::
-  -- | 'AgenteBloque' con el que calcular la jugada
+  -- | 'Agente Tablero' con el que calcular la jugada
   Agente Tablero ->
-  -- | 'Ficha' del 'AgenteBloque'
+  -- | 'Ficha' del 'Agente Tablero'
   Ficha ->
   -- | Frame actual del juego (parámetro ignorado)
   Float ->
