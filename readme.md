@@ -1,5 +1,5 @@
-Práctica de Haskell: implementación del juego Meta Tic Tac Toe
-==============================================================
+Práctica de Haskell: Meta tres en raya
+======================================
 
 Hemos implementado dos juegos: el *tres en raya* y una generalización de este,
 el *meta tres en raya*. En ambos casos se asume que siempre empieza el jugador
@@ -126,4 +126,9 @@ Se pueden consultar en `package.yaml`.
 Referencias
 -----------
 
-https://www.cs.huji.ac.il/~ai/projects/2013/UlitmateTic-Tac-Toe/
+- [AI agent for Ultimate Tic Tac Toe Game](https://www.cs.huji.ac.il/~ai/projects/2013/U2T3P/files/AI_Report.pdf)
+- [At Most 43 Moves, At Least 29: Optimal Strategies and Bounds for Ultimate
+  Tic-Tac-Toe](https://arxiv.org/abs/2006.02353)
+- [](https://www.cs.huji.ac.il/~ai/projects/2013/UlitmateTic-Tac-Toe/)
+- [How I used the AlphaZero algorithm to play Ultimate
+  tic-tac-toe](https://youtu.be/CcwC8tTe_QE)
