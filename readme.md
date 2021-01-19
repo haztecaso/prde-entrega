@@ -108,9 +108,9 @@ Algunos comandos útiles de *stack*:
 Nix
 ---
 
-[Nix](https*://nixos.wiki/wiki/Nix) es un gestor de paquetes que deriva
+[Nix](https://nixos.wiki/wiki/Nix) es un gestor de paquetes que deriva
 instrucciones de compilación especificadas en el lenguaje de programación
-*[nix](https://nixos.wiki/wiki/Nix_Expression_Language)*, un lenguaje de
+[*nix*](https://nixos.wiki/wiki/Nix_Expression_Language), un lenguaje de
 programación funcional puro y perezoso.
 
 Este proyecto usa *nix* solo para gestionar el entorno de desarollo de
