@@ -9,7 +9,6 @@
 module Mttt.Tablero
   ( -- * 'Tablero': el tipo para el meta tres en raya
     Tablero (bloqueActivo),
-    tableroVacio,
 
     -- * Funciones heurísticas
     heur0,
@@ -19,7 +18,7 @@ where
 import Data.Array (Array, elems, listArray, (!), (//))
 import Data.List (intercalate, transpose)
 import Data.Maybe (fromJust, isJust, isNothing)
-import Mttt.Bloque (Bloque, bloqueVacio)
+import Mttt.Bloque (Bloque)
 import Mttt.Common
 
 -- | Tipo para un tablero de /meta tres en raya/
@@ -44,6 +43,11 @@ instance Show Tablero where
           bs = bloques t
 
 instance Juego Tablero (Pos, Pos) Bloque where
+  vacio =
+    T
+      { bloques = listArray ((1, 1), (3, 3)) [vacio | _ <- listaIndices],
+        bloqueActivo = Nothing
+      }
   contarFichas t = foldr1 suma [contarFichas $ bloques t ! i | i <- listaIndices]
     where
       suma (a, b) (c, d) = (a + c, b + d)
@@ -65,13 +69,6 @@ instance Juego Tablero (Pos, Pos) Bloque where
         | map ganador l == [Just O, Just O, Just O] = Just O
         | otherwise = Nothing
 
-  tablas t = null (posicionesLibres t) && isNothing (ganador t)
-
-  fin t
-    | isJust (ganador t) = True
-    | tablas t = True
-    | otherwise = False
-
   mov t f (p1, p2)
     | validPos && Just p1 == bloqueActivo t = nuevo
     | validPos && isNothing (bloqueActivo t) = nuevo
@@ -91,14 +88,6 @@ instance Juego Tablero (Pos, Pos) Bloque where
               }
         )
           <$> bloque
-
--- | 'Tablero' vacío
-tableroVacio :: Tablero
-tableroVacio =
-  T
-    { bloques = listArray ((1, 1), (3, 3)) [bloqueVacio | _ <- listaIndices],
-      bloqueActivo = Nothing
-    }
 
 lineas :: Tablero -> [[Bloque]]
 lineas t = filas ++ columnas ++ diagonales

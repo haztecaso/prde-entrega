@@ -1,3 +1,6 @@
+{-# LANGUAGE FunctionalDependencies #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+
 -- |
 -- Module      : Mttt.Gui.Common
 -- Copyright   : (c) Adrián Lattes y David Diez
@@ -12,16 +15,31 @@ module Mttt.Gui.Common
     cuadrado,
     dibujaFicha,
     posPoint,
-    pointPos,
+    pointPos',
 
     -- * Temas
-    Tema (fondo, contraste, principal, secundario, neutro),
+    Tema
+      ( fondo,
+        contraste,
+        principal,
+        secundario,
+        neutro
+      ),
     temaClaro,
     temaOscuro,
     temaBicolor,
 
     -- * Estados
-    Estado (tam, centro, tema, dibuja, modifica),
+    Estado
+      ( inicial,
+        juego,
+        tam,
+        centro,
+        tema,
+        pointPos,
+        dibuja,
+        reemplazaJuego
+      ),
     displayEstado,
     dibuja',
 
@@ -206,17 +224,19 @@ posPoint tam pos = (tam * (y -1 + 0.5), tam * (3 - x + 0.5))
   where
     (x, y) = bimap fromIntegral fromIntegral pos
 
--- | Dada una posición del puntero y un tamaño y centro de un estado devuelve
+-- | Utilidad para definir las instancias de 'pointPos'
+--
+-- Dada una posición del puntero y un tamaño y centro de un estado devuelve
 -- la 'Pos' correspondiente.
-pointPos ::
-  -- | Posición del puntero en pantalla
-  Point ->
+pointPos' ::
   -- | Tamaño
   Float ->
   -- | Centro
   Point ->
+  -- | Posición del puntero en pantalla
+  Point ->
   Pos
-pointPos (x, y) tam (cx, cy) =
+pointPos' tam (cx, cy) (x, y) =
   floor'
     ( 4 -3 * (y - cy + tam / 2) / tam,
       1 + 3 * (x - cx + tam / 2) / tam
@@ -228,29 +248,52 @@ pointPos (x, y) tam (cx, cy) =
 -- 'Mttt.Gui.Estado.EstadoTablero'. Seguramente haya una manera mejor de definir
 -- los estados, sin pasar los getters de los tipos
 -- 'Mttt.Gui.Bloque.EstadoBloque' y 'Mttt.Gui.Tablero.EstadoTablero'.
-class Estado e where
+class
+  (Juego juego pos casilla) =>
+  Estado estado juego pos casilla
+    | estado -> juego pos casilla
+  where
+  -- | Estado inicial
+  inicial :: Float -> Tema -> estado
+
+  -- | Juego del tablero
+  juego :: estado -> juego
+
   -- | Tamaño del tablero
-  tam :: e -> Float
+  tam :: estado -> Float
 
   -- | Posición del centro del tablero
-  centro :: e -> Point
+  centro :: estado -> Point
   centro _ = (0, 0)
 
-  tema :: e -> Tema
+  -- | Tema con el que pintar el tablero
+  tema :: estado -> Tema
+
+  -- | Dada una posición del puntero devuelve la posición del juego
+  -- correspondiente.
+  pointPos :: estado -> Point -> pos
+
+  -- | Reemplaza el juego de un tablero
+  reemplazaJuego :: estado -> juego -> estado
 
   -- | Función para dibujar un estado
-  dibuja :: e -> Picture
+  dibuja :: estado -> Picture
 
-  -- | Función para modificar un estado
-  modifica :: Point -> e -> e
+-- | Función para modificar un estado
+modifica :: Estado e j p c => Point -> e -> e
+modifica p e
+  | fin (juego e) = reemplazaJuego e (vacio)
+  | otherwise = maybe e (reemplazaJuego e) n
+  where
+    n = movTurno (juego e) $ pointPos e p
 
 -- | Display de un estado. Útil para hacer testing.
-displayEstado :: Estado e => e -> IO ()
+displayEstado :: Estado e j p c => e -> IO ()
 displayEstado e = display (ventana $ tam e) (fondo $ tema e) (dibuja' e)
 
 -- | Parte común de los dibujos. Posiciona correctamente y añade una cuadrícula
 -- al dibujo de un estado.
-dibuja' :: Estado e => e -> Picture
+dibuja' :: Estado e j p c => e -> Picture
 dibuja' estado =
   translateP centro' $
     pictures
@@ -261,13 +304,13 @@ dibuja' estado =
     centro' = sumP (- (tam estado) / 2, - (tam estado) / 2) $ centro estado
 
 -- | Función para modificar un estado cuando se hace click
-modificaEvent :: Estado e => Event -> e -> e
+modificaEvent :: Estado e j p c => Event -> e -> e
 modificaEvent (EventKey (MouseButton LeftButton) Up _ point) = modifica point
 modificaEvent _ = id
 
 -- | Función IO para jugar en modo multijugador
 guiMulti ::
-  Estado e =>
+  Estado e j p c =>
   -- | Estado inicial
   e ->
   IO ()
@@ -281,14 +324,30 @@ guiMulti e =
     modificaEvent
     (const id)
 
+modificaAgente ::
+  Estado e j p c =>
+  -- | 'Agente' con el que calcular la jugada
+  Agente j ->
+  -- | 'Ficha' del 'Agente'
+  Ficha ->
+  -- | Frame actual del juego (parámetro ignorado)
+  Float ->
+  -- | Estado actual del tablero
+  e ->
+  e
+modificaAgente a fichaAgente _ e =
+  if turno j == Just fichaAgente && not (fin j)
+    then reemplazaJuego e (f a j)
+    else e
+  where
+    j = juego e
+
 -- | Función IO para jugar contra un agente
 --
 -- __Nota:__ Debido a que la librería /gloss/ es algo limitada hemos tenido que
 -- usar de una manera un poco cutre la función 'play'.
 guiAgente ::
-  (Juego j p c, Estado e) =>
-  -- | Función que modifica un estado
-  (Agente j -> Ficha -> Float -> e -> e) ->
+  Estado e j p c =>
   -- | Estado inicial
   e ->
   -- | 'Ficha' del 'Agente'
@@ -296,7 +355,7 @@ guiAgente ::
   -- | 'Agente' contra el que jugar
   Agente j ->
   IO ()
-guiAgente modificaAgente e f a =
+guiAgente e f a =
   play
     (ventana $ tam e)
     (fondo $ tema e)

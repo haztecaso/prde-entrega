@@ -1,3 +1,6 @@
+{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+
 -- |
 -- Module      : Mttt.Gui.Tablero
 -- Copyright   : (c) Adrián Lattes y David Diez
@@ -6,15 +9,11 @@
 module Mttt.Gui.Tablero
   ( -- * Estado
     EstadoTablero,
-    estadoTableroInicial,
-
-    -- * Interfaz gráfica
-    guiAgenteTablero,
   )
 where
 
 import Graphics.Gloss (Picture (Blank, Scale, Text), Point, bright, color, pictures)
-import Mttt.Bloque (bloqueVacio)
+import Mttt.Bloque (Bloque)
 import Mttt.Common
 import Mttt.Gui.Bloque (EstadoBloque (EB, bloqueEB, centroEB, tamEB, temaEB))
 import Mttt.Gui.Common
@@ -32,9 +31,25 @@ data EstadoTablero = ET
   }
   deriving (Show)
 
-instance Estado EstadoTablero where
+instance Estado EstadoTablero Tablero (Pos, Pos) Bloque where
+  inicial tam tema =
+    ET
+      { tableroET = vacio,
+        tamET = tam,
+        temaET = tema
+      }
+
+  juego = tableroET
   tam = tamET
   tema = temaET
+
+  reemplazaJuego e t = e {tableroET = t}
+
+  pointPos e p = (posBloque, pointPos' (t / 3 * 0.8) (centroBloque) p)
+    where
+      t = tam e
+      posBloque = pointPos' t (0, 0) p
+      centroBloque = sumP (posPoint (t / 3) posBloque) (- t / 2, - t / 2)
 
   dibuja e =
     pictures $
@@ -50,39 +65,6 @@ instance Estado EstadoTablero where
             tamEB = tam e / 3 * 0.8,
             temaEB = tema e
           }
-
-  modifica p e
-    | fin t = e {tableroET = tableroVacio}
-    | otherwise = maybe e (\n -> e {tableroET = n}) nuevo
-    where
-      t = tableroET e
-      positions = pointPos' p $ tam e
-      nuevo = movTurno t (fst positions, snd positions)
-
-pointPos' ::
-  -- | Posición del puntero en la pantalla
-  Point ->
-  -- | Tamaño
-  Float ->
-  -- | Posición del puntero en el 'bloqueEB'
-  (Pos, Pos)
-pointPos' p t = (posBloque, pointPos p (t / 3 * 0.8) (centroBloque))
-  where
-    posBloque = pointPos p t (0, 0)
-    centroBloque = sumP (posPoint (t / 3) posBloque) (- t / 2, - t / 2)
-
--- | Función para construir un 'EstadoTablero' con un 'tableroVacio'
-estadoTableroInicial ::
-  -- | Tamaño
-  Float ->
-  Tema ->
-  EstadoTablero
-estadoTableroInicial tam tema =
-  ET
-    { tableroET = tableroVacio,
-      tamET = tam,
-      temaET = tema
-    }
 
 -- | Resalta los bloques activos de un 'EstadoTablero'
 dibujaCasillasLibres :: EstadoTablero -> Picture
@@ -119,32 +101,3 @@ dibujaTurno e
     t = tam e
     s = t / 2000
     tf c p = color c $ translateP (0, - t / 14) $ Scale s s p
-
--- | Función que ejecuta la jugada de un 'Agente Tablero'.
-modificaEstadoTableroAgente ::
-  -- | 'Agente Tablero' con el que calcular la jugada
-  Agente Tablero ->
-  -- | 'Ficha' del 'Agente Tablero'
-  Ficha ->
-  -- | Frame actual del juego (parámetro ignorado)
-  Float ->
-  -- | Estado actual del tablero
-  EstadoTablero ->
-  EstadoTablero
-modificaEstadoTableroAgente agente fichaAgente _ estado =
-  if turno t == Just fichaAgente && not (fin t)
-    then (estado {tableroET = f agente t})
-    else estado
-  where
-    t = tableroET estado
-
--- | Función IO para jugar al /tres en raya/ contra un agente
-guiAgenteTablero ::
-  -- | Estado inicial
-  EstadoTablero ->
-  -- | 'Ficha' del 'Agente'
-  Ficha ->
-  -- | 'Agente' contra el que jugar
-  Agente Tablero ->
-  IO ()
-guiAgenteTablero = guiAgente modificaEstadoTableroAgente

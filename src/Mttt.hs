@@ -8,13 +8,13 @@
 -- modalidades.
 module Mttt (nuevoJuego) where
 
-import Mttt.Bloque (Bloque, bloqueVacio)
+import Mttt.Bloque (Bloque)
 import qualified Mttt.Bloque as B (heur0)
 import Mttt.Common
 import Mttt.Gui.Bloque
 import Mttt.Gui.Common
 import Mttt.Gui.Tablero
-import Mttt.Tablero (Tablero, tableroVacio)
+import Mttt.Tablero (Tablero)
 import qualified Mttt.Tablero as T (heur0)
 import Mttt.Tui
 
@@ -54,11 +54,11 @@ nuevoJuego ::
   -- | Ficha del Agente
   Ficha ->
   IO ()
-nuevoJuego True True True _ = tuiMulti bloqueVacio
-nuevoJuego True True False p = tuiAgente (agenteMinimax p "heur0" B.heur0 expandir 9) p bloqueVacio
-nuevoJuego True False True _ = guiMulti $ estadoBloqueInicial 350 temaOscuro
-nuevoJuego True False False p = guiAgenteBloque (estadoBloqueInicial 350 temaOscuro) p (agenteMinimax p "heur0" B.heur0 expandir 9)
-nuevoJuego False False True _ = guiMulti $ estadoTableroInicial 350 temaOscuro
-nuevoJuego False False False p = guiAgenteTablero (estadoTableroInicial 350 temaOscuro) p (agenteMinimax p "heur0" T.heur0 expandir 5)
-nuevoJuego False True True _ = tuiMulti tableroVacio
-nuevoJuego False True False p = tuiAgente (agenteMinimax p "heur0" T.heur0 expandir 5) p tableroVacio
+nuevoJuego True True True _ = tuiMulti (vacio :: Bloque)
+nuevoJuego True True False p = tuiAgente (agenteMinimax p "heur0" B.heur0 expandir 9) p (vacio :: Bloque)
+nuevoJuego True False True _ = guiMulti (inicial 350 temaOscuro :: EstadoBloque)
+nuevoJuego True False False p = guiAgente (inicial 350 temaOscuro :: EstadoBloque) p (agenteMinimax p "heur0" B.heur0 expandir 9)
+nuevoJuego False False True _ = guiMulti (inicial 350 temaOscuro :: EstadoTablero)
+nuevoJuego False False False p = guiAgente (inicial 350 temaOscuro :: EstadoTablero) p (agenteMinimax p "heur0" T.heur0 expandir 5)
+nuevoJuego False True True _ = tuiMulti (vacio :: Tablero)
+nuevoJuego False True False p = tuiAgente (agenteMinimax p "heur0" T.heur0 expandir 5) p (vacio :: Tablero)

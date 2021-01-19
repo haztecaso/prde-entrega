@@ -9,7 +9,6 @@
 module Mttt.Bloque
   ( -- * 'Bloque': el tipo para el tres en raya
     Bloque,
-    bloqueVacio,
 
     -- * Funciones heurísticas
     heur0,
@@ -29,6 +28,7 @@ instance Show Bloque where
   show (B b) = unlines [intersperse ' ' [showMaybeFicha $ b ! (x, y) | y <- [1 .. 3]] | x <- [1 .. 3]]
 
 instance Juego Bloque Pos (Maybe Ficha) where
+  vacio = B $ listArray ((1, 1), (3, 3)) [Nothing | _ <- listaIndices]
   contarFichas (B b) = foldr1 suma $ map f $ elems b
     where
       f Nothing = (0, 0)
@@ -53,20 +53,9 @@ instance Juego Bloque Pos (Maybe Ficha) where
         | l == [Just O, Just O, Just O] = Just O
         | otherwise = Nothing
 
-  tablas (B b) = notElem Nothing b && isNothing (ganador $ B b)
-
-  fin b
-    | isJust (ganador b) = True
-    | tablas b = True
-    | otherwise = False
-
   mov (B b) f p
     | p `elem` listaIndices && isNothing (b ! p) = Just (B (b // [(p, Just f)]))
     | otherwise = Nothing
-
--- | 'Bloque' vacío
-bloqueVacio :: Bloque
-bloqueVacio = B $ listArray ((1, 1), (3, 3)) [Nothing | _ <- listaIndices]
 
 lineas :: Bloque -> [[Maybe Ficha]]
 lineas (B b) = filas ++ columnas ++ diagonales

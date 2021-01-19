@@ -128,7 +128,7 @@ Algunos comandos útiles de *stack*:
 - `stack build` para compilar el programa.
 - `stack ghci` para obtener un prompt de *ghci* con el programa cargado como
   librería.
-- `stack exec -- mttt -h` para ejecutar el programa.
+- `stack exec -- mttt [options]` para ejecutar el programa.
 - `stack haddock --file-watch` para generar la documentación de forma automática
   mientras editamos los archivos.
 

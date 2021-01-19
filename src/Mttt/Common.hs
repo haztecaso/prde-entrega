@@ -21,15 +21,16 @@ module Mttt.Common
 
     -- * Clase 'Juego'
     Juego
-      ( contarFichas,
+      ( vacio,
+        contarFichas,
         casilla,
         casillasLibres,
         posicionesLibres,
         ganador,
-        tablas,
-        fin,
         mov
       ),
+    tablas,
+    fin,
     expandir,
     turno,
     movTurno,
@@ -42,7 +43,7 @@ module Mttt.Common
 where
 
 import Data.List (elemIndex)
-import Data.Maybe (fromJust, isNothing)
+import Data.Maybe (fromJust, isJust, isNothing)
 import Mttt.Inteligencia
 
 -- | Tipo que representa una ficha del juego
@@ -85,6 +86,9 @@ class
   Juego juego pos casilla
     | juego -> pos casilla
   where
+  -- | Estado vacío
+  vacio :: juego
+
   -- | Cuenta las fichas de cada tipo que hay en el juego. El primer valor es la
   -- cantidad de 'X's y el segundo de 'O's.
   contarFichas :: juego -> (Int, Int)
@@ -102,15 +106,20 @@ class
   -- | Determina quien es el ganador, en caso de haberlo.
   ganador :: juego -> Maybe Ficha
 
-  -- | Determina si la partida ha acabado en tablas.
-  tablas :: juego -> Bool
-
-  -- | Determina si la partida ha acabado o no
-  fin :: juego -> Bool
-
   -- | Insertar una ficha nueva. Si el movimiento es válido se devuelve
   -- 'Just juego' y en caso contrario 'Nothing'.
   mov :: juego -> Ficha -> pos -> Maybe juego
+
+-- | Determina si la partida ha acabado en tablas.
+tablas :: Juego j p c => j -> Bool
+tablas j = null (posicionesLibres j) && isNothing (ganador j)
+
+-- | Determina si la partida ha acabado o no
+fin :: Juego j p c => j -> Bool
+fin j
+  | isJust (ganador j) = True
+  | tablas j = True
+  | otherwise = False
 
 -- | Devuelve la 'Ficha' a la que le toca jugar
 turno :: Juego j p c => j -> Maybe Ficha
