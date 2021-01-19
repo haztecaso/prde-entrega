@@ -54,7 +54,6 @@ instance Estado EstadoTablero where
   modifica p e
     | fin t = e {tableroET = tableroVacio}
     | otherwise = maybe e (\n -> e {tableroET = n}) nuevo
-    | otherwise = e
     where
       t = tableroET e
       positions = pointPos' p $ tam e
