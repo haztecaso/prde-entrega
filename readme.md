@@ -64,34 +64,33 @@ código hay comentarios que explican con más detalle que hacen las funciones.
 
 - *Mttt*: Función que usa el binario `mttt` para lanzar las distintas
   interfaces.
-- Tipos de datos
-  - *Mttt.Common*: Aquí está definida la parte común para los tipos de datos
-    de los juegos. Para ello hemos definido la clase *Juego*. Esta clase está
-    parametrizada mediante tres tipos (para poder hacer esto hemos tenido que
-    incluir la extensión [`MultiParamTypeClasses`](https://downloads.haskell.org/~ghc/8.8.4/docs/html/users_guide/glasgow_exts.html#multi-parameter-type-classes)).
-    El tipo *juego* es el que almacena los datos del juego correspondiente,
-    *pos* el tipo para las posiciones del juego y *casilla* el tipo de las
-    casillas del juego. *pos* y *casilla* son tipos que dependen de *juego*
-    (para esto hemos incluido la extensión [`FunctionalDependencies`](https://downloads.haskell.org/~ghc/8.8.4/docs/html/users_guide/glasgow_exts.html#functional-dependencies)).
-    También hemos definido un tipo para los agentes inteligentes.
-  - *Mttt.Bloque*: Tipo de datos para el *tres en raya*. Para que el tipo
-    *Bloque* pueda ser instancia de la clase *Juego* es necesario incluir las
-    extensiones [`MultiParamTypeClasses`](https://downloads.haskell.org/~ghc/8.8.4/docs/html/users_guide/glasgow_exts.html#multi-parameter-type-classes)
-    y [`FlexibleInstances`](https://downloads.haskell.org/~ghc/8.8.4/docs/html/users_guide/glasgow_exts.html#extension-FlexibleInstances).
-  - *Mttt.Tablero*: Tipo de datos para el *meta tres en raya*. Aquí también
-    hemos tenido que incluir las mismas extensiones que en *Mttt.Bloque*. El
-    tipo 'Tablero' usa la [sintaxis
-    *record*](https://www.haskell.org/onlinereport/haskell2010/haskellch3.html#x8-490003.15),
-    mediante la cual se le asignan nombres a los contenidos del tipo. Esto es
-    muy cómodo porque define automáticamente unas funciones (llamadas *getters*)
-    para extraer los valores.  
-    La función heurística *heur0* la hemos robado de un trabajo que hemos
-    encontrado en la red (más info abajo).
-  - *Mttt.Inteligencia*: Aquí está definido el algoritmo *minimax*.
-  - *Mttt.Gui.Common*: Parte común de las interfaces gráficas. Hemos acomunado
-    todas las funcionalidades que hemos podido en la clase *Estado*.
-  - *Mttt.Gui.Bloque* y *Mttt.Gui.Tablero*: Interfaces para los juegos.
-  - *Mttt.Tui*: Interfaz de texto para los juegos.
+- *Mttt.Common*: Aquí está definida la parte común para los tipos de datos
+  de los juegos. Para ello hemos definido la clase *Juego*. Esta clase está
+  parametrizada mediante tres tipos (para poder hacer esto hemos tenido que
+  incluir la extensión [`MultiParamTypeClasses`](https://downloads.haskell.org/~ghc/8.8.4/docs/html/users_guide/glasgow_exts.html#multi-parameter-type-classes)).
+  El tipo *juego* es el que almacena los datos del juego correspondiente,
+  *pos* el tipo para las posiciones del juego y *casilla* el tipo de las
+  casillas del juego. *pos* y *casilla* son tipos que dependen de *juego*
+  (para esto hemos incluido la extensión [`FunctionalDependencies`](https://downloads.haskell.org/~ghc/8.8.4/docs/html/users_guide/glasgow_exts.html#functional-dependencies)).
+  También hemos definido un tipo para los agentes inteligentes.
+- *Mttt.Bloque*: Tipo de datos para el *tres en raya*. Para que el tipo
+  *Bloque* pueda ser instancia de la clase *Juego* es necesario incluir las
+  extensiones [`MultiParamTypeClasses`](https://downloads.haskell.org/~ghc/8.8.4/docs/html/users_guide/glasgow_exts.html#multi-parameter-type-classes)
+  y [`FlexibleInstances`](https://downloads.haskell.org/~ghc/8.8.4/docs/html/users_guide/glasgow_exts.html#extension-FlexibleInstances).
+- *Mttt.Tablero*: Tipo de datos para el *meta tres en raya*. Aquí también
+  hemos tenido que incluir las mismas extensiones que en *Mttt.Bloque*. El
+  tipo 'Tablero' usa la [sintaxis
+  *record*](https://www.haskell.org/onlinereport/haskell2010/haskellch3.html#x8-490003.15),
+  mediante la cual se le asignan nombres a los contenidos del tipo. Esto es
+  muy cómodo porque define automáticamente unas funciones (llamadas *getters*)
+  para extraer los valores.  
+  La función heurística *heur0* la hemos robado de un trabajo que hemos
+  encontrado en la red (más info abajo).
+- *Mttt.Inteligencia*: Aquí está definido el algoritmo *minimax*.
+- *Mttt.Gui.Common*: Parte común de las interfaces gráficas. Hemos acomunado
+  todas las funcionalidades que hemos podido en la clase *Estado*.
+- *Mttt.Gui.Bloque* y *Mttt.Gui.Tablero*: Interfaces para los juegos.
+- *Mttt.Tui*: Interfaz de texto para los juegos.
 
 Problemas y posibles mejoras
 ----------------------------
