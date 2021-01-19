@@ -51,19 +51,47 @@ El proyecto está organizado con la estructura predefinida de *stack*:
     [-p,--primero]  Dejar que empiece el agente
   ```
 
-- En [/src](./src) están los módulos que forman la librería *Mttt*. Esta es una
-  descripción superficial de que hay en cada módulo. En el propio código hay
-  comentarios que explican con más detalle que hacen las funciones.
-
-  - *Mttt*: Función que usa el binario `mttt` para lanzar las distintas
-    interfaces.
-  - Tipos de datos
-    - *Mttt.Common*: Parte común de los tipos de datos para el *tres en raya*
-    - ...
+- En [/src](./src) están los módulos que forman la librería *Mttt*.
 
 - En [/test](./test) estárían los tests. Hemos dejado un ejemplo de un test que
   hemos usado para debuguear la traducción de posiciones del puntero a
   posiciones del tablero. Se puede ejecutar mediante el comando `stack test`
+
+### Organización de los módulos
+
+Esta es una descripción superficial de que hay en cada módulo. En el propio
+código hay comentarios que explican con más detalle que hacen las funciones.
+
+- *Mttt*: Función que usa el binario `mttt` para lanzar las distintas
+  interfaces.
+- Tipos de datos
+  - *Mttt.Common*: Aquí está definida la parte común para los tipos de datos
+    de los juegos. Para ello hemos definido la clase *Juego*. Esta clase está
+    parametrizada mediante tres tipos (para poder hacer esto hemos tenido que
+    incluir la extensión [`MultiParamTypeClasses`](https://downloads.haskell.org/~ghc/8.8.4/docs/html/users_guide/glasgow_exts.html#multi-parameter-type-classes)).
+    El tipo *juego* es el que almacena los datos del juego correspondiente,
+    *pos* el tipo para las posiciones del juego y *casilla* el tipo de las
+    casillas del juego. *pos* y *casilla* son tipos que dependen de *juego*
+    (para esto hemos incluido la extensión [`FunctionalDependencies`](https://downloads.haskell.org/~ghc/8.8.4/docs/html/users_guide/glasgow_exts.html#functional-dependencies)).
+    También hemos definido un tipo para los agentes inteligentes.
+  - *Mttt.Bloque*: Tipo de datos para el *tres en raya*. Para que el tipo
+    *Bloque* pueda ser instancia de la clase *Juego* es necesario incluir las
+    extensiones [`MultiParamTypeClasses`](https://downloads.haskell.org/~ghc/8.8.4/docs/html/users_guide/glasgow_exts.html#multi-parameter-type-classes)
+    y [`FlexibleInstances`](https://downloads.haskell.org/~ghc/8.8.4/docs/html/users_guide/glasgow_exts.html#extension-FlexibleInstances).
+  - *Mttt.Tablero*: Tipo de datos para el *meta tres en raya*. Aquí también
+    hemos tenido que incluir las mismas extensiones que en *Mttt.Bloque*. El
+    tipo 'Tablero' usa la [sintaxis
+    *record*](https://www.haskell.org/onlinereport/haskell2010/haskellch3.html#x8-490003.15),
+    mediante la cual se le asignan nombres a los contenidos del tipo. Esto es
+    muy cómodo porque define automáticamente unas funciones (llamadas *getters*)
+    para extraer los valores.  
+    La función heurística *heur0* la hemos robado de un trabajo que hemos
+    encontrado en la red (más info abajo).
+  - *Mttt.Inteligencia*: Aquí está definido el algoritmo *minimax*.
+  - *Mttt.Gui.Common*: Parte común de las interfaces gráficas. Hemos acomunado
+    todas las funcionalidades que hemos podido en la clase *Estado*.
+  - *Mttt.Gui.Bloque* y *Mttt.Gui.Tablero*: Interfaces para los juegos.
+  - *Mttt.Tui*: Interfaz de texto para los juegos.
 
 Problemas y posibles mejoras
 ----------------------------
@@ -145,12 +173,21 @@ Hemos usado dos librerías:
 Las dependencias del proyecto están especificadas en
 [package.yaml](./package.yaml).
 
+Releases
+--------
+
+[Aquí](https://haztecaso.com/mttt/releases/) están subidas las últimas versiones
+del proyecto.
+
 Referencias
 -----------
 
-- [AI agent for Ultimate Tic Tac Toe Game](https://www.cs.huji.ac.il/~ai/projects/2013/U2T3P/files/AI_Report.pdf)
+- [AI agent for Ultimate Tic Tac Toe Game](https://www.cs.huji.ac.il/~ai/projects/2013/U2T3P/files/AI_Report.pdf).
+  De aquí hemos sacado la idea para la función heurística *Mttt.Tablero.heur0'
 - [At Most 43 Moves, At Least 29: Optimal Strategies and Bounds for Ultimate
-  Tic-Tac-Toe](https://arxiv.org/abs/2006.02353)
+  Tic-Tac-Toe](https://arxiv.org/abs/2006.02353). Aquí se demuestra formalmente
+  que existe una estrategia óptima para jugar al *meta tres en raya* (para unas
+  reglas ligeramente distintas).
 - [AI Approaches to Ultimate Tic-Tac-Toe](https://www.cs.huji.ac.il/~ai/projects/2013/UlitmateTic-Tac-Toe/files/report.pdf)
 - [How I used the AlphaZero algorithm to play Ultimate
   tic-tac-toe](https://youtu.be/CcwC8tTe_QE)
