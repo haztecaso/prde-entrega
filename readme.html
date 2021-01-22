@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Meta tres en raya</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+  <style>
+  html {
+  	overflow-y: scroll;
+  	background: white;
+  }
+
+  body {
+  	color: #222;
+  	padding: 1em 1em 30em 1em;
+  	margin: auto;
+  	max-width: 100%;
+  	background: #fafafa;
+      border: none;
+  }
+
+  header{ display:none;}
+
+  figure { text-align:center;}
+
+  @media only screen and (min-width: 520px) {
+  	body {
+  		font-size: 16px;
+  	    padding: 1em 2em 30em 2em;
+  	}
+  }
+  @media only screen and (min-width: 976px) {
+  	body {
+  	    max-width: 50em;
+  		font-size: 18px;
+          border-left: solid #eee 2px;
+          border-right: solid #eee 2px;
+  	}
+  }
+  @media print {
+  	* {
+  		background: transparent !important;
+  		color: black !important;
+  		filter: none !important;
+  		-ms-filter: none !important;
+  	}
+
+  	body {
+  		font-size: 8pt;
+  		max-width: 100%;
+          border-left: none !important;
+          border-right: none !important;
+          padding-bottom: 1em;
+  	}
+
+  	a, a:visited {
+  		text-decoration: underline;
+  	}
+
+  	hr {
+  		height: 1px;
+  		border: 0;
+  		border-bottom: 1px solid black;
+  	}
+
+  	a[href]:after {
+  		content: " (" attr(href) ")";
+  	}
+
+  	abbr[title]:after {
+  		content: " (" attr(title) ")";
+  	}
+
+  	.ir a:after, a[href^="javascript:"]:after, a[href^="#"]:after {
+  		content: "";
+  	}
+
+  	pre, blockquote {
+  		padding-right: 1em;
+  		page-break-inside: avoid;
+  	}
+      pre.sourceCode{
+          border: solid 1px gray;
+      }
+
+  	tr, img {
+  		page-break-inside: avoid;
+  	}
+
+  	img {
+  		max-width: 100% !important;
+  	}
+
+  	@page :left {
+  		margin: 15mm 20mm 15mm 10mm;
+  	}
+
+  	@page :right {
+  		margin: 15mm 10mm 15mm 20mm;
+  	}
+
+  	p, h2, h3 {
+  		orphans: 3;
+  		widows: 3;
+  	}
+
+  	h2, h3 {
+  		page-break-after: avoid;
+  	}
+      #TOC{
+          display: none;
+      }
+  }
+  </style>
+  <script>
+  document.addEventListener('DOMContentLoaded', (event) => {
+      document.querySelectorAll('a').forEach(function(link){
+          let url = link.getAttribute('href')
+          if (url.startsWith('./')) {
+              if (url.startsWith('./docs')){
+                  link.href = 'https://haztecaso.com/mttt/'+url.slice(2);
+              }else{
+                  link.href = 'https://git.haztecaso.com/mttt/tree/'+url.slice(2);
+              }
+          }
+      });
+  })
+  </script>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Meta tres en raya</h1>
+</header>
+<h1 id="práctica-de-haskell-meta-tres-en-raya">Práctica de Haskell: Meta tres en raya</h1>
+<figure>
+<img src="captura.png" alt="captura de la interfaz gráfica" /><figcaption aria-hidden="true">captura de la interfaz gráfica</figcaption>
+</figure>
+<p>Hemos implementado dos juegos: el <em>tres en raya</em> y una generalización de este, el <em>meta tres en raya</em>. En ambos casos se asume que siempre empieza el jugador X. Además de programar las reglas de los juegos hemos desarrollado interfaces gráficas y de texto y un sistema muy simple de agentes inteligentes.</p>
+<p>Salvo en algún caso donde no hemos sido capaces hemos intentado evitar repetir código, definiendo clases que acomunan las interfaces y permiten separar las partes comunes.</p>
+<h2 id="documentación">Documentación</h2>
+<p><a href="https://www.haskell.org/haddock/"><em>Haddock</em></a> es una utilidad para generar documentación automáticamente a partir de comentarios del código fuente. Hay que tener en cuenta que <em>haddock</em> incluye las descripciones y datos de las funciones que son exportadas por los módulos, por lo que hay comentarios que no se ven en la documentación. Esto no es malo, ya que somos nosotros quienes decidimos que funciones queremos que sean visibles fuera de los módulos y cuales son internas.</p>
+<p>Otra función muy chula de <em>haddock</em> es que para cada fichero de código genera un <a href="./docs/src">html</a> donde podemos navegar el código de forma interactiva, viendo de que tipo son las cosas y donde están las definiciones. Se puede acceder a estas páginas a través de los enlaces <em>#source</em> al lado de cada entrada de la documentación o desde el enlace <em>source</em> a de la barra superior.</p>
+<p>Hemos adjuntado una carpeta <a href="./docs">/docs</a> con la documentación generada por haddock en el momento de entregar la práctica. También se puede consultar en <a href="https://haztecaso.com/mttt/docs">este enlace</a>. Es posible el enlace esté caido o que el contenido no coincida exactamente con la versión entregada.</p>
+<h3 id="estructura-del-código">Estructura del código</h3>
+<p>El proyecto está organizado con la estructura predefinida de <em>stack</em>:</p>
+<ul class="incremental">
+<li><p>En <a href="./app">/app</a> se encuentra el código compilable a un binario. Al compilar el programa se genera un binario <code>mttt</code>, al que podemos pasarle opciones para lanzar las distintas interfaces de los juegos. Se pueden consultar las opciones mediante el comando <code>mttt -h</code>. Por completitud las pegamos aquí también:</p>
+<pre><code>usage: mttt [options]
+  [-h,--help]     Lista de opciones para la interfaz cli
+  [-t,--tui]      Interfaz de texto
+  [-s,--simple]   Jugar al tres en raya
+  [-m,--multi]    Jugar en modo multijugador
+  [-p,--primero]  Dejar que empiece el agente</code></pre></li>
+<li><p>En <a href="./docs/src">/src</a> están los módulos que forman la librería <em>Mttt</em>.</p></li>
+<li><p>En <a href="./test">/test</a> estárían los tests. Hemos dejado un ejemplo de un test que hemos usado para debuguear la traducción de posiciones del puntero a posiciones del tablero. Se puede ejecutar mediante el comando <code>stack test</code></p></li>
+</ul>
+<h3 id="organización-de-los-módulos">Organización de los módulos</h3>
+<p>Esta es una descripción superficial de que hay en cada módulo. En el propio código hay comentarios que explican con más detalle que hacen las funciones.</p>
+<ul class="incremental">
+<li><em>Mttt</em>: Función que usa el binario <code>mttt</code> para lanzar las distintas interfaces.</li>
+<li><em>Mttt.Common</em>: Aquí está definida la parte común para los tipos de datos de los juegos. Para ello hemos definido la clase <em>Juego</em>. Esta clase está parametrizada mediante tres tipos (para poder hacer esto hemos tenido que incluir la extensión <a href="https://downloads.haskell.org/~ghc/8.8.4/docs/html/users_guide/glasgow_exts.html#multi-parameter-type-classes"><code>MultiParamTypeClasses</code></a>). El tipo <em>juego</em> es el que almacena los datos del juego correspondiente, <em>pos</em> el tipo para las posiciones del juego y <em>casilla</em> el tipo de las casillas del juego. <em>pos</em> y <em>casilla</em> son tipos que dependen de <em>juego</em> (para esto hemos incluido la extensión <a href="https://downloads.haskell.org/~ghc/8.8.4/docs/html/users_guide/glasgow_exts.html#functional-dependencies"><code>FunctionalDependencies</code></a>). También hemos definido un tipo para los agentes inteligentes.</li>
+<li><em>Mttt.Bloque</em>: Tipo de datos para el <em>tres en raya</em>. Para que el tipo <em>Bloque</em> pueda ser instancia de la clase <em>Juego</em> es necesario incluir las extensiones <a href="https://downloads.haskell.org/~ghc/8.8.4/docs/html/users_guide/glasgow_exts.html#multi-parameter-type-classes"><code>MultiParamTypeClasses</code></a> y <a href="https://downloads.haskell.org/~ghc/8.8.4/docs/html/users_guide/glasgow_exts.html#extension-FlexibleInstances"><code>FlexibleInstances</code></a>.</li>
+<li><em>Mttt.Tablero</em>: Tipo de datos para el <em>meta tres en raya</em>. Aquí también hemos tenido que incluir las mismas extensiones que en <em>Mttt.Bloque</em>. El tipo ‘Tablero’ usa la <a href="https://www.haskell.org/onlinereport/haskell2010/haskellch3.html#x8-490003.15">sintaxis <em>record</em></a>, mediante la cual se le asignan nombres a los contenidos del tipo. Esto es muy cómodo porque define automáticamente unas funciones (llamadas <em>getters</em>) para extraer los valores.<br />
+La función heurística <em>heur0</em> la hemos robado de un trabajo que hemos encontrado en la red (más info abajo).</li>
+<li><em>Mttt.Inteligencia</em>: Aquí está definido el algoritmo <em>minimax</em>.</li>
+<li><em>Mttt.Gui.Common</em>: Parte común de las interfaces gráficas. Hemos acomunado todas las funcionalidades que hemos podido en la clase <em>Estado</em>.</li>
+<li><em>Mttt.Gui.Bloque</em> y <em>Mttt.Gui.Tablero</em>: Interfaces para los juegos.</li>
+<li><em>Mttt.Tui</em>: Interfaz de texto para los juegos.</li>
+</ul>
+<h2 id="problemas-y-posibles-mejoras">Problemas y posibles mejoras</h2>
+<ul class="incremental">
+<li>Definir mejores funciones heurísticas.</li>
+<li>Implementar testeos de eficiencia para comparar los distintos agentes.</li>
+</ul>
+<h2 id="compilando-el-proyecto">Compilando el proyecto</h2>
+<p>Puesto que el proyecto está organizado con <em>stack</em> es poco práctico compilarlo directamente con <em>ghc</em> (no sabemos como habría que proceder para enlazar correctamente los módulos). Tampoco estamos seguros de si las funciones de <em>Prelude</em> que hemos usado y las extensiones del lenguaje son compatibles con <em>Hugs</em> (sospechamos que no es el caso…).</p>
+<p>Por tanto lo mejor es usar una de las herramientas compatibles con el proyecto: <em>stack</em> o <em>cabal</em>. Nosotros hemos aprendido a usar <em>stack</em> y no tenemos experiencia con <em>cabal</em>, pero en teoría <em>stack</em> es totalmente compatible con <em>cabal</em>, ya que genera un fichero <a href="./mttt.cabal">mttt.cabal</a>.</p>
+<h2 id="stack-paquete-gestión-de-dependecias">Stack: paquete, gestión de dependecias</h2>
+<p><em>Stack</em> gestiona las dependencias de la aplicación y proporciona una interfaz muy cómoda para <em>ghc</em> y <em>ghci</em>. Además está muy bien integrado con otras utilidades como <em>cabal</em>, <em>ghcid</em>, <em>haddock</em> y <em>nix</em>.</p>
+<p><em>Stack</em> es compatible con <em>cabal</em>. Para generar el archivo .cabal a partir de <code>packacge.yaml</code> (configuración del proyecto de <em>stack</em>) se puede usar <em>hpack</em> o <code>stack build</code>.</p>
+<p>Algunos comandos útiles de <em>stack</em>:</p>
+<ul class="incremental">
+<li><code>stack build</code> para compilar el programa.</li>
+<li><code>stack ghci</code> para obtener un prompt de <em>ghci</em> con el programa cargado como librería.</li>
+<li><code>stack exec -- mttt [options]</code> para ejecutar el programa.</li>
+<li><code>stack haddock --file-watch</code> para generar la documentación de forma automática mientras editamos los archivos.</li>
+</ul>
+<h2 id="nix">Nix</h2>
+<p><a href="https://nixos.wiki/wiki/Nix">Nix</a> es un gestor de paquetes que deriva instrucciones de compilación especificadas en el lenguaje de programación <a href="https://nixos.wiki/wiki/Nix_Expression_Language"><em>nix</em></a>, un lenguaje de programación funcional puro y perezoso.</p>
+<p>Este proyecto usa <em>nix</em> solo para gestionar el entorno de desarollo de <em>haskell</em>. La gestión de dependencias y compilación queda delegada totalmente a <em>stack</em>. Lo bueno de esto es que no es necesario escribir una derivación de <em>nix</em> y como <em>stack</em> está integrado con <em>nix</em>, no perdemos ciertos beneficios de <em>nix</em> (como tener un entorno aislado).</p>
+<p>Con <em>nix-shell</em> se puede utilizar el entorno de desarollo definido en <a href="./shell.nix">shell.nix</a>. Aquí se incluyen algunas utilidades cómodas para programar en <em>haskell</em>:</p>
+<ul class="incremental">
+<li><p><em>ghcid</em>: Versión de <em>ghci</em> que recompila el código cada vez que se modifica un fichero. Se puede lanzar con el comando <code>nix-shell --run ghcid</code>.</p></li>
+<li><p><em>haskell-language-server</em>: <em><a href="https://microsoft.github.io/language-server-protocol/">LSP</a></em> para <em>haskell</em>. Útil para integrar con un editor (por ejemplo con <a href="https://neovim.io"><em>nvim</em></a>, mediante <a href="https://github.com/neoclide/coc.nvim/"><em>coc.nvim</em></a>).</p></li>
+</ul>
+<h2 id="dependencias">Dependencias</h2>
+<p>Hemos usado dos librerías:</p>
+<ul class="incremental">
+<li><a href="https://hackage.haskell.org/package/gloss/">gloss</a> para la parte gráfica. Es una dependencia de toda la librería.</li>
+<li><a href="https://hackage.haskell.org/package/parseargs/">parseargs</a> para gestionar las opciones que se le pasan al binario. Esta dependencia es necesaria solo para compilar el ejecutable, no para la librería.</li>
+</ul>
+<p>Las dependencias del proyecto están especificadas en <a href="./package.yaml">package.yaml</a>.</p>
+<h2 id="releases">Releases</h2>
+<p><a href="https://haztecaso.com/mttt/releases/">Aquí</a> están subidas las últimas versiones del proyecto.</p>
+<h2 id="referencias">Referencias</h2>
+<ul class="incremental">
+<li><a href="https://www.cs.huji.ac.il/~ai/projects/2013/U2T3P/files/AI_Report.pdf">AI agent for Ultimate Tic Tac Toe Game</a>. De aquí hemos sacado la idea para la función heurística *Mttt.Tablero.heur0’</li>
+<li><a href="https://arxiv.org/abs/2006.02353">At Most 43 Moves, At Least 29: Optimal Strategies and Bounds for Ultimate Tic-Tac-Toe</a>. Aquí se demuestra formalmente que existe una estrategia óptima para jugar al <em>meta tres en raya</em> (para unas reglas ligeramente distintas).</li>
+<li><a href="https://www.cs.huji.ac.il/~ai/projects/2013/UlitmateTic-Tac-Toe/files/report.pdf">AI Approaches to Ultimate Tic-Tac-Toe</a></li>
+<li><a href="https://youtu.be/CcwC8tTe_QE">How I used the AlphaZero algorithm to play Ultimate tic-tac-toe</a></li>
+</ul>
+</body>
+</html>
