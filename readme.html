@@ -160,7 +160,13 @@ La función heurística <em>heur0</em> la hemos robado de un trabajo que hemos e
 <h2 id="posibles-mejoras">Posibles mejoras</h2>
 <ul class="incremental">
 <li>Mejorar la eficiencia de alguna función. Sobre todo las que puedan influir en la velocidad del algoritmo minimax.</li>
-<li>Definir mejores funciones heurísticas.</li>
+<li>Mejorar i.a.
+<ul class="incremental">
+<li>Definir mejores funciones heurísticas. No solo que jueguen bien, sino también que sean rápidas de calcular.</li>
+<li>Implementar poda alfa-beta. Este algoritmo corta las ramas que no hace falta visitar del arbol de expansiones del juego.</li>
+<li>Optimizar algoritmos y heurísticas para poder aumentar la profundidad de expansión.</li>
+<li>Implementar algún algoritmo de machine learning.</li>
+</ul></li>
 <li>Mejorar la interfaz de texto. En particular el input de las coordenadas.</li>
 <li>Replantear la organización de las estructuras de datos para que sea más concisa. ¿Usar la mónada state?</li>
 <li>Implementar testeos de eficiencia para comparar los distintos agentes.
