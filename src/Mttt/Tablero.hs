@@ -17,7 +17,7 @@ where
 
 import Data.Array (Array, elems, listArray, (!), (//))
 import Data.List (intercalate, transpose)
-import Data.Maybe (fromJust, isJust, isNothing)
+import Data.Maybe (isNothing)
 import Mttt.Bloque (Bloque)
 import Mttt.Common
 
@@ -76,9 +76,8 @@ instance Juego Tablero (Pos, Pos) Bloque where
     where
       validPos = p1 `elem` casillasLibres t && p2 `elem` listaIndices
       bloque = mov (bloques t ! p1) f p2
-      siguiente --TODO: ¡Arreglar!
+      siguiente
         | fin (bloques t ! p2) = Nothing
-        | isJust bloque && fin (fromJust bloque) = Nothing --TODO: ¿Cómo evitar fromJust?
         | otherwise = Just p2
       nuevo =
         ( \b ->
