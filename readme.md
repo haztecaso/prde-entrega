@@ -12,6 +12,34 @@ Salvo en algún caso donde no hemos sido capaces hemos intentado evitar repetir
 código, definiendo clases que acomunan las interfaces y permiten separar las
 partes comunes.
 
+¿Cómo se juega?
+---------------
+
+Puedes encontrar las reglas del juego en
+[wikipedia](https://en.wikipedia.org/wiki/Ultimate_tic-tac-toe). Nosotros hemos
+asumido que el juego siempre lo empieza la X.
+
+Para lanzar el juego basta ejecutar el binario `mttt` con las correspondientes
+opciones (ver más abajo).
+
+### Interfaz gráfica
+
+Es la interfaz por defecto para los juegos. Cuando se juega contra *la máquina*
+hay que tener un poco de paciencia y esperar a que se coloque la ficha (no hay
+ningun indicador gráfico de que el ordenador está pensando).
+
+### Interfaz de texto
+
+Se lanza con la opción `-t` del binario. La interfaz dibuja en pantalla el
+tablero y nos pregunta donde queremos jugar. El programa espera que le demos las
+coordenadas como tuplas, omitiendo los paréntesis más externos:
+
+- Para el tres en raya: Valores `x,y` donde `1,1` es la esquina superior
+  izquierda y `3,3` la esquina inferior derecha.
+- Para el meta tres en raya: Valores `(a,b),(x,y)` donde `a,b` son las
+  coordenadas del bloque donde queremos jugar y `x,y` la posición de la casilla
+  del bloque `a,b` donde queremos colocar la ficha.
+
 Documentación
 -------------
 
@@ -94,11 +122,19 @@ código hay comentarios que explican con más detalle que hacen las funciones.
 - *Mttt.Gui.Bloque* y *Mttt.Gui.Tablero*: Interfaces para los juegos.
 - *Mttt.Tui*: Interfaz de texto para los juegos.
 
-Problemas y posibles mejoras
-----------------------------
+Posibles mejoras
+----------------
 
+- Mejorar la eficiencia de alguna función. Sobre todo las que puedan influir en
+  la velocidad del algoritmo minimax.
 - Definir mejores funciones heurísticas.
+- Mejorar la interfaz de texto. En particular el input de las coordenadas.
+- Replantear la organización de las estructuras de datos para que sea más
+  concisa. ¿Usar la mónada state?
 - Implementar testeos de eficiencia para comparar los distintos agentes.
+  - Hacer que los agentes jueguen contra otros agentes.
+  - Usar alguna librería de testeo.
+- Mejorar la interfaz gráfica.
 
 Compilando el proyecto
 ----------------------
