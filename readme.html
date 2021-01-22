@@ -18,6 +18,7 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
   <![endif]-->
   <style>
+  h1.title{ display:none;}
   figure { text-align:center;}
   figure img { max-width: 100%;}
 
@@ -118,6 +119,17 @@
 </figure>
 <p>Hemos implementado dos juegos: el <em>tres en raya</em> y una generalización de este, el <em>meta tres en raya</em>. En ambos casos se asume que siempre empieza el jugador X. Además de programar las reglas de los juegos hemos desarrollado interfaces gráficas y de texto y un sistema muy simple de agentes inteligentes.</p>
 <p>Salvo en algún caso donde no hemos sido capaces hemos intentado evitar repetir código, definiendo clases que acomunan las interfaces y permiten separar las partes comunes.</p>
+<h2 id="cómo-se-juega">¿Cómo se juega?</h2>
+<p>Puedes encontrar las reglas del juego en <a href="https://en.wikipedia.org/wiki/Ultimate_tic-tac-toe">wikipedia</a>. Nosotros hemos asumido que el juego siempre lo empieza la X.</p>
+<p>Para lanzar el juego basta ejecutar el binario <code>mttt</code> con las correspondientes opciones (ver más abajo).</p>
+<h3 id="interfaz-gráfica">Interfaz gráfica</h3>
+<p>Es la interfaz por defecto para los juegos. Cuando se juega contra <em>la máquina</em> hay que tener un poco de paciencia y esperar a que se coloque la ficha (no hay ningun indicador gráfico de que el ordenador está pensando).</p>
+<h3 id="interfaz-de-texto">Interfaz de texto</h3>
+<p>Se lanza con la opción <code>-t</code> del binario. La interfaz dibuja en pantalla el tablero y nos pregunta donde queremos jugar. El programa espera que le demos las coordenadas como tuplas, omitiendo los paréntesis más externos:</p>
+<ul class="incremental">
+<li>Para el tres en raya: Valores <code>x,y</code> donde <code>1,1</code> es la esquina superior izquierda y <code>3,3</code> la esquina inferior derecha.</li>
+<li>Para el meta tres en raya: Valores <code>(a,b),(x,y)</code> donde <code>a,b</code> son las coordenadas del bloque donde queremos jugar y <code>x,y</code> la posición de la casilla del bloque <code>a,b</code> donde queremos colocar la ficha.</li>
+</ul>
 <h2 id="documentación">Documentación</h2>
 <p><a href="https://www.haskell.org/haddock/"><em>Haddock</em></a> es una utilidad para generar documentación automáticamente a partir de comentarios del código fuente. Hay que tener en cuenta que <em>haddock</em> incluye las descripciones y datos de las funciones que son exportadas por los módulos, por lo que hay comentarios que no se ven en la documentación. Esto no es malo, ya que somos nosotros quienes decidimos que funciones queremos que sean visibles fuera de los módulos y cuales son internas.</p>
 <p>Otra función muy chula de <em>haddock</em> es que para cada fichero de código genera un <a href="./docs/src">html</a> donde podemos navegar el código de forma interactiva, viendo de que tipo son las cosas y donde están las definiciones. Se puede acceder a estas páginas a través de los enlaces <em>#source</em> al lado de cada entrada de la documentación o desde el enlace <em>source</em> a de la barra superior.</p>
@@ -148,10 +160,18 @@ La función heurística <em>heur0</em> la hemos robado de un trabajo que hemos e
 <li><em>Mttt.Gui.Bloque</em> y <em>Mttt.Gui.Tablero</em>: Interfaces para los juegos.</li>
 <li><em>Mttt.Tui</em>: Interfaz de texto para los juegos.</li>
 </ul>
-<h2 id="problemas-y-posibles-mejoras">Problemas y posibles mejoras</h2>
+<h2 id="posibles-mejoras">Posibles mejoras</h2>
 <ul class="incremental">
+<li>Mejorar la eficiencia de alguna función. Sobre todo las que puedan influir en la velocidad del algoritmo minimax.</li>
 <li>Definir mejores funciones heurísticas.</li>
-<li>Implementar testeos de eficiencia para comparar los distintos agentes.</li>
+<li>Mejorar la interfaz de texto. En particular el input de las coordenadas.</li>
+<li>Replantear la organización de las estructuras de datos para que sea más concisa. ¿Usar la mónada state?</li>
+<li>Implementar testeos de eficiencia para comparar los distintos agentes.
+<ul class="incremental">
+<li>Hacer que los agentes jueguen contra otros agentes.</li>
+<li>Usar alguna librería de testeo.</li>
+</ul></li>
+<li>Mejorar la interfaz gráfica.</li>
 </ul>
 <h2 id="compilando-el-proyecto">Compilando el proyecto</h2>
 <p>Puesto que el proyecto está organizado con <em>stack</em> es poco práctico compilarlo directamente con <em>ghc</em> (no sabemos como habría que proceder para enlazar correctamente los módulos). Tampoco estamos seguros de si las funciones de <em>Prelude</em> que hemos usado y las extensiones del lenguaje son compatibles con <em>Hugs</em> (sospechamos que no es el caso…).</p>
