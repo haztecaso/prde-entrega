@@ -227,7 +227,7 @@ Referencias
 -----------
 
 - [AI agent for Ultimate Tic Tac Toe Game](https://www.cs.huji.ac.il/~ai/projects/2013/U2T3P/files/AI_Report.pdf).
-  De aquí hemos sacado la idea para la función heurística *Mttt.Tablero.heur0'
+  De aquí hemos sacado la idea para la función heurística *Mttt.Tablero.heur0*
 - [At Most 43 Moves, At Least 29: Optimal Strategies and Bounds for Ultimate
   Tic-Tac-Toe](https://arxiv.org/abs/2006.02353). Aquí se demuestra formalmente
   que existe una estrategia óptima para jugar al *meta tres en raya* (para unas
