@@ -79,7 +79,7 @@ instance Juego Tablero (Pos, Pos) Bloque where
       siguiente
         | fin (bloques t ! p2) = Nothing
         | otherwise =
-          maybe
+          maybe -- Seguro que hay alguna manera más elegante de hacer esto...
             (Just p2)
             (\n -> if fin (bloques n ! p2) then Nothing else Just p2)
             nuevo
