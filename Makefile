@@ -20,6 +20,7 @@ docs:
 publish: docs readme tarball
 	rsync -aPvzz ./docs/ hhh:/srv/http/mttt/docs/ --delete
 	rsync -vzz ./mttt-v${VERSION}.tar.gz hhh:/srv/http/mttt/releases/
+	rsync -aPv ./captura.png hhh:/srv/http/mttt/
 	rsync -aPv ./readme.html hhh:/srv/http/mttt/index.html
 
 tarball: docs

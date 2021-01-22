@@ -5,7 +5,7 @@ cabal-version: 1.12
 -- see: https://github.com/sol/hpack
 
 name:           mttt
-version:        0.7.1
+version:        1.0.0
 description:    Entrega de programación declarativa: implementación en Haskell del juego `meta tres en raya`. En el archivo readme.md hay más información sobre el juego y el código.
 homepage:       https://haztecaso.com/mttt/
 author:         Adrián Lattes y David Díez

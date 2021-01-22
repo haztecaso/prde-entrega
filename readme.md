@@ -1,6 +1,8 @@
 Práctica de Haskell: Meta tres en raya
 ======================================
 
+![captura de la interfaz gráfica](captura.png)
+
 Hemos implementado dos juegos: el *tres en raya* y una generalización de este,
 el *meta tres en raya*. En ambos casos se asume que siempre empieza el jugador
 X. Además de programar las reglas de los juegos hemos desarrollado interfaces
@@ -51,7 +53,7 @@ El proyecto está organizado con la estructura predefinida de *stack*:
     [-p,--primero]  Dejar que empiece el agente
   ```
 
-- En [/src](./src) están los módulos que forman la librería *Mttt*.
+- En [/src](./docs/src) están los módulos que forman la librería *Mttt*.
 
 - En [/test](./test) estárían los tests. Hemos dejado un ejemplo de un test que
   hemos usado para debuguear la traducción de posiciones del puntero a
