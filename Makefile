@@ -1,6 +1,6 @@
 VERSION=$$(awk '/^version:/ { print $$2 }' package.yaml)
 PANDOC_OPTIONS=--to html5 -s --highlight-style tango -H header.html --metadata\
-			   title="Meta tres en raya"
+			   title=""
 
 all: build install readme docs publish
 
