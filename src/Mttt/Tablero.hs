@@ -116,7 +116,10 @@ pesoCasilla b p
   | casilla b p == Just O = - pesoPos p
   | otherwise = 0
 
--- | Función heurística aceptable para 'Tablero'
+-- | Función heurística aceptable para 'Tablero'.
+--
+-- En realidad no es muy buena. Es fácil ganar al algoritmo minimax con
+-- profundidad 4.
 heur0 ::
   Tablero ->
   Int

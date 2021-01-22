@@ -127,7 +127,14 @@ Posibles mejoras
 
 - Mejorar la eficiencia de alguna función. Sobre todo las que puedan influir en
   la velocidad del algoritmo minimax.
-- Definir mejores funciones heurísticas.
+- Mejorar i.a.
+  - Definir mejores funciones heurísticas. No solo que jueguen bien, sino también
+    que sean rápidas de calcular.
+  - Implementar poda alfa-beta. Este algoritmo corta las ramas que no hace falta
+    visitar del arbol de expansiones del juego.
+  - Optimizar algoritmos y heurísticas para poder aumentar la profundidad de
+    expansión.
+  - Implementar algún algoritmo de machine learning.
 - Mejorar la interfaz de texto. En particular el input de las coordenadas.
 - Replantear la organización de las estructuras de datos para que sea más
   concisa. ¿Usar la mónada state?
