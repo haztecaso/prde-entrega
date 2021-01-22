@@ -16,11 +16,11 @@ readme:
 docs:
 	stack haddock
 	cp -r .stack-work/dist/x86_64-linux-nix/Cabal-3.0.1.0/doc/html/mttt docs
+	rm ./docs/src/Paths_mttt.html
 
 publish: docs readme tarball
 	rsync -aPvzz ./docs/ hhh:/srv/http/mttt/docs/ --delete
 	rsync -vzz ./mttt-v${VERSION}.tar.gz hhh:/srv/http/mttt/releases/
-	rsync -aPv ./captura.png hhh:/srv/http/mttt/
 
 tarball: docs
 	tar -zcvf /tmp/mttt-v${VERSION}.tar.gz\
@@ -28,7 +28,7 @@ tarball: docs
 		--exclude .stack-work\
 		--exclude .gitignore\
 		--exclude *.tar.gz\
-		.
+		../mttt
 	mv /tmp/mttt-v${VERSION}.tar.gz .
 
 version:

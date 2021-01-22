@@ -78,7 +78,11 @@ instance Juego Tablero (Pos, Pos) Bloque where
       bloque = mov (bloques t ! p1) f p2
       siguiente
         | fin (bloques t ! p2) = Nothing
-        | otherwise = Just p2
+        | otherwise =
+          maybe
+            (Just p2)
+            (\n -> if fin (bloques n ! p2) then Nothing else Just p2)
+            nuevo
       nuevo =
         ( \b ->
             T
