@@ -63,7 +63,7 @@ printCasillasLibres j =
 preguntarJugada :: Juego juego pos c => juego -> IO pos
 preguntarJugada j = do
   let jugador = maybe "??" show (turno j)
-  putStr $ "[Turno de " ++ show jugador ++ "] "
+  putStr $ "[Turno de " ++ jugador ++ "] "
   posStr <- prompt "Posición donde jugar: "
   let pos = maybeRead $ '(' : posStr ++ ")"
   maybe (putStrLn "¡Posición incorrecta!" >> preguntarJugada j) return pos
@@ -126,11 +126,14 @@ loopAgente ::
 loopAgente agente ficha juego jugadas = do
   (siguiente, pos) <-
     if turno juego == Just ficha
-      then return (juego', mov2pos juego juego')
+      then do
+        print juego
+        putStrLn $ "[Turno de " ++ show ficha ++ "] Agente calculando..."
+        return (juego', mov2pos juego juego')
       else jugar juego
   if fin siguiente
     then return (siguiente, pos : jugadas)
-    else loopMulti siguiente $ pos : jugadas
+    else loopAgente agente ficha siguiente $ pos : jugadas
   where
     juego' = f agente juego
 
@@ -155,7 +158,6 @@ mensajeFinAgente j f
       | otherwise = "Has ganado al agente."
 
 -- | Función IO para jugar una partida contra un agente.
--- TODO: 'Arreglar!
 tuiAgente ::
   Juego j p c =>
   -- | 'Agente' contra el que jugar
