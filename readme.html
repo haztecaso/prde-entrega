@@ -18,38 +18,17 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
   <![endif]-->
   <style>
-  html {
-  	overflow-y: scroll;
-  	background: white;
-  }
-
   body {
   	color: #222;
-  	padding: 1em 1em 30em 1em;
   	margin: auto;
-  	max-width: 100%;
-  	background: #fafafa;
+      width:100%;
+  	max-width: 50em;
       border: none;
   }
-
   header{ display:none;}
-
   figure { text-align:center;}
+  figure img { max-width: 100%;}
 
-  @media only screen and (min-width: 520px) {
-  	body {
-  		font-size: 16px;
-  	    padding: 1em 2em 30em 2em;
-  	}
-  }
-  @media only screen and (min-width: 976px) {
-  	body {
-  	    max-width: 50em;
-  		font-size: 18px;
-          border-left: solid #eee 2px;
-          border-right: solid #eee 2px;
-  	}
-  }
   @media print {
   	* {
   		background: transparent !important;
@@ -120,9 +99,6 @@
   	h2, h3 {
   		page-break-after: avoid;
   	}
-      #TOC{
-          display: none;
-      }
   }
   </style>
   <script>
@@ -130,7 +106,7 @@
       document.querySelectorAll('a').forEach(function(link){
           let url = link.getAttribute('href')
           if (url.startsWith('./')) {
-              if (url.startsWith('./docs')){
+              if (url.startsWith('./docs/src')){
                   link.href = 'https://haztecaso.com/mttt/'+url.slice(2);
               }else{
                   link.href = 'https://git.haztecaso.com/mttt/tree/'+url.slice(2);
