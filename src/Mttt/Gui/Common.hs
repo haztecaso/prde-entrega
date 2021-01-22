@@ -1,5 +1,5 @@
 {-# LANGUAGE FunctionalDependencies #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE MultiParamTypeClasses  #-}
 
 -- |
 -- Module      : Mttt.Gui.Common
@@ -49,10 +49,10 @@ module Mttt.Gui.Common
   )
 where
 
-import Data.Bifunctor (bimap)
-import Graphics.Gloss (Picture, display, play)
-import Graphics.Gloss.Interface.IO.Interact
-import Mttt.Common
+import           Data.Bifunctor                       (bimap)
+import           Graphics.Gloss                       (Picture, display, play)
+import           Graphics.Gloss.Interface.IO.Interact
+import           Mttt.Common
 
 ventana ::
   -- | Tamaño de la ventana
@@ -85,11 +85,11 @@ rad2grad = (* (180 / pi))
 -- | Tipo para representar temas (grupos de colores)
 -- de la intefaz gráfica del juego.
 data Tema = Tema
-  { fondo :: Color,
-    contraste :: Color,
-    principal :: Color,
+  { fondo      :: Color,
+    contraste  :: Color,
+    principal  :: Color,
     secundario :: Color,
-    neutro :: Color
+    neutro     :: Color
   }
   deriving (Show)
 
@@ -306,7 +306,7 @@ dibuja' estado =
 -- | Función para modificar un estado cuando se hace click
 modificaEvent :: Estado e j p c => Event -> e -> e
 modificaEvent (EventKey (MouseButton LeftButton) Up _ point) = modifica point
-modificaEvent _ = id
+modificaEvent _                                              = id
 
 -- | Función IO para jugar en modo multijugador
 guiMulti ::

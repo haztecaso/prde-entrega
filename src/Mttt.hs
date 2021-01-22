@@ -8,15 +8,15 @@
 -- modalidades.
 module Mttt (nuevoJuego) where
 
-import Mttt.Bloque (Bloque)
-import qualified Mttt.Bloque as B (heur0)
-import Mttt.Common
-import Mttt.Gui.Bloque
-import Mttt.Gui.Common
-import Mttt.Gui.Tablero
-import Mttt.Tablero (Tablero)
-import qualified Mttt.Tablero as T (heur0)
-import Mttt.Tui
+import           Mttt.Bloque      (Bloque)
+import qualified Mttt.Bloque      as B (heur0)
+import           Mttt.Common
+import           Mttt.Gui.Bloque
+import           Mttt.Gui.Common
+import           Mttt.Gui.Tablero
+import           Mttt.Tablero     (Tablero)
+import qualified Mttt.Tablero     as T (heur0)
+import           Mttt.Tui
 
 getHeurTablero :: IO (String, Tablero -> Int)
 getHeurTablero = do

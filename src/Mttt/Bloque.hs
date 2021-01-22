@@ -1,4 +1,4 @@
-{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 
 -- |
@@ -15,10 +15,10 @@ module Mttt.Bloque
   )
 where
 
-import Data.Array (Array, elems, listArray, (!), (//))
-import Data.List (intersperse, transpose)
-import Data.Maybe (isJust, isNothing)
-import Mttt.Common
+import           Data.Array  (Array, elems, listArray, (!), (//))
+import           Data.List   (intersperse, transpose)
+import           Data.Maybe  (isJust, isNothing)
+import           Mttt.Common
 
 -- | Tipo para un tablero de /tres en raya/
 data Bloque = B (Array Pos (Maybe Ficha))
@@ -31,7 +31,7 @@ instance Juego Bloque Pos (Maybe Ficha) where
   vacio = B $ listArray ((1, 1), (3, 3)) [Nothing | _ <- listaIndices]
   contarFichas (B b) = foldr1 suma $ map f $ elems b
     where
-      f Nothing = (0, 0)
+      f Nothing  = (0, 0)
       f (Just X) = (1, 0)
       f (Just O) = (0, 1)
       suma (a, b) (c, d) = (a + c, b + d)

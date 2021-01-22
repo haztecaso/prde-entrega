@@ -1,4 +1,4 @@
-{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 
 -- |
@@ -12,12 +12,13 @@ module Mttt.Gui.Tablero
   )
 where
 
-import Graphics.Gloss (Picture (Blank, Scale, Text), Point, bright, color, pictures)
-import Mttt.Bloque (Bloque)
-import Mttt.Common
-import Mttt.Gui.Bloque (EstadoBloque (EB, bloqueEB, centroEB, tamEB, temaEB))
-import Mttt.Gui.Common
-import Mttt.Tablero
+import           Graphics.Gloss  (Picture (Blank, Scale, Text), Point, bright,
+                                  color, pictures)
+import           Mttt.Bloque     (Bloque)
+import           Mttt.Common
+import           Mttt.Gui.Bloque (EstadoBloque (EB, bloqueEB, centroEB, tamEB, temaEB))
+import           Mttt.Gui.Common
+import           Mttt.Tablero
 
 -- | Tipo que encapsula los datos necesarios para dibujar un 'Tablero' en
 -- pantalla
@@ -25,9 +26,9 @@ data EstadoTablero = ET
   { -- | 'Tablero' a dibujar
     tableroET :: Tablero,
     -- | Tamaño del tablero
-    tamET :: Float,
+    tamET     :: Float,
     -- | 'Tema' con el que dibujar el tablero
-    temaET :: Tema
+    temaET    :: Tema
   }
   deriving (Show)
 

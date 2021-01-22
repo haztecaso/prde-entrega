@@ -1,5 +1,5 @@
 {-# LANGUAGE FunctionalDependencies #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE MultiParamTypeClasses  #-}
 
 -- |
 -- Module      : Mttt.Common
@@ -42,9 +42,9 @@ module Mttt.Common
   )
 where
 
-import Data.List (elemIndex)
-import Data.Maybe (fromJust, isJust, isNothing)
-import Mttt.Inteligencia
+import           Data.List         (elemIndex)
+import           Data.Maybe        (fromJust, isJust, isNothing)
+import           Mttt.Inteligencia
 
 -- | Tipo que representa una ficha del juego
 data Ficha = X | O deriving (Eq)
@@ -55,7 +55,7 @@ instance Show Ficha where
 
 -- | Utilidad para imprimir una /casilla/ en pantalla
 showMaybeFicha :: Maybe Ficha -> Char
-showMaybeFicha Nothing = '_'
+showMaybeFicha Nothing  = '_'
 showMaybeFicha (Just f) = head (show f)
 
 -- | Tipo sinónimo para representar posiciones.

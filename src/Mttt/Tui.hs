@@ -15,10 +15,10 @@ module Mttt.Tui
   )
 where
 
-import Data.List (intersperse)
-import Data.Maybe (isJust, listToMaybe)
-import Mttt.Common
-import System.IO (hFlush, stdout)
+import           Data.List   (intersperse)
+import           Data.Maybe  (isJust, listToMaybe)
+import           Mttt.Common
+import           System.IO   (hFlush, stdout)
 
 -- | Utilidad para evitar los errores generados por 'read'.
 -- Copiada de https://stackoverflow.com/questions/5121371/#answer-5121537

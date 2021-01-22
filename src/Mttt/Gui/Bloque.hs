@@ -1,4 +1,4 @@
-{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 
 -- |
@@ -12,10 +12,10 @@ module Mttt.Gui.Bloque
   )
 where
 
-import Graphics.Gloss (Picture (Blank), Point, color, pictures, play)
-import Mttt.Bloque
-import Mttt.Common
-import Mttt.Gui.Common
+import           Graphics.Gloss  (Picture (Blank), Point, color, pictures, play)
+import           Mttt.Bloque
+import           Mttt.Common
+import           Mttt.Gui.Common
 
 -- | Tipo que encapsula los datos necesarios para dibujar un 'Bloque' en pantalla
 data EstadoBloque = EB
@@ -24,9 +24,9 @@ data EstadoBloque = EB
     -- | Posición del centro del tablero
     centroEB :: Point,
     -- | Tamaño del tablero
-    tamEB :: Float,
+    tamEB    :: Float,
     -- | 'Tema' con el que dibujar el tablero
-    temaEB :: Tema
+    temaEB   :: Tema
   }
   deriving (Show)
 

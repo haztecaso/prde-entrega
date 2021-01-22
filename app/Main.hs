@@ -1,8 +1,8 @@
 module Main where
 
-import Mttt
-import Mttt.Common (Ficha (O, X))
-import System.Console.ParseArgs
+import           Mttt
+import           Mttt.Common              (Ficha (O, X))
+import           System.Console.ParseArgs
 
 -- | Tipo de dato para diferenciar las opciones de la interfaz cli
 data Opciones = OAyuda | OTui | OSimple | OMulti | OPrimero

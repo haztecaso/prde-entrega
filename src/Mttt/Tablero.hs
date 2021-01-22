@@ -1,4 +1,4 @@
-{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE FlexibleInstances     #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 
 -- |
@@ -15,16 +15,16 @@ module Mttt.Tablero
   )
 where
 
-import Data.Array (Array, elems, listArray, (!), (//))
-import Data.List (intercalate, transpose)
-import Data.Maybe (isNothing)
-import Mttt.Bloque (Bloque)
-import Mttt.Common
+import           Data.Array  (Array, elems, listArray, (!), (//))
+import           Data.List   (intercalate, transpose)
+import           Data.Maybe  (isNothing)
+import           Mttt.Bloque (Bloque)
+import           Mttt.Common
 
 -- | Tipo para un tablero de /meta tres en raya/
 data Tablero = T
   { -- | Bloques del tablero
-    bloques :: Array Pos Bloque,
+    bloques      :: Array Pos Bloque,
     -- | 'Pos' del 'Bloque' activo para jugar. Si es 'Nothing' se puede jugar en
     -- cualquier 'Bloque' que no haya llegado a su 'fin'.
     bloqueActivo :: Maybe Pos
