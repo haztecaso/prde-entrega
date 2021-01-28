@@ -12,7 +12,7 @@ module Mttt.Gui.Bloque
   )
 where
 
-import           Graphics.Gloss  (Picture (Blank), Point, color, pictures, play)
+import           Graphics.Gloss  (Picture (Blank), Point, pictures)
 import           Mttt.Bloque
 import           Mttt.Common
 import           Mttt.Gui.Common

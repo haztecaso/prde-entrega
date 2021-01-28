@@ -45,7 +45,7 @@ executable mttt
       Paths_mttt
   hs-source-dirs:
       app
-  ghc-options: -haddock -threaded -rtsopts -with-rtsopts=-N
+  ghc-options: -haddock -threaded -rtsopts -with-rtsopts=-N -fwarn-tabs -fwarn-orphans -fwarn-incomplete-patterns -fwarn-unused-imports
   build-depends:
       array
     , base >=4.7 && <5

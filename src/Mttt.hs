@@ -24,6 +24,7 @@ getHeurTablero = do
   opc <- getOpcion ["heur0"]
   case opc of
     0 -> return ("heur0", T.heur0)
+    _ -> return ("heur0 (default)", T.heur0)
 
 getProf :: IO (Int)
 getProf = do

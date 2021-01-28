@@ -17,7 +17,7 @@ where
 
 import           Data.Array  (Array, elems, listArray, (!), (//))
 import           Data.List   (intersperse, transpose)
-import           Data.Maybe  (isJust, isNothing)
+import           Data.Maybe  (isNothing)
 import           Mttt.Common
 
 -- | Tipo para un tablero de /tres en raya/

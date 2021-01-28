@@ -50,7 +50,7 @@ module Mttt.Gui.Common
 where
 
 import           Data.Bifunctor                       (bimap)
-import           Graphics.Gloss                       (Picture, display, play)
+import           Graphics.Gloss                       (display, play)
 import           Graphics.Gloss.Interface.IO.Interact
 import           Mttt.Common
 
@@ -100,7 +100,7 @@ temaClaro =
     { fondo = greyN 0.75,
       contraste = greyN 0.05,
       principal = dim red,
-      secundario = iterate dim green !! 3,
+      secundario = iterate dim green !! 3, -- ¡Cuidado con las funciones parciales!
       neutro = greyN 0.50
     }
 

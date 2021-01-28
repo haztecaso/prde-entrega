@@ -56,7 +56,7 @@ instance Show Ficha where
 -- | Utilidad para imprimir una /casilla/ en pantalla
 showMaybeFicha :: Maybe Ficha -> Char
 showMaybeFicha Nothing  = '_'
-showMaybeFicha (Just f) = head (show f)
+showMaybeFicha (Just f) = head (show f) -- ¡Cuidado con las funciones parciales!
 
 -- | Tipo sinónimo para representar posiciones.
 type Pos = (Int, Int)
@@ -149,7 +149,7 @@ expandir t
 -- podría adaptar el algoritmo minimax para que devuelva automaticamente la
 -- posición en la que jugar, en vez de los propios juegos...
 mov2pos :: Juego j p c => j -> j -> p
-mov2pos j1 j2 = posicionesLibres j1 !! fromJust (elemIndex j2 $ expandir j1)
+mov2pos j1 j2 = posicionesLibres j1 !! fromJust (elemIndex j2 $ expandir j1) -- ¡Cuidado con las funciones parciales!
 
 -- | Tipo para los agentes inteligentes.
 data Agente a = A {f :: (a -> a), nombre :: String}

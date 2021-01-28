@@ -16,7 +16,7 @@ module Mttt.Tui
 where
 
 import           Data.List   (intersperse)
-import           Data.Maybe  (isJust, listToMaybe)
+import           Data.Maybe  (listToMaybe)
 import           Mttt.Common
 import           System.IO   (hFlush, stdout)
 
@@ -44,11 +44,14 @@ putOps' (x : xs) n = do
   putOps' xs (n + 1)
 
 -- | Seleccionar una opción
+--
+-- Estaría bien cambiar la implementación para evitar usar la función parcial
+-- `read`...
 getOpcion :: [String] -> IO Int
 getOpcion ops = do
   putOps ops
   n <- prompt "Selecciona una opción: "
-  if (read n >= 0) && (read n < length ops)
+  if (read n >= 0) && (read n < length ops) -- ¡Cuidado con las funciones parciales!
     then return (read n)
     else getOpcion ops
 
@@ -56,7 +59,7 @@ printCasillasLibres :: Juego juego p c => juego -> IO ()
 printCasillasLibres j =
   putStrLn
     ( "Casillas donde se puede jugar: "
-        ++ (concat $ intersperse " - " $ map (tail . init) [show c | c <- casillasLibres j])
+        ++ (concat $ intersperse " - " $ map (tail . init) [show c | c <- casillasLibres j]) -- ¡Cuidado con las funciones parciales!
     )
 
 -- | Pregunta donde se quiere jugar.

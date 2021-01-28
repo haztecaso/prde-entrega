@@ -12,8 +12,8 @@ module Mttt.Gui.Tablero
   )
 where
 
-import           Graphics.Gloss  (Picture (Blank, Scale, Text), Point, bright,
-                                  color, pictures)
+import           Graphics.Gloss  (Picture (Blank, Scale, Text), bright, color,
+                                  pictures)
 import           Mttt.Bloque     (Bloque)
 import           Mttt.Common
 import           Mttt.Gui.Bloque (EstadoBloque (EB, bloqueEB, centroEB, tamEB, temaEB))

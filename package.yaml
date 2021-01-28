@@ -29,6 +29,10 @@ executables:
     - -threaded
     - -rtsopts
     - -with-rtsopts=-N
+    - -fwarn-tabs
+    - -fwarn-orphans
+    - -fwarn-incomplete-patterns
+    - -fwarn-unused-imports
     dependencies:
     - mttt
     - parseargs
