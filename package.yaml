@@ -33,6 +33,7 @@ executables:
     - -fwarn-orphans
     - -fwarn-incomplete-patterns
     - -fwarn-unused-imports
+    - -Wincomplete-patterns
     dependencies:
     - mttt
     - parseargs

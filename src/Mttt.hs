@@ -18,6 +18,7 @@ import           Mttt.Tablero     (Tablero)
 import qualified Mttt.Tablero     as T (heur0)
 import           Mttt.Tui
 
+{-
 getHeurTablero :: IO (String, Tablero -> Int)
 getHeurTablero = do
   putStrLn "Selecciona una función heurística"
@@ -43,6 +44,7 @@ getAgenteTablero = do
   (nombreHeur, heur) <- getHeurTablero
   prof <- getProf
   return (\f -> agenteMinimax f nombreHeur heur expandir prof)
+-}
 
 -- | Función para lanzar un juego
 nuevoJuego ::
